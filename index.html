@@ -180,7 +180,25 @@
      </div>
     </div><!-- Mobile Menu -->
     <div id="mobile-menu" class="lg:hidden hidden bg-white border-t border-slate-100 px-4 py-4">
-     <div class="flex flex-col gap-3"><a href="#home" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Home</a> <a href="#services" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Services</a> <a href="#why-us" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Why Us</a> <a href="#testimonials" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Reviews</a> <a href="#contact" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Contact</a>
+     <div class="flex flex-col gap-3"><a href="#home" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Home</a> <div class="px-2">
+  <button id="mobile-services-btn"
+    class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">
+    <span>Services</span>
+    <svg id="mobile-services-icon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </button>
+
+  <div id="mobile-services-menu" class="hidden mt-2 ml-2 border-l border-slate-200 pl-3">
+    <a href="#services" data-service="basement" class="service-dd block px-4 py-2 rounded-lg hover:bg-sky-50">Basement Waterproofing</a>
+    <a href="#services" data-service="terrace"  class="service-dd block px-4 py-2 rounded-lg hover:bg-sky-50">Terrace Waterproofing</a>
+    <a href="#services" data-service="wall"     class="service-dd block px-4 py-2 rounded-lg hover:bg-sky-50">Wall Waterproofing</a>
+    <a href="#services" data-service="pool"     class="service-dd block px-4 py-2 rounded-lg hover:bg-sky-50">Swimming Pool Waterproofing</a>
+    <a href="#services" data-service="bathroom" class="service-dd block px-4 py-2 rounded-lg hover:bg-sky-50">Bathroom Waterproofing</a>
+    <a href="#services" data-service="tank"     class="service-dd block px-4 py-2 rounded-lg hover:bg-sky-50">Tank Waterproofing</a>
+  </div>
+</div>
+ <a href="#why-us" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Why Us</a> <a href="#testimonials" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Reviews</a> <a href="#contact" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Contact</a>
      </div>
     </div>
    </nav><!-- Hero Section -->
@@ -848,6 +866,17 @@
       const menu = document.getElementById('mobile-menu');
       menu.classList.toggle('hidden');
     });
+   const msBtn = document.getElementById('mobile-services-btn');
+const msMenu = document.getElementById('mobile-services-menu');
+const msIcon = document.getElementById('mobile-services-icon');
+
+if (msBtn && msMenu) {
+  msBtn.addEventListener('click', () => {
+    msMenu.classList.toggle('hidden');
+    msIcon.classList.toggle('rotate-180');
+  });
+}
+
 
     // Close mobile menu when clicking on links
     document.querySelectorAll('#mobile-menu a').forEach(link => {
