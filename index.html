@@ -861,21 +861,42 @@
 
     let config = { ...defaultConfig };
 
-    // Mobile menu toggle
-    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-      const menu = document.getElementById('mobile-menu');
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Mobile menu toggle
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+
+  if (btn && menu) {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       menu.classList.toggle('hidden');
     });
-   const msBtn = document.getElementById('mobile-services-btn');
-const msMenu = document.getElementById('mobile-services-menu');
-const msIcon = document.getElementById('mobile-services-icon');
+  }
 
-if (msBtn && msMenu) {
-  msBtn.addEventListener('click', () => {
-    msMenu.classList.toggle('hidden');
-    msIcon.classList.toggle('rotate-180');
+  // Mobile services accordion
+  const msBtn = document.getElementById('mobile-services-btn');
+  const msMenu = document.getElementById('mobile-services-menu');
+  const msIcon = document.getElementById('mobile-services-icon');
+
+  if (msBtn && msMenu) {
+    msBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      msMenu.classList.toggle('hidden');
+      if (msIcon) msIcon.classList.toggle('rotate-180');
+    });
+  }
+
+  // Close mobile menu when clicking any link
+  document.querySelectorAll('#mobile-menu a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (menu) menu.classList.add('hidden');
+      if (msMenu) msMenu.classList.add('hidden');
+      if (msIcon) msIcon.classList.remove('rotate-180');
+    });
   });
-}
+});
+</script>
 
 
     // Close mobile menu when clicking on links
