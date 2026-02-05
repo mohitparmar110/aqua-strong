@@ -844,26 +844,26 @@
    </footer>
   </div>
   <script>
-    // Default configuration
-    const defaultConfig = {
-      company_name: 'AquaShield',
-      hero_headline: 'Stop Water Damage Before It Starts',
-      hero_subtext: 'Professional waterproofing solutions with 10-year warranty. Protect your home from leaks, seepage & dampness forever.',
-      phone_number: '+91 98765 43210',
-      whatsapp_number: '919876543210',
-      cta_button_text: 'Get Free Inspection',
-      background_color: '#0c4a6e',
-      surface_color: '#ffffff',
-      text_color: '#1e293b',
-      primary_action_color: '#22c55e',
-      secondary_action_color: '#0ea5e9'
-    };
-
-    let config = { ...defaultConfig };
-
-    <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Mobile menu toggle
+
+  // Default configuration
+  const defaultConfig = {
+    company_name: 'AquaShield',
+    hero_headline: 'Stop Water Damage Before It Starts',
+    hero_subtext: 'Professional waterproofing solutions with 10-year warranty. Protect your home from leaks, seepage & dampness forever.',
+    phone_number: '+91 98765 43210',
+    whatsapp_number: '919876543210',
+    cta_button_text: 'Get Free Inspection',
+    background_color: '#0c4a6e',
+    surface_color: '#ffffff',
+    text_color: '#1e293b',
+    primary_action_color: '#22c55e',
+    secondary_action_color: '#0ea5e9'
+  };
+
+  let config = { ...defaultConfig };
+
+  // ✅ Mobile menu toggle
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
 
@@ -874,7 +874,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Mobile services accordion
+  // ✅ Mobile services accordion
   const msBtn = document.getElementById('mobile-services-btn');
   const msMenu = document.getElementById('mobile-services-menu');
   const msIcon = document.getElementById('mobile-services-icon');
@@ -887,7 +887,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Close mobile menu when clicking any link
+  // ✅ Close mobile menu when clicking any link
   document.querySelectorAll('#mobile-menu a').forEach(link => {
     link.addEventListener('click', () => {
       if (menu) menu.classList.add('hidden');
@@ -895,132 +895,96 @@ document.addEventListener('DOMContentLoaded', () => {
       if (msIcon) msIcon.classList.remove('rotate-180');
     });
   });
-});
-</script>
 
-
-    // Close mobile menu when clicking on links
-    document.querySelectorAll('#mobile-menu a').forEach(link => {
-      link.addEventListener('click', () => {
-        document.getElementById('mobile-menu').classList.add('hidden');
-      });
-    });
-
-    // Form submission
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
+  // ✅ Form submission (safe checks)
+  const form = document.getElementById('contact-form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
-      
-      const name = document.getElementById('name').value;
-      const phone = document.getElementById('phone').value;
-      const service = document.getElementById('service').value;
-      const message = document.getElementById('message').value;
-      
-      // Show success message
-      document.getElementById('contact-form').classList.add('hidden');
-      document.getElementById('success-message').classList.remove('hidden');
-      
-      // Update WhatsApp link with form data
+
+      const name = document.getElementById('name')?.value || '';
+      const phone = document.getElementById('phone')?.value || '';
+      const service = document.getElementById('service')?.value || '';
+      const message = document.getElementById('message')?.value || '';
+
+      document.getElementById('contact-form')?.classList.add('hidden');
+      document.getElementById('success-message')?.classList.remove('hidden');
+
       const whatsappMessage = `Hi! I'm ${name}. I need ${service} waterproofing service. ${message}. My phone: ${phone}`;
       const whatsappUrl = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(whatsappMessage)}`;
-      document.getElementById('success-whatsapp').href = whatsappUrl;
+      const successWa = document.getElementById('success-whatsapp');
+      if (successWa) successWa.href = whatsappUrl;
     });
-      <script>
+  }
 
-    // When clicking a service dropdown item, pre-select the form dropdown
-    document.querySelectorAll('.service-dd').forEach(link => {
-      link.addEventListener('click', () => {
-        const val = link.getAttribute('data-service');
-        const sel = document.getElementById('service');
-        if (sel && val) sel.value = val;
-      });
+  // ✅ When clicking a service dropdown item, pre-select the form dropdown
+  document.querySelectorAll('.service-dd').forEach(link => {
+    link.addEventListener('click', () => {
+      const val = link.getAttribute('data-service');
+      const sel = document.getElementById('service');
+      if (sel && val) sel.value = val;
+    });
+  });
+
+  // ✅ Update UI based on config
+  function onConfigChange(cfg) {
+    config = { ...defaultConfig, ...cfg };
+
+    document.getElementById('nav-company-name').textContent = config.company_name;
+    document.getElementById('footer-company-name').textContent = config.company_name;
+    document.getElementById('copyright-company-name').textContent = config.company_name + ' Waterproofing';
+
+    document.getElementById('hero-headline').innerHTML =
+      config.hero_headline.replace(
+        'Before It Starts',
+        '<br class="hidden sm:block"/><span class="text-green-400">Before It Starts</span>'
+      );
+    document.getElementById('hero-subtext').textContent = config.hero_subtext;
+    document.getElementById('hero-cta-text').textContent = config.cta_button_text;
+
+    document.getElementById('nav-phone-text').textContent = config.phone_number;
+    document.getElementById('contact-phone').textContent = config.phone_number;
+    document.getElementById('footer-phone').textContent = config.phone_number;
+    document.getElementById('cta-phone-text').textContent = 'Call ' + config.phone_number;
+
+    ['whatsapp-float', 'hero-whatsapp', 'cta-whatsapp', 'success-whatsapp'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent('Hi! I need waterproofing services')}`;
     });
 
-    // Update UI based on config
+    document.getElementById('nav-cta').textContent = config.cta_button_text;
+  }
 
-    // Update UI based on config
-    function onConfigChange(cfg) {
-      config = { ...defaultConfig, ...cfg };
+  // Element SDK init
+  if (window.elementSdk) {
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange,
+      mapToCapabilities: (cfg) => ({
+        recolorables: [
+          { get: () => cfg.background_color || defaultConfig.background_color, set: (value) => window.elementSdk.setConfig({ background_color: value }) },
+          { get: () => cfg.surface_color || defaultConfig.surface_color, set: (value) => window.elementSdk.setConfig({ surface_color: value }) },
+          { get: () => cfg.text_color || defaultConfig.text_color, set: (value) => window.elementSdk.setConfig({ text_color: value }) },
+          { get: () => cfg.primary_action_color || defaultConfig.primary_action_color, set: (value) => window.elementSdk.setConfig({ primary_action_color: value }) },
+          { get: () => cfg.secondary_action_color || defaultConfig.secondary_action_color, set: (value) => window.elementSdk.setConfig({ secondary_action_color: value }) }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      }),
+      mapToEditPanelValues: (cfg) => new Map([
+        ['company_name', cfg.company_name || defaultConfig.company_name],
+        ['hero_headline', cfg.hero_headline || defaultConfig.hero_headline],
+        ['hero_subtext', cfg.hero_subtext || defaultConfig.hero_subtext],
+        ['phone_number', cfg.phone_number || defaultConfig.phone_number],
+        ['whatsapp_number', cfg.whatsapp_number || defaultConfig.whatsapp_number],
+        ['cta_button_text', cfg.cta_button_text || defaultConfig.cta_button_text]
+      ])
+    });
+  }
 
-      // Update company name instances
-      document.getElementById('nav-company-name').textContent = config.company_name;
-      document.getElementById('footer-company-name').textContent = config.company_name;
-      document.getElementById('copyright-company-name').textContent = config.company_name + ' Waterproofing';
-
-      // Update hero section
-      document.getElementById('hero-headline').innerHTML = config.hero_headline.replace('Before It Starts', '<br class="hidden sm:block"/><span class="text-green-400">Before It Starts</span>');
-      document.getElementById('hero-subtext').textContent = config.hero_subtext;
-      document.getElementById('hero-cta-text').textContent = config.cta_button_text;
-
-      // Update phone numbers
-      document.getElementById('nav-phone-text').textContent = config.phone_number;
-      document.getElementById('contact-phone').textContent = config.phone_number;
-      document.getElementById('footer-phone').textContent = config.phone_number;
-      document.getElementById('cta-phone-text').textContent = 'Call ' + config.phone_number;
-
-      // Update all WhatsApp links
-      const waLinks = [
-        'whatsapp-float', 'hero-whatsapp', 'cta-whatsapp', 'success-whatsapp'
-      ];
-      waLinks.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent('Hi! I need waterproofing services')}`;
-        }
-      });
-
-      // Update nav CTA
-      document.getElementById('nav-cta').textContent = config.cta_button_text;
-
-      // Update colors
-      document.documentElement.style.setProperty('--primary-action', config.primary_action_color);
-      document.documentElement.style.setProperty('--secondary-action', config.secondary_action_color);
-    }
-
-    // Initialize Element SDK
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange,
-        mapToCapabilities: (cfg) => ({
-          recolorables: [
-            {
-              get: () => cfg.background_color || defaultConfig.background_color,
-              set: (value) => window.elementSdk.setConfig({ background_color: value })
-            },
-            {
-              get: () => cfg.surface_color || defaultConfig.surface_color,
-              set: (value) => window.elementSdk.setConfig({ surface_color: value })
-            },
-            {
-              get: () => cfg.text_color || defaultConfig.text_color,
-              set: (value) => window.elementSdk.setConfig({ text_color: value })
-            },
-            {
-              get: () => cfg.primary_action_color || defaultConfig.primary_action_color,
-              set: (value) => window.elementSdk.setConfig({ primary_action_color: value })
-            },
-            {
-              get: () => cfg.secondary_action_color || defaultConfig.secondary_action_color,
-              set: (value) => window.elementSdk.setConfig({ secondary_action_color: value })
-            }
-          ],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (cfg) => new Map([
-          ['company_name', cfg.company_name || defaultConfig.company_name],
-          ['hero_headline', cfg.hero_headline || defaultConfig.hero_headline],
-          ['hero_subtext', cfg.hero_subtext || defaultConfig.hero_subtext],
-          ['phone_number', cfg.phone_number || defaultConfig.phone_number],
-          ['whatsapp_number', cfg.whatsapp_number || defaultConfig.whatsapp_number],
-          ['cta_button_text', cfg.cta_button_text || defaultConfig.cta_button_text]
-        ])
-      });
-    }
-
-    // Initialize with default config
-    onConfigChange(defaultConfig);
-  </script>
+  onConfigChange(defaultConfig);
+});
+</script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6b6d5c431e8513',t:'MTc2OTg4NTc2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
