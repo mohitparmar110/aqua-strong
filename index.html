@@ -866,15 +866,19 @@
       document.getElementById('success-whatsapp').href = whatsappUrl;
     });
       <script>
-  // When clicking a service dropdown item, pre-select the form dropdown
-  document.querySelectorAll('.service-dd').forEach(link => {
-    link.addEventListener('click', () => {
-      const val = link.getAttribute('data-service');
-      const sel = document.getElementById('service');
-      if (sel && val) sel.value = val;
+      });
+
+    // When clicking a service dropdown item, pre-select the form dropdown
+    document.querySelectorAll('.service-dd').forEach(link => {
+      link.addEventListener('click', () => {
+        const val = link.getAttribute('data-service');
+        const sel = document.getElementById('service');
+        if (sel && val) sel.value = val;
+      });
     });
-  });
-</script>
+
+    // Update UI based on config
+
     // Update UI based on config
     function onConfigChange(cfg) {
       config = { ...defaultConfig, ...cfg };
