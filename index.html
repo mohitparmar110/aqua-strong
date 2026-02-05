@@ -46,15 +46,16 @@
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-20px); }
     }
-    .water-wave {
+.water-wave {
   position: relative;
   overflow: visible;
+  z-index: 20; /* navbar base layer */
 }
 
-/* animated line UNDER the navbar */
+/* animated gradient line */
 .water-wave::after {
   content: '';
-  position: absolute;   /* ✅ important */
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
@@ -62,16 +63,14 @@
   background: linear-gradient(90deg, #0ea5e9, #22c55e, #0ea5e9);
   background-size: 200% 100%;
   animation: wave 3s linear infinite;
-  z-index: 0;           /* put it behind everything */
+  z-index: 30; /* above navbar background */
 }
 
-/* lift navbar content above the line */
-nav > div {
-  position: relative;
-  z-index: 10;
-}
-
-    @keyframes wave {
+/* dropdown must be top layer */
+.group > div {
+  z-index: 50;
+} 
+   @keyframes wave {
       0% { background-position: 0% 0%; }
       100% { background-position: 200% 0%; }
     }
