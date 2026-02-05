@@ -47,20 +47,30 @@
       50% { transform: translateY(-20px); }
     }
     .water-wave {
-      position: relative;
-      overflow: visible;
-    }
-    .water-wave::after {
-      content: '';
-      position: relative;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #0ea5e9, #22c55e, #0ea5e9);
-      background-size: 200% 100%;
-      animation: wave 3s linear infinite;
-    }
+  position: relative;
+  overflow: visible;
+}
+
+/* animated line UNDER the navbar */
+.water-wave::after {
+  content: '';
+  position: absolute;   /* ✅ important */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0ea5e9, #22c55e, #0ea5e9);
+  background-size: 200% 100%;
+  animation: wave 3s linear infinite;
+  z-index: 0;           /* put it behind everything */
+}
+
+/* lift navbar content above the line */
+nav > div {
+  position: relative;
+  z-index: 10;
+}
+
     @keyframes wave {
       0% { background-position: 0% 0%; }
       100% { background-position: 200% 0%; }
