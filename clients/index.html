@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Our Clients | AquaShield Waterproofing</title>
+  <meta name="description" content="AquaShield Waterproofing — trusted by leading institutions, developers, hospitals, hotels, and enterprises across Mumbai."/>
+
+  <style>
+    :root{
+      --primary-teal:#005a8d;
+      --accent-green:#1ebc61;
+      --dark-blue:#002b46;
+      --light-bg:#f8fafc;
+      --text-gray:#4a5568;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin:0;
+      color:var(--text-gray);
+      background: var(--light-bg);
+      line-height:1.6;
+    }
+    .container{ max-width:1100px; margin:0 auto; padding: 0 20px; }
+
+    /* Top bar + nav */
+    .topbar{
+      position: sticky;
+      top:0;
+      z-index: 50;
+      background: rgba(248,250,252,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(15,23,42,0.08);
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 0;
+      gap: 16px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:.2px;
+      color:#0f172a;
+      text-decoration:none;
+    }
+    .brand-badge{
+      width:38px; height:38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-teal), var(--dark-blue));
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-weight:900;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+    .navlinks{
+      display:flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+    .navlinks a{
+      text-decoration:none;
+      color:#0f172a;
+      font-weight:700;
+      padding: 10px 12px;
+      border-radius: 999px;
+      transition: .2s ease;
+    }
+    .navlinks a:hover{
+      background: rgba(0,90,141,0.08);
+      color: var(--primary-teal);
+    }
+    .navlinks a.active{
+      background: rgba(30,188,97,0.12);
+      color: #0f172a;
+      border: 1px solid rgba(30,188,97,0.35);
+    }
+    .cta-mini{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      text-decoration:none;
+      background: var(--accent-green);
+      color:#fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      box-shadow: 0 10px 25px rgba(30,188,97,0.25);
+      transition: transform .2s ease, box-shadow .2s ease;
+      white-space: nowrap;
+    }
+    .cta-mini:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 35px rgba(30,188,97,0.32);
+    }
+
+    /* Header */
+    header{
+      background: linear-gradient(135deg, var(--primary-teal) 0%, var(--dark-blue) 100%);
+      color:#fff;
+      padding: 72px 0 48px;
+      position: relative;
+      overflow:hidden;
+    }
+    header:before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(30,188,97,0.22), transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.12), transparent 45%),
+        radial-gradient(circle at 60% 80%, rgba(30,188,97,0.18), transparent 42%);
+      transform: rotate(8deg);
+    }
+    .hero{
+      position:relative;
+      z-index:1;
+      text-align:center;
+    }
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.20);
+      font-weight: 800;
+      font-size: .9rem;
+    }
+    h1{
+      margin: 14px 0 10px;
+      font-size: 2.6rem;
+      line-height: 1.15;
+      letter-spacing: -0.4px;
+    }
+    .hero p{
+      margin: 0 auto;
+      max-width: 700px;
+      opacity: .92;
+      font-size: 1.05rem;
+    }
+
+    /* Section card */
+    .section{
+      margin-top: -28px;
+      position: relative;
+      z-index: 2;
+    }
+    .panel{
+      background:#fff;
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.10);
+      border: 1px solid rgba(15,23,42,0.06);
+    }
+    .panel-top{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .panel-top h2{
+      margin:0;
+      color:#0f172a;
+      font-size: 1.35rem;
+      letter-spacing: -0.2px;
+    }
+    .panel-top .note{
+      margin:0;
+      font-size: .95rem;
+      opacity:.9;
+    }
+
+    /* Client grid + cards */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .client-card{
+      position: relative;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 14px 45px rgba(0,0,0,0.06);
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      overflow:hidden;
+      min-height: 150px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .client-card:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.10);
+      border-color: rgba(0,90,141,0.22);
+    }
+
+    /* subtle corner glow */
+    .client-card:before{
+      content:"";
+      position:absolute;
+      width: 160px;
+      height: 160px;
+      top: -80px;
+      right: -80px;
+      background: radial-gradient(circle, rgba(30,188,97,0.18), transparent 60%);
+      pointer-events:none;
+    }
+
+    .logo-wrap{
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(0,90,141,0.06);
+      border: 1px solid rgba(0,90,141,0.10);
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+    .logo{
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      display:block;
+      filter: saturate(1.05);
+    }
+
+    .client-name{
+      margin: 14px 0 0;
+      font-size: 1rem;
+      font-weight: 900;
+      color:#0f172a;
+      line-height: 1.25;
+      letter-spacing: -0.15px;
+    }
+    .client-tag{
+      margin: 6px 0 0;
+      font-size: .85rem;
+      font-weight: 800;
+      color: var(--primary-teal);
+      opacity: .9;
+    }
+
+    .mini-pill{
+      margin-top: 10px;
+      display:inline-flex;
+      width: fit-content;
+      gap: 8px;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(30,188,97,0.12);
+      border: 1px solid rgba(30,188,97,0.18);
+      color:#0f172a;
+      font-weight: 800;
+      font-size: .82rem;
+    }
+
+    /* enquiry strip */
+    .enquiry{
+      margin-top: 20px;
+      padding: 18px 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(0,90,141,0.07), rgba(30,188,97,0.08));
+      border: 1px solid rgba(15,23,42,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .enquiry strong{ color:#0f172a; }
+    .enquiry a{
+      text-decoration:none;
+      background: var(--accent-green);
+      color:#fff;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 900;
+      box-shadow: 0 12px 28px rgba(30,188,97,0.25);
+      transition: transform .2s ease;
+      white-space: nowrap;
+    }
+    .enquiry a:hover{ transform: translateY(-1px); }
+
+    footer{
+      margin-top: 46px;
+      background: var(--dark-blue);
+      color:#fff;
+      padding: 42px 0;
+      text-align:center;
+    }
+    footer p{ opacity:.9; margin: 8px 0 0; }
+
+    /* Responsive */
+    @media (max-width: 1024px){
+      .grid{ grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px){
+      h1{ font-size: 2rem; }
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+      .cta-mini{ display:none; } /* keep nav clean on mobile */
+    }
+    @media (max-width: 520px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div class="topbar">
+    <div class="container">
+      <div class="nav">
+        <a class="brand" href="/">
+          <span class="brand-badge">AS</span>
+          <span>AquaShield</span>
+        </a>
+
+        <div class="navlinks" aria-label="Primary navigation">
+          <!-- Update these hrefs as per your site -->
+          <a href="/">Home</a>
+          <a href="/services.html">Services</a>
+          <a href="/blog/index.html">Blog</a>
+          <a class="active" href="/clients.html">Clients</a>
+          <a href="/contact.html">Contact</a>
+        </div>
+
+        <a class="cta-mini" href="https://wa.me/919876543210" target="_blank" rel="noopener">
+          WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header>
+    <div class="container hero">
+      <div class="kicker">✓ Trusted Work • Professional Waterproofing</div>
+      <h1>Our Clients</h1>
+      <p>
+        A snapshot of institutions and brands who have worked with AquaShield Waterproofing.
+        Logos shown are representative of their respective owners.
+      </p>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="container section">
+    <div class="panel">
+      <div class="panel-top">
+        <div>
+          <h2>Client Portfolio</h2>
+          <p class="note">Add each client’s square logo (recommended 512×512 PNG, transparent background).</p>
+        </div>
+        <p class="note"><strong>Tip:</strong> Put logos inside <code>/assets/clients/</code> and keep filenames same as below.</p>
+      </div>
+
+      <!-- CLIENT GRID -->
+      <div class="grid">
+
+        <!-- NOTE:
+          Replace the src paths with your real logo files.
+          If a logo is missing, the image will hide automatically (no broken icon).
+        -->
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/vibyor-high.png" alt="Vibyor High logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Vibyor High</div>
+            <div class="client-tag">Education</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/macleods.png" alt="Macleods logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Macleods</div>
+            <div class="client-tag">Pharmaceutical</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/itc-hotel.png" alt="ITC Hotel logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">ITC Hotel</div>
+            <div class="client-tag">Hospitality</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/saifee-burhani.png" alt="Saifee Burhani logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Saifee Burmani</div>
+            <div class="client-tag">Institution</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/renaissance.png" alt="Renaissance logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Renaissance</div>
+            <div class="client-tag">Hospitality</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/praxis-technologies.png" alt="Praxis Technologies logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Praxis Technologies</div>
+            <div class="client-tag">Technology</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/lt.png" alt="L&T logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">L&amp;T</div>
+            <div class="client-tag">Infrastructure</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/mcx.png" alt="MCX logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">MCX</div>
+            <div class="client-tag">Exchange</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/mahindra-lifespaces.png" alt="Mahindra Lifespaces logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Mahindra Lifespaces</div>
+            <div class="client-tag">Real Estate</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/shree-tirupati.png" alt="Shree Tirupati Group logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Shree Tirupati Group</div>
+            <div class="client-tag">Group</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/tata.png" alt="Tata logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Tata</div>
+            <div class="client-tag">Conglomerate</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/dna.png" alt="DNA logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">DNA</div>
+            <div class="client-tag">Media</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/g-corp.png" alt="G Corp logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">G Corp</div>
+            <div class="client-tag">Developer</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/rna-corp.png" alt="RNA Corp logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">RNA Corp</div>
+            <div class="client-tag">Real Estate</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/man-infra.png" alt="Man Infra Construction Limited logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Man Infra Construction Limited</div>
+            <div class="client-tag">Construction</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/lodha.png" alt="Lodha logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Lodha</div>
+            <div class="client-tag">Real Estate</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/kokilaben-hospital.png" alt="Kokilaben Hospital logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Kokilaben Dhirubhai Ambani Hospital &amp; Medical Research Institute</div>
+            <div class="client-tag">Healthcare</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/be-billimoria.png" alt="B.E. Billimoria & Co. Limited logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">B.E. Billimoria &amp; Co. Limited</div>
+            <div class="client-tag">Engineering</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/nmims.png" alt="NMIMS logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">NMIMS</div>
+            <div class="client-tag">Education</div>
+            <div class="mini-pill">Mumbai</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/viacom18.png" alt="Viacom18 logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Viacom 18</div>
+            <div class="client-tag">Media</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/sify.png" alt="SIFY logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">SIFY</div>
+            <div class="client-tag">Technology</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="logo-wrap">
+            <img class="logo" src="assets/clients/alkem.png" alt="Alkem Laboratories logo" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <div class="client-name">Alkem Laboratories Ltd.</div>
+            <div class="client-tag">Pharmaceutical</div>
+            <div class="mini-pill">India</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Enquiry strip -->
+      <div class="enquiry">
+        <div>
+          <strong>Need waterproofing for your site?</strong>
+          <div>Get an inspection and the right treatment plan.</div>
+        </div>
+        <a href="https://wa.me/919876543210" target="_blank" rel="noopener">WhatsApp for Site Visit</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div style="font-weight:900; font-size:1.1rem;">AquaShield Waterproofing</div>
+      <p>Long-lasting waterproofing solutions for terraces, basements, bathrooms, tanks, and pools.</p>
+      <p style="margin-top:12px;">
+        <strong>Phone:</strong> +91 98765 43210 &nbsp; | &nbsp; <strong>Email:</strong> info@aquashield.com
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
