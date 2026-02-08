@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Waterproofing Blog | AquaShield Waterproofing</title>
+  <meta name="description" content="Practical waterproofing guides for terrace leakage, bathroom seepage, water tank safety, and swimming pool waterproofing in Mumbai."/>
+
+  <style>
+    :root {
+      --primary-teal: #005a8d;
+      --accent-green: #1ebc61;
+      --dark-blue: #002b46;
+      --light-bg: #f8fafc;
+      --text-gray: #4a5568;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: var(--text-gray);
+      margin: 0;
+      padding: 0;
+      background-color: var(--light-bg);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary-teal) 0%, var(--dark-blue) 100%);
+      color: white;
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .container { max-width: 1100px; margin: auto; padding: 20px; }
+
+    h1 { font-size: 2.8rem; margin-bottom: 15px; line-height: 1.2; }
+    h2 { color: var(--primary-teal); margin-top: 40px; border-left: 5px solid var(--accent-green); padding-left: 15px; }
+
+    .cta-button {
+      display: inline-block;
+      background: var(--accent-green);
+      color: white;
+      padding: 16px 32px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: bold;
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(30, 188, 97, 0.3);
+    }
+    .cta-button:hover { background: #18a353; transform: translateY(-2px); }
+
+    .highlight-box {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 30px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      border-top: 4px solid var(--primary-teal);
+    }
+
+    /* Blog cards */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:16px;
+      padding: 22px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.06);
+      border: 1px solid #eef2f7;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      transition: transform .15s ease, box-shadow .15s ease;
+      min-height: 230px;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 55px rgba(0,0,0,0.10);
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width: fit-content;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(0,90,141,0.08);
+      color: var(--primary-teal);
+      font-weight: 700;
+      font-size: .85rem;
+    }
+    .meta{
+      font-size: .9rem;
+      opacity: .9;
+    }
+    .title{
+      font-size: 1.15rem;
+      color: #0f172a;
+      font-weight: 800;
+      line-height:1.25;
+      margin: 0;
+    }
+    .excerpt{ margin:0; }
+    .read{
+      margin-top:auto;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      text-decoration:none;
+      font-weight: 800;
+      color: var(--primary-teal);
+    }
+    .read:hover{ text-decoration: underline; }
+
+    /* Form Styling */
+    .form-section {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      margin-top: 50px;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--primary-teal); }
+    input, select, textarea {
+      width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;
+    }
+
+    footer { background: var(--dark-blue); color: white; text-align: center; padding: 60px 20px; margin-top: 60px; }
+
+    @media (max-width: 1024px){
+      .grid{ grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      .grid{ grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Back to Home button (matches your UI) */
+    .back-home{
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      z-index: 9999;
+
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+
+      padding: 12px 18px;
+      border-radius: 999px;
+
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+
+      background: linear-gradient(135deg, #0b5d7a 0%, #0e7490 100%);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .back-home:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+    }
+    .back-home .icon{
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(6px);
+    }
+    .back-home svg{ width: 18px; height: 18px; }
+    @media (max-width: 768px){
+      .back-home{ top: 14px; left: 14px; padding: 10px 14px; }
+      .back-home .label{ display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="back-home" href="/">
+    <span class="icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+    </span>
+    <span class="label">Back to Home</span>
+  </a>
+
+  <header>
+    <div class="container">
+      <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;">✓ Practical Guides • Clear Steps</span>
+      <h1>Waterproofing <br><span style="color: var(--accent-green);">Blog</span></h1>
+      <p>Simple, practical articles to help you understand leakage, choose the right treatment, and avoid repeat damage.</p>
+      <a href="#enquiry" class="cta-button">Talk to an Expert</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="highlight-box">
+      <strong>What you’ll find here:</strong> terrace leakage guides, bathroom seepage solutions, water tank safety tips, pool waterproofing basics, and contractor selection checklists.
+    </div>
+
+    <h2>Latest Articles</h2>
+
+    <div class="grid">
+      <div class="card">
+        <span class="pill">Terrace</span>
+        <div class="meta">Mumbai • 6 min read</div>
+        <h3 class="title">Terrace Leakage: Causes, Signs & the Right Waterproofing Approach</h3>
+        <p class="excerpt">Learn why terraces leak, what symptoms to watch, and how a proper coating system prevents repeat seepage.</p>
+        <a class="read" href="./terrace-waterproofing-guide.html">Read Article →</a>
+      </div>
+
+      <div class="card">
+        <span class="pill">Bathroom</span>
+        <div class="meta">Mumbai • 5 min read</div>
+        <h3 class="title">Bathroom Leakage Without Major Breaking: What Actually Works</h3>
+        <p class="excerpt">Tile joints, pipe points, and floor junctions—how to fix seepage without turning your bathroom into a demolition site.</p>
+        <a class="read" href="./bathroom-leakage-without-breaking.html">Read Article →</a>
+      </div>
+
+      <div class="card">
+        <span class="pill">Water Tank</span>
+        <div class="meta">Mumbai • 5 min read</div>
+        <h3 class="title">Water Tank Waterproofing: Food-Grade Coatings & Hygiene Checklist</h3>
+        <p class="excerpt">What “safe for drinking water” means, how sealing works, and how to reduce contamination risk.</p>
+        <a class="read" href="./water-tank-waterproofing-food-grade.html">Read Article →</a>
+      </div>
+
+      <div class="card">
+        <span class="pill">Swimming Pool</span>
+        <div class="meta">Mumbai • 6 min read</div>
+        <h3 class="title">Swimming Pool Leakage: Tiny Cracks, Big Water Loss — Fix Guide</h3>
+        <p class="excerpt">Pool leakage isn’t always visible. Understand pressure, cracks, and tile joints, and how waterproofing systems handle them.</p>
+        <a class="read" href="./swimming-pool-leakage-causes-fixes.html">Read Article →</a>
+      </div>
+
+      <div class="card">
+        <span class="pill">Checklist</span>
+        <div class="meta">Mumbai • 7 min read</div>
+        <h3 class="title">How to Choose a Waterproofing Contractor (Mumbai): A Simple Checklist</h3>
+        <p class="excerpt">Avoid repeat leakage. Ask the right questions about materials, process, slope, curing, and warranty.</p>
+        <a class="read" href="./how-to-choose-waterproofing-contractor.html">Read Article →</a>
+      </div>
+    </div>
+
+    <section class="form-section" id="enquiry">
+      <h2 style="margin-top:0; border:none; text-align:center;">Request a Site Inspection</h2>
+      <p style="text-align:center; margin-bottom:30px;">Share your details and we’ll contact you with the right solution for your leakage issue.</p>
+
+      <form action="#">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Enter your name" required>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" placeholder="+91 XXXXX XXXXX" required>
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" placeholder="e.g. Andheri, Borivali" required>
+          </div>
+          <div class="form-group">
+            <label>Type of Issue</label>
+            <select>
+              <option>Terrace Leakage</option>
+              <option>Bathroom Seepage</option>
+              <option>Water Tank Leakage</option>
+              <option>Swimming Pool Leakage</option>
+              <option>Basement Dampness</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Briefly describe the problem</label>
+          <textarea rows="4" placeholder="Tell us what you’re seeing (dampness, cracks, dripping, stains, water loss, etc.)"></textarea>
+        </div>
+
+        <div style="text-align:center;">
+          <button type="submit" class="cta-button" style="border:none; cursor:pointer; width:100%; max-width:400px;">Submit Request</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <footer>
+    <div class="container">
+      <h2>Need Help With Leakage?</h2>
+      <p>We diagnose the root cause and apply long-lasting waterproofing systems.</p>
+      <div style="margin: 20px 0;">
+        <strong>Phone:</strong> +91 98765 43210 &nbsp; | &nbsp; <strong>Email:</strong> info@aquashield.com
+      </div>
+      <a href="https://wa.me/919876543210" class="cta-button" style="background: #25d366;">WhatsApp Instant Chat</a>
+    </div>
+  </footer>
+</body>
+</html>
