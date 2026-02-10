@@ -44,24 +44,25 @@
       background-color: var(--light-bg);
     }
 
-  /* HERO HEADER FINAL */
-header{
-  background-image: url("/assets/images/basement-wp.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+    /* HERO HEADER (IMAGE ONLY, BANNER ONLY) */
+    header{
+      background-image: url("/assets/images/basement-wp.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
 
-  color: white;
-  text-align: center;
-  padding: 140px 20px 160px;
-}
+      color: white;
+      text-align: center;
+      padding: 140px 20px 120px; /* banner padding */
+    }
 
-/* Make text readable without dark overlay */
-header h1,
-header p,
-header span{
-  text-shadow: 0 6px 20px rgba(0,0,0,0.55);
-}
+    /* Make text readable without overlay */
+    header h1,
+    header p,
+    header span{
+      text-shadow: 0 6px 20px rgba(0,0,0,0.55);
+    }
+
     .container{
       max-width: 1100px;
       margin: auto;
@@ -95,21 +96,6 @@ header span{
     .cta-button:hover{
       background: #18a353;
       transform: translateY(-2px);
-    }
-
-    /* Hero image inside banner */
-    .hero-image{
-      margin: 40px auto 0;
-      max-width: 980px;
-      padding: 0 10px;
-    }
-    .hero-image img{
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 20px;
-      box-shadow: 0 30px 70px rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.12);
     }
 
     .highlight-box{
@@ -219,14 +205,14 @@ header span{
         padding: 10px 14px;
       }
       .back-home .label{ display: none; }
-      header{ padding: 70px 16px 50px; }
-      .hero-image{ margin-top: 26px; }
+      header{ padding: 90px 16px 70px; }
       .form-section{ padding: 28px; }
     }
   </style>
 </head>
 
 <body>
+
   <!-- Back to Home -->
   <a class="back-home" href="/">
     <span class="icon" aria-hidden="true">
@@ -237,7 +223,7 @@ header span{
     <span class="label">Back to Home</span>
   </a>
 
-  <!-- ✅ SINGLE HEADER ONLY -->
+  <!-- ✅ HEADER ENDS AFTER BUTTON -->
   <header>
     <div class="container">
       <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;">
@@ -252,7 +238,10 @@ header span{
       <p>Professional Mumbai Waterproofing Solutions with 10-Year Warranty</p>
 
       <a href="#enquiry" class="cta-button">Book Free Site Inspection</a>
+    </div>
+  </header>
 
+  <!-- ✅ PAGE CONTENT STARTS HERE (NOT INSIDE HEADER) -->
   <div class="container">
     <article>
       <h2>Why Mumbai Basements Fail</h2>
@@ -345,5 +334,6 @@ header span{
       <a href="https://wa.me/919876543210" class="cta-button" style="background: #25d366;">WhatsApp Instant Chat</a>
     </div>
   </footer>
+
 </body>
 </html>
