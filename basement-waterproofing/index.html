@@ -152,7 +152,19 @@
   }
   .back-home .label{ display: none; } /* icon-only on mobile */
 }
+        /* Hero image inside banner */
+.hero-image{
+  margin-top: 45px;
+  display: flex;
+  justify-content: center;
+}
 
+.hero-image img{
+  width: 100%;
+  max-width: 950px;
+  border-radius: 20px;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.35);
+}
     </style>
 </head>
 <body>
@@ -174,18 +186,30 @@
         <a href="#enquiry" class="cta-button">Book Free Site Inspection</a>
     </div>
 </header>
-    <!-- Hero Work Image -->
-<div style="margin-top:40px;">
-  <img 
-    src="/assets/images/basement-wp.jpg"
-    alt="Basement Waterproofing Work"
-    style="
-      width:100%;
-      max-width:900px;
-      border-radius:18px;
-      box-shadow:0 25px 60px rgba(0,0,0,0.35);
-    ">
-</div>
+    <header>
+  <div class="container">
+
+    <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;">
+      ✓ Trusted by 10,000+ Customers
+    </span>
+
+    <h1>
+      Stop Water Damage <br>
+      <span style="color: var(--accent-green);">Before It Starts</span>
+    </h1>
+
+    <p>Professional Mumbai Waterproofing Solutions with 10-Year Warranty</p>
+
+    <a href="#enquiry" class="cta-button">Book Free Site Inspection</a>
+
+    <!-- HERO IMAGE INSIDE BANNER -->
+    <div class="hero-image">
+        <img src="/assets/images/basement-waterproofing.jpg" alt="Basement Waterproofing Work">
+    </div>
+
+  </div>
+</header>
+
 
 <div class="container">
     <article>
