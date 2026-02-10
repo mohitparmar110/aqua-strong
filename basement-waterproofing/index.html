@@ -44,17 +44,23 @@
       background-color: var(--light-bg);
     }
 
-    /* HERO HEADER (IMAGE ONLY, BANNER ONLY) */
-    header{
-      background-image: url("/assets/images/basement-wp.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+   header{
+  background:
+    linear-gradient(
+      rgba(15,111,124,0.75),   /* teal */
+      rgba(6,47,74,0.85)       /* deep blue */
+    ),
+    url("/assets/images/basement-wp.jpg");
 
-      color: white;
-      text-align: center;
-      padding: 140px 20px 120px; /* banner padding */
-    }
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  color: white;
+  text-align: center;
+  padding: 140px 20px 120px;
+}
+
 
     /* Make text readable without overlay */
     header h1,
