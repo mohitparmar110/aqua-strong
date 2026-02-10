@@ -45,12 +45,41 @@
     }
 
     /* HERO */
-    header{
-      background: linear-gradient(135deg, var(--primary-teal) 0%, var(--dark-blue) 100%);
-      color: white;
-      padding: 80px 20px 60px;
-      text-align: center;
-    }
+   header{
+  position: relative;
+  color: white;
+  padding: 120px 20px 140px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Background image */
+header::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:url("/assets/images/basement-wp.jpg");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  z-index:-2;
+}
+
+/* Dark overlay for text readability */
+header::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+      rgba(0,40,60,0.85),
+      rgba(0,40,60,0.92)
+  );
+  z-index:-1;
+}
+    header .container{
+  max-width:900px;
+}
+
 
     .container{
       max-width: 1100px;
@@ -242,14 +271,6 @@
       <p>Professional Mumbai Waterproofing Solutions with 10-Year Warranty</p>
 
       <a href="#enquiry" class="cta-button">Book Free Site Inspection</a>
-
-      <!-- ✅ HERO IMAGE INSIDE BANNER -->
-      <div class="hero-image">
-        <!-- IMPORTANT: filename must match EXACTLY what you uploaded -->
-        <img src="/assets/images/basement-wp.jpg" alt="Basement Waterproofing Work" loading="lazy">
-      </div>
-    </div>
-  </header>
 
   <div class="container">
     <article>
