@@ -237,73 +237,113 @@
          </svg><span class="text-sky-100">24/7 Support</span>
         </div>
        </div>
-      <!-- Hero Visual with Image Grid -->
-<div class="hidden lg:block relative">
-  <div class="relative w-full max-w-lg mx-auto">
-    <!-- Image Grid -->
-    <div class="grid grid-cols-2 gap-4">
+     <!-- RIGHT: Click-Based Hero Banner Rotator -->
+<div class="relative w-full max-w-2xl mx-auto lg:mx-0">
+  <div id="hero-rotator" class="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10">
 
-      <!-- Main Large Image -->
-      <div class="col-span-2 relative rounded-3xl overflow-hidden shadow-2xl group">
-        <div class="aspect-[16/10] bg-gradient-to-br from-sky-900 to-sky-700 relative overflow-hidden">
+    <!-- Background banner image -->
+    <div class="relative aspect-[16/9] sm:aspect-[21/9] lg:aspect-[16/9]">
+      <img
+        id="hero-bg"
+        src="assets/banners/terrace.jpg"
+        alt="AquaShield waterproofing banner"
+        class="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+      />
+      <!-- Dark overlay for readability -->
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/40 to-slate-950/10"></div>
 
-          <!-- Image fills the box -->
-          <img
-            src="assets/images/wterprofingwholehome.png"
-            alt="Complete Home Protection"
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-
-          <!-- optional overlay (keep if you want readability) -->
-          <div class="absolute inset-0 bg-gradient-to-t from-sky-900/60 via-sky-900/20 to-transparent"></div>
-
-          <div class="absolute bottom-4 left-4 right-4">
-            <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
-              <div class="text-white font-bold text-sm">✓ Complete Home Protection</div>
-              <div class="text-sky-200 text-xs">10-Year Warranty Included</div>
-            </div>
-          </div>
-
+      <!-- Left content (optional – you can keep your existing left text outside too) -->
+      <div class="absolute left-5 sm:left-8 top-5 sm:top-8 max-w-[70%] sm:max-w-[55%]">
+        <div id="hero-right-kicker" class="text-green-300 font-semibold text-xs sm:text-sm tracking-wide">
+          Innovative System Is Here
         </div>
+        <h3 id="hero-right-title" class="text-white font-extrabold leading-tight text-lg sm:text-2xl mt-2">
+          Terrace Waterproofing
+        </h3>
+        <p id="hero-right-sub" class="text-sky-100 text-xs sm:text-sm mt-2">
+          Crack repair + coating to stop leaks before monsoon.
+        </p>
+
+        <ul id="hero-right-bullets" class="mt-4 space-y-2 text-xs sm:text-sm text-white/90">
+          <li class="flex gap-2"><span class="text-green-400">✓</span><span>Heat & rain resistant coating</span></li>
+          <li class="flex gap-2"><span class="text-green-400">✓</span><span>Crack filling included</span></li>
+          <li class="flex gap-2"><span class="text-green-400">✓</span><span>10-year warranty option</span></li>
+        </ul>
       </div>
 
-      <!-- Small Image 1 - Terrace -->
-      <div class="relative rounded-2xl overflow-hidden shadow-xl group">
-        <div class="aspect-square relative overflow-hidden bg-gradient-to-br from-green-700 to-emerald-600">
-          <img
-            src="assets/images/terrace-2.jpg"
-            alt="Terrace Waterproofing"
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-          <div class="absolute inset-0 bg-black/25"></div>
-
-          <div class="absolute bottom-2 left-2 right-2">
-            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-2">
-              <div class="text-white font-semibold text-xs">Terrace Coating</div>
-            </div>
+      <!-- Right-side clickable options -->
+      <div class="absolute right-4 sm:right-6 top-4 sm:top-6 w-[180px] sm:w-[220px] space-y-3">
+        
+        <!-- Option 1 -->
+        <button
+          type="button"
+          class="hero-option w-full text-left rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 transition p-3 sm:p-4 flex items-center gap-3"
+          data-key="terrace"
+          aria-pressed="true"
+        >
+          <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-sky-600/30 border border-white/15 flex items-center justify-center">
+            <!-- simple icon -->
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
           </div>
-        </div>
+          <div class="min-w-0">
+            <div class="text-white font-bold text-sm sm:text-base leading-tight">Terrace</div>
+            <div class="text-white/80 text-xs">Click to view</div>
+          </div>
+        </button>
+
+        <!-- Option 2 -->
+        <button
+          type="button"
+          class="hero-option w-full text-left rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 transition p-3 sm:p-4 flex items-center gap-3"
+          data-key="toilet"
+          aria-pressed="false"
+        >
+          <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-sky-600/30 border border-white/15 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 3h10v8a5 5 0 01-5 5H7V3zM7 16h10v2a3 3 0 01-3 3H10a3 3 0 01-3-3v-2z"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <div class="text-white font-bold text-sm sm:text-base leading-tight">Toilet</div>
+            <div class="text-white/80 text-xs">Click to view</div>
+          </div>
+        </button>
+
+        <!-- Option 3 -->
+        <button
+          type="button"
+          class="hero-option w-full text-left rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/15 transition p-3 sm:p-4 flex items-center gap-3"
+          data-key="heat"
+          aria-pressed="false"
+        >
+          <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-sky-600/30 border border-white/15 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m7-9h2M3 12H1m15.364 6.364l1.414 1.414M6.222 6.222 4.808 4.808m0 14.384 1.414-1.414M19.778 6.222l-1.414 1.414"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <div class="text-white font-bold text-sm sm:text-base leading-tight">Heat Reflection</div>
+            <div class="text-white/80 text-xs">Click to view</div>
+          </div>
+        </button>
+
       </div>
 
-      <!-- Small Image 2 - Wall Protection -->
-      <div class="relative rounded-2xl overflow-hidden shadow-xl group">
-        <div class="aspect-square relative overflow-hidden bg-gradient-to-br from-blue-700 to-cyan-600">
-          <img
-            src="assets/images/crack-filling-services-on-external-building-surface-500x500.jpg"
-            alt="Wall Waterproofing"
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-          <div class="absolute inset-0 bg-black/25"></div>
-
-          <div class="absolute bottom-2 left-2 right-2">
-            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-2">
-              <div class="text-white font-semibold text-xs">Wall Sealing</div>
-            </div>
-          </div>
-        </div>
+      <!-- Bottom CTA (optional) -->
+      <div class="absolute left-5 sm:left-8 bottom-5 sm:bottom-6">
+        <a
+          id="hero-right-cta"
+          href="https://wa.me/919769531112?text=Hi!%20I%20need%20terrace%20waterproofing"
+          class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full font-bold shadow-xl transition"
+        >
+          Get Quote
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
       </div>
 
     </div>
@@ -1002,6 +1042,111 @@ document.addEventListener('DOMContentLoaded', () => {
       ])
     });
   }
+ // ✅ HERO ROTATOR (click-based banner + right content)
+const heroSlides = {
+  terrace: {
+    bg: "assets/banners/terrace.jpg",
+    kicker: "Innovative System Is Here",
+    title: "Terrace Waterproofing",
+    sub: "Crack repair + coating to stop leaks before monsoon.",
+    bullets: [
+      "Heat & rain resistant coating",
+      "Crack filling included",
+      "10-year warranty option"
+    ],
+    whatsappText: "Hi! I need terrace waterproofing. Please share cost & inspection time."
+  },
+  toilet: {
+    bg: "assets/banners/toilet.jpg",
+    kicker: "Leak-Proof Bathroom Solution",
+    title: "Toilet / Bathroom Waterproofing",
+    sub: "Stop leakage without breaking tiles (case-to-case).",
+    bullets: [
+      "Tile joint sealing",
+      "Leak source diagnosis",
+      "Fast turnaround"
+    ],
+    whatsappText: "Hi! I need toilet/bathroom waterproofing. Please share best solution."
+  },
+  heat: {
+    bg: "assets/banners/heat-reflection.jpg",
+    kicker: "Cool Roof Technology",
+    title: "Heat Reflection Coating",
+    sub: "Reduce heat transfer and protect slab from expansion cracks.",
+    bullets: [
+      "Reflects harsh sunlight",
+      "Helps reduce indoor temperature",
+      "Long-lasting roof protection"
+    ],
+    whatsappText: "Hi! I need heat reflection coating. Please share details and pricing."
+  }
+};
+
+const heroBg = document.getElementById("hero-bg");
+const heroKicker = document.getElementById("hero-right-kicker");
+const heroTitle = document.getElementById("hero-right-title");
+const heroSub = document.getElementById("hero-right-sub");
+const heroBullets = document.getElementById("hero-right-bullets");
+const heroCta = document.getElementById("hero-right-cta");
+const heroOptions = document.querySelectorAll(".hero-option");
+
+// Preload images for instant switch (no flicker)
+Object.values(heroSlides).forEach(s => { const i = new Image(); i.src = s.bg; });
+
+function setHeroSlide(key) {
+  const slide = heroSlides[key];
+  if (!slide) return;
+
+  // Background swap
+  if (heroBg) {
+    heroBg.src = slide.bg;
+  }
+
+  // Text swap
+  if (heroKicker) heroKicker.textContent = slide.kicker;
+  if (heroTitle) heroTitle.textContent = slide.title;
+  if (heroSub) heroSub.textContent = slide.sub;
+
+  // Bullets swap
+  if (heroBullets) {
+    heroBullets.innerHTML = slide.bullets
+      .map(b => `<li class="flex gap-2"><span class="text-green-400">✓</span><span>${b}</span></li>`)
+      .join("");
+  }
+
+  // CTA swap (WhatsApp message)
+  const wa = (typeof config !== "undefined" && config.whatsapp_number) ? config.whatsapp_number : "919769531112";
+  const href = `https://wa.me/${wa}?text=${encodeURIComponent(slide.whatsappText)}`;
+  if (heroCta) heroCta.href = href;
+
+  // Active state (whole option clickable)
+  heroOptions.forEach(btn => {
+    const active = btn.getAttribute("data-key") === key;
+    btn.setAttribute("aria-pressed", active ? "true" : "false");
+    btn.classList.toggle("ring-2", active);
+    btn.classList.toggle("ring-green-400/70", active);
+    btn.classList.toggle("bg-white/15", active);
+  });
+
+  // Optional: reflect in URL so sharing works
+  const url = new URL(window.location.href);
+  url.searchParams.set("service", key);
+  window.history.replaceState({}, "", url.toString());
+}
+
+// Click handlers
+heroOptions.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const key = btn.getAttribute("data-key");
+    setHeroSlide(key);
+  });
+});
+
+// Load from URL if present
+const initialKey = new URL(window.location.href).searchParams.get("service");
+if (initialKey && heroSlides[initialKey]) setHeroSlide(initialKey);
+else setHeroSlide("terrace");
+
 
   onConfigChange(defaultConfig);
 });
