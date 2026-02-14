@@ -28,6 +28,37 @@
         <h2 class="text-lg font-bold">Hero Slides</h2>
         <button id="saveAll" class="px-4 py-2 rounded-xl bg-green-600 text-white">Save Changes</button>
       </div>
+      <!-- Upload ANY banner -->
+<div class="mb-5 border rounded-2xl p-4 bg-slate-50">
+  <div class="flex items-center justify-between">
+    <h3 class="font-bold">Upload Any Banner (any name)</h3>
+    <span class="text-xs text-slate-500">Uploads to R2 using your chosen key</span>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-3 mt-3">
+    <div>
+      <label class="text-xs font-semibold">File</label>
+      <input type="file" id="file_any" class="block w-full text-sm mt-1"/>
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold">R2 Key (path + filename)</label>
+      <input id="key_any" class="w-full border rounded-xl px-3 py-2 mt-1"
+             placeholder="banners/home-hero-1.webp (or services/terrace/hero.jpg)"/>
+      <p class="text-[11px] text-slate-500 mt-1">Tip: start with <b>banners/</b></p>
+    </div>
+
+    <div class="flex items-end">
+      <button id="uploadAnyBtn" class="w-full px-4 py-2 rounded-xl bg-indigo-600 text-white">
+        Upload Any Banner
+      </button>
+    </div>
+  </div>
+
+  <div class="text-xs text-slate-600 mt-3 break-words">
+    Result URL: <span id="any_url" class="font-mono"></span>
+  </div>
+</div>
 
       <div class="grid md:grid-cols-3 gap-4" id="cards"></div>
       <p id="msg" class="text-sm mt-4"></p>
@@ -128,6 +159,31 @@ async function upload(slot){
   document.getElementById(`bg_${slot}`).textContent = out.publicUrl;
   show(`Uploaded ${slot} banner ✅`);
 }
+async function uploadAny(){
+  const fileInput = document.getElementById("file_any");
+  const keyInput  = document.getElementById("key_any");
+  const urlEl = document.getElementById("any_url");
+
+  if (!fileInput.files[0]) return show("Select a file first", true);
+  const key = keyInput.value.trim();
+  if (!key) return show("Enter an R2 key like banners/home-hero-1.webp", true);
+
+  const fd = new FormData();
+  fd.append("file", fileInput.files[0]);
+  fd.append("key", key);
+
+  const res = await fetch(`/api/admin/upload-banner`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: fd
+  });
+
+  if (!res.ok) return show("Upload failed: " + await res.text(), true);
+
+  const out = await res.json();
+  urlEl.textContent = out.url || out.publicUrl || "";
+  show("Uploaded ✅");
+}
 
 async function saveAll(){
   collect();
@@ -156,6 +212,7 @@ document.getElementById("saveToken").onclick = () => {
 document.getElementById("logout").onclick = () => { clearToken(); render(); };
 
 document.getElementById("saveAll").onclick = saveAll;
+document.getElementById("uploadAnyBtn").onclick = uploadAny;
 
 (async ()=>{
   document.getElementById("token").value = getToken();
