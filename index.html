@@ -1043,113 +1043,134 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
  // ✅ HERO ROTATOR (click-based banner + right content)
-const heroSlides = {
-  terrace: {
-    bg: "assets/banners/terrace.jpg",
-    kicker: "Innovative System Is Here",
-    title: "Terrace Waterproofing",
-    sub: "Crack repair + coating to stop leaks before monsoon.",
-    bullets: [
-      "Heat & rain resistant coating",
-      "Crack filling included",
-      "10-year warranty option"
-    ],
-    whatsappText: "Hi! I need terrace waterproofing. Please share cost & inspection time."
-  },
-  toilet: {
-    bg: "assets/banners/toilet.jpg",
-    kicker: "Leak-Proof Bathroom Solution",
-    title: "Toilet / Bathroom Waterproofing",
-    sub: "Stop leakage without breaking tiles (case-to-case).",
-    bullets: [
-      "Tile joint sealing",
-      "Leak source diagnosis",
-      "Fast turnaround"
-    ],
-    whatsappText: "Hi! I need toilet/bathroom waterproofing. Please share best solution."
-  },
-  heat: {
-    bg: "assets/banners/heat-reflection.jpg",
-    kicker: "Cool Roof Technology",
-    title: "Heat Reflection Coating",
-    sub: "Reduce heat transfer and protect slab from expansion cracks.",
-    bullets: [
-      "Reflects harsh sunlight",
-      "Helps reduce indoor temperature",
-      "Long-lasting roof protection"
-    ],
-    whatsappText: "Hi! I need heat reflection coating. Please share details and pricing."
-  }
-};
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
 
-const heroBg = document.getElementById("hero-bg");
-const heroKicker = document.getElementById("hero-right-kicker");
-const heroTitle = document.getElementById("hero-right-title");
-const heroSub = document.getElementById("hero-right-sub");
-const heroBullets = document.getElementById("hero-right-bullets");
-const heroCta = document.getElementById("hero-right-cta");
-const heroOptions = document.querySelectorAll(".hero-option");
+  // -----------------------------
+  // 1) Load CMS config from /api/config
+  // -----------------------------
+  let siteCfg = null;
 
-// Preload images for instant switch (no flicker)
-Object.values(heroSlides).forEach(s => { const i = new Image(); i.src = s.bg; });
-
-function setHeroSlide(key) {
-  const slide = heroSlides[key];
-  if (!slide) return;
-
-  // Background swap
-  if (heroBg) {
-    heroBg.src = slide.bg;
+  async function loadSiteConfig(){
+    const res = await fetch("/api/config", { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to load /api/config");
+    return await res.json();
   }
 
-  // Text swap
-  if (heroKicker) heroKicker.textContent = slide.kicker;
-  if (heroTitle) heroTitle.textContent = slide.title;
-  if (heroSub) heroSub.textContent = slide.sub;
-
-  // Bullets swap
-  if (heroBullets) {
-    heroBullets.innerHTML = slide.bullets
-      .map(b => `<li class="flex gap-2"><span class="text-green-400">✓</span><span>${b}</span></li>`)
-      .join("");
+  function safeSlide(slide){
+    // normalize fields so your UI never breaks
+    return {
+      bg: slide?.bg || "",
+      title: slide?.title || "",
+      sub: slide?.sub || "",
+      bullets: Array.isArray(slide?.bullets) ? slide.bullets : [],
+      ctaText: slide?.ctaText || "Get Quote",
+      ctaLink: slide?.ctaLink || "https://wa.me/919769531112?text=Hi!%20I%20need%20waterproofing"
+    };
   }
 
-  // CTA swap (WhatsApp message)
-  const wa = (typeof config !== "undefined" && config.whatsapp_number) ? config.whatsapp_number : "919769531112";
-  const href = `https://wa.me/${wa}?text=${encodeURIComponent(slide.whatsappText)}`;
-  if (heroCta) heroCta.href = href;
+  // -----------------------------
+  // 2) Hero DOM references
+  // -----------------------------
+  const heroBg      = document.getElementById("hero-bg");
+  const heroKicker  = document.getElementById("hero-right-kicker");
+  const heroTitle   = document.getElementById("hero-right-title");
+  const heroSub     = document.getElementById("hero-right-sub");
+  const heroBullets = document.getElementById("hero-right-bullets");
+  const heroCta     = document.getElementById("hero-right-cta");
+  const heroOptions = document.querySelectorAll(".hero-option");
 
-  // Active state (whole option clickable)
+  // -----------------------------
+  // 3) Render slide from CMS
+  // -----------------------------
+  function setHeroSlide(key){
+    const slides = siteCfg?.hero?.slides || {};
+    const raw = slides[key];
+    if (!raw) return;
+
+    const slide = safeSlide(raw);
+
+    // background
+    if (heroBg && slide.bg) heroBg.src = slide.bg;
+
+    // text blocks (kicker is optional — use title if you want)
+    if (heroKicker) heroKicker.textContent = "Innovative System Is Here";
+    if (heroTitle) heroTitle.textContent = slide.title;
+    if (heroSub) heroSub.textContent = slide.sub;
+
+    // bullets
+    if (heroBullets){
+      const list = (slide.bullets || []).slice(0, 5);
+      heroBullets.innerHTML = list.map(b =>
+        `<li class="flex gap-2"><span class="text-green-400">✓</span><span>${escapeHtml(b)}</span></li>`
+      ).join("");
+    }
+
+    // CTA
+    if (heroCta){
+      heroCta.href = slide.ctaLink || "#";
+      heroCta.textContent = slide.ctaText || "Get Quote";
+      // keep your arrow icon if you want: easiest is keep current HTML and only update href/text elsewhere
+    }
+
+    // active button UI
+    heroOptions.forEach(btn => {
+      const active = btn.getAttribute("data-key") === key;
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+      btn.classList.toggle("ring-2", active);
+      btn.classList.toggle("ring-green-400/70", active);
+      btn.classList.toggle("bg-white/15", active);
+    });
+
+    // optional: reflect in URL
+    const url = new URL(window.location.href);
+    url.searchParams.set("service", key);
+    window.history.replaceState({}, "", url.toString());
+  }
+
+  function escapeHtml(str){
+    return (str || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;");
+  }
+
+  // -----------------------------
+  // 4) Wire up clicks
+  // -----------------------------
   heroOptions.forEach(btn => {
-    const active = btn.getAttribute("data-key") === key;
-    btn.setAttribute("aria-pressed", active ? "true" : "false");
-    btn.classList.toggle("ring-2", active);
-    btn.classList.toggle("ring-green-400/70", active);
-    btn.classList.toggle("bg-white/15", active);
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-key");
+      setHeroSlide(key);
+    });
   });
 
-  // Optional: reflect in URL so sharing works
-  const url = new URL(window.location.href);
-  url.searchParams.set("service", key);
-  window.history.replaceState({}, "", url.toString());
-}
+  // -----------------------------
+  // 5) Boot: load config + preload images + set initial slide
+  // -----------------------------
+  try {
+    siteCfg = await loadSiteConfig();
 
-// Click handlers
-heroOptions.forEach(btn => {
-  btn.addEventListener("click", () => {
-    const key = btn.getAttribute("data-key");
-    setHeroSlide(key);
-  });
-});
+    // preload bg images for smoother switching
+    const slides = siteCfg?.hero?.slides || {};
+    Object.keys(slides).forEach(k => {
+      const bg = slides[k]?.bg;
+      if (bg) { const img = new Image(); img.src = bg; }
+    });
 
-// Load from URL if present
-const initialKey = new URL(window.location.href).searchParams.get("service");
-if (initialKey && heroSlides[initialKey]) setHeroSlide(initialKey);
-else setHeroSlide("terrace");
+    const initialKey = new URL(window.location.href).searchParams.get("service");
+    if (initialKey && siteCfg?.hero?.slides?.[initialKey]) setHeroSlide(initialKey);
+    else setHeroSlide("terrace");
 
+  } catch (e) {
+    console.error(e);
+    // fallback if API fails
+    setHeroSlide("terrace");
+  }
 
-  onConfigChange(defaultConfig);
 });
 </script>
+
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6b6d5c431e8513',t:'MTc2OTg4NTc2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
