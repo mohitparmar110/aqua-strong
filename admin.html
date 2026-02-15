@@ -29,8 +29,6 @@
         <button id="saveAll" class="px-4 py-2 rounded-xl bg-green-600 text-white">Save Changes</button>
       </div>
 
-      <!-- NOTE: Removed "Upload Any Banner" block completely -->
-
       <div class="grid md:grid-cols-3 gap-4" id="cards"></div>
       <p id="msg" class="text-sm mt-4"></p>
     </div>
@@ -76,7 +74,7 @@ function ensureShape(c){
 
 async function loadConfig(){
   const res = await fetch("/api/config", { cache:"no-store" });
-  if (!res.ok) throw new Error("Failed to load /api/config");
+  if (!res.ok) throw new Error("Failed to load /api/config: " + await res.text());
   const data = await res.json();
   cfg = ensureShape(data);
 }
@@ -150,14 +148,7 @@ async function upload(slot){
   const file = fileInput.files && fileInput.files[0];
   if (!file) return show(`Select a file for ${slot} first`, true);
 
-  const okTypes = ["image/png","image/jpeg","image/webp"];
-  if (!okTypes.includes(file.type)) {
-    return show("Only PNG/JPG/WEBP allowed.", true);
-  }
-
-  if (!getToken()) {
-    return show("Paste ADMIN TOKEN and click Save first.", true);
-  }
+  if (!getToken()) return show("Paste ADMIN TOKEN and click Save first.", true);
 
   const fd = new FormData();
   fd.append("file", file);
@@ -191,7 +182,7 @@ async function saveAll(){
   });
 
   if (!res.ok) return show("Save failed: " + await res.text(), true);
-  show("Saved ✅ (Frontend will read /api/config)");
+  show("Saved ✅");
 }
 
 document.getElementById("saveToken").onclick = () => {
@@ -206,7 +197,6 @@ document.getElementById("logout").onclick = () => {
   render();
   show("Logged out ✅");
 };
-
 document.getElementById("saveAll").onclick = saveAll;
 
 (async ()=>{
