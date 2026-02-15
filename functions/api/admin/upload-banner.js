@@ -1,70 +1,49 @@
+function isAuthed(request, env) {
+  const auth = request.headers.get("authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  return !!env.ADMIN_TOKEN && token === env.ADMIN_TOKEN;
+}
+
+function extFromFile(fileName, mime) {
+  const fromName = (fileName || "").split(".").pop()?.toLowerCase();
+  if (fromName && ["png", "jpg", "jpeg", "webp"].includes(fromName)) return fromName === "jpeg" ? "jpg" : fromName;
+  if (mime === "image/png") return "png";
+  if (mime === "image/jpeg") return "jpg";
+  return "webp";
+}
+
 export async function onRequestPost({ request, env }) {
   try {
-    // ---- 1) Admin auth (same pattern as your save-config.js usually uses)
-    const auth = request.headers.get("Authorization") || "";
-    if (!env.ADMIN_TOKEN || auth !== `Bearer ${env.ADMIN_TOKEN}`) {
-      return new Response("Unauthorized", { status: 401 });
-    }
+    if (!isAuthed(request, env)) return new Response("Unauthorized", { status: 401 });
+    if (!env.R2) return new Response("Missing R2 binding (env.R2)", { status: 500 });
 
-    // ---- 2) Read multipart form-data
+    const urlObj = new URL(request.url);
+    const slot = (urlObj.searchParams.get("slot") || "").trim();
+
+    if (!slot) return new Response("Missing slot", { status: 400 });
+    if (!["terrace", "toilet", "heat"].includes(slot)) return new Response("Invalid slot", { status: 400 });
+
     const form = await request.formData();
-
-    // file
     const file = form.get("file");
-    if (!file || !(file instanceof File)) {
-      return new Response("Missing file", { status: 400 });
-    }
+    if (!file || !(file instanceof File)) return new Response("Missing file", { status: 400 });
 
-    // key (the path/filename you want in R2)
-    // examples:
-    //  banners/terrace.webp
-    //  banners/home-hero-1.jpg
-    //  services/roof/hero.png
-    let key = form.get("key");
+    const okTypes = ["image/png", "image/jpeg", "image/webp"];
+    if (!okTypes.includes(file.type)) return new Response("Only PNG/JPG/WEBP allowed", { status: 400 });
 
-    // Backward compatibility:
-    // if your old UI sends "service" or "name", we build a key automatically
-    const service = (form.get("service") || form.get("name") || "").toString().trim();
-    if (!key || typeof key !== "string" || !key.trim()) {
-      // auto-generate a safe filename if key not provided
-      const ext = (file.name.split(".").pop() || "webp").toLowerCase();
-      const safeService = (service || "banner")
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-_]/g, "");
-      key = `banners/${safeService}-${Date.now()}.${ext}`;
-    }
+    const ext = extFromFile(file.name, file.type);
+    const key = `banners/hero-${slot}.${ext}`;
 
-    // ---- 3) Sanitize key (avoid ../ etc)
-    const cleanKey = key
-      .toString()
-      .trim()
-      .replace(/^\/+/, "")                 // no leading /
-      .replace(/\.\.+/g, ".")              // stop ../ tricks
-      .replace(/[^a-zA-Z0-9\-_.\/]/g, ""); // safe chars only
-
-    if (!cleanKey || cleanKey.length > 180) {
-      return new Response("Invalid key", { status: 400 });
-    }
-
-    // ---- 4) Upload to R2 (your binding name is R2)
-    await env.R2.put(cleanKey, await file.arrayBuffer(), {
-      httpMetadata: { contentType: file.type || "application/octet-stream" },
+    await env.R2.put(key, await file.arrayBuffer(), {
+      httpMetadata: { contentType: file.type },
     });
 
-    // ---- 5) Build public URL
     const base = (env.R2_PUBLIC_BASE || "").replace(/\/+$/, "");
-    const url = base ? `${base}/${cleanKey}` : cleanKey;
+    const publicUrl = base ? `${base}/${key}` : key;
 
-    // ---- 6) OPTIONAL: save URL into KV (if frontend sends kvKey)
-    // Example kvKey: hero.terrace or banners.home
-    const kvKey = form.get("kvKey");
-    if (kvKey && typeof kvKey === "string" && kvKey.trim()) {
-      await env.KV.put(kvKey.trim(), url);
-    }
-
-    return Response.json({ ok: true, key: cleanKey, url });
+    return new Response(JSON.stringify({ ok: true, key, publicUrl }), {
+      headers: { "content-type": "application/json; charset=utf-8" },
+    });
   } catch (e) {
-    return new Response(`Upload error: ${e.message}`, { status: 500 });
+    return new Response(`Upload error: ${e?.message || e}`, { status: 500 });
   }
 }
