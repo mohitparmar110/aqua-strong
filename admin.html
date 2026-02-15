@@ -28,37 +28,8 @@
         <h2 class="text-lg font-bold">Hero Slides</h2>
         <button id="saveAll" class="px-4 py-2 rounded-xl bg-green-600 text-white">Save Changes</button>
       </div>
-      <!-- Upload ANY banner -->
-<div class="mb-5 border rounded-2xl p-4 bg-slate-50">
-  <div class="flex items-center justify-between">
-    <h3 class="font-bold">Upload Any Banner (any name)</h3>
-    <span class="text-xs text-slate-500">Uploads to R2 using your chosen key</span>
-  </div>
 
-  <div class="grid md:grid-cols-3 gap-3 mt-3">
-    <div>
-      <label class="text-xs font-semibold">File</label>
-      <input type="file" id="file_any" class="block w-full text-sm mt-1"/>
-    </div>
-
-    <div>
-      <label class="text-xs font-semibold">R2 Key (path + filename)</label>
-      <input id="key_any" class="w-full border rounded-xl px-3 py-2 mt-1"
-             placeholder="banners/home-hero-1.webp (or services/terrace/hero.jpg)"/>
-      <p class="text-[11px] text-slate-500 mt-1">Tip: start with <b>banners/</b></p>
-    </div>
-
-    <div class="flex items-end">
-      <button id="uploadAnyBtn" class="w-full px-4 py-2 rounded-xl bg-indigo-600 text-white">
-        Upload Any Banner
-      </button>
-    </div>
-  </div>
-
-  <div class="text-xs text-slate-600 mt-3 break-words">
-    Result URL: <span id="any_url" class="font-mono"></span>
-  </div>
-</div>
+      <!-- NOTE: Removed "Upload Any Banner" block completely -->
 
       <div class="grid md:grid-cols-3 gap-4" id="cards"></div>
       <p id="msg" class="text-sm mt-4"></p>
@@ -74,30 +45,57 @@ function setToken(t){ localStorage.setItem("ADMIN_TOKEN", t); }
 function clearToken(){ localStorage.removeItem("ADMIN_TOKEN"); }
 
 function authHeaders(){
-  return { "authorization": "Bearer " + getToken() };
+  const t = getToken();
+  return t ? { "authorization": "Bearer " + t } : {};
+}
+
+function escapeHtml(str){
+  return (str||"")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
+}
+
+function ensureShape(c){
+  if (!c || typeof c !== "object") c = {};
+  if (!c.hero || typeof c.hero !== "object") c.hero = {};
+  if (!c.hero.slides || typeof c.hero.slides !== "object") c.hero.slides = {};
+  SLOTS.forEach(slot => {
+    if (!c.hero.slides[slot] || typeof c.hero.slides[slot] !== "object") c.hero.slides[slot] = {};
+    const s = c.hero.slides[slot];
+    s.bg = s.bg || "";
+    s.title = s.title || "";
+    s.sub = s.sub || "";
+    s.bullets = Array.isArray(s.bullets) ? s.bullets : [];
+    s.ctaText = s.ctaText || "";
+    s.ctaLink = s.ctaLink || "";
+  });
+  return c;
 }
 
 async function loadConfig(){
   const res = await fetch("/api/config", { cache:"no-store" });
-  cfg = await res.json();
-}
-
-function escapeHtml(str){
-  return (str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  if (!res.ok) throw new Error("Failed to load /api/config");
+  const data = await res.json();
+  cfg = ensureShape(data);
 }
 
 function card(slot){
   const s = cfg.hero.slides[slot];
   return `
-  <div class="border rounded-2xl p-4">
+  <div class="border rounded-2xl p-4 bg-white">
     <div class="text-sm font-bold uppercase">${slot}</div>
 
     <div class="mt-3">
       <label class="text-xs font-semibold">Banner Image</label>
-      <input type="file" id="file_${slot}" class="block w-full text-sm mt-1"/>
-      <button data-upload="${slot}" class="mt-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-sm w-full">Upload Banner</button>
+      <input type="file" id="file_${slot}" class="block w-full text-sm mt-1"
+             accept="image/png,image/jpeg,image/webp"/>
+      <button data-upload="${slot}" class="mt-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-sm w-full">
+        Upload Banner
+      </button>
       <div class="text-xs text-slate-500 mt-2 break-words">
-        Current: <span id="bg_${slot}">${escapeHtml(s.bg)}</span>
+        Current: <span id="bg_${slot}" class="font-mono">${escapeHtml(s.bg)}</span>
       </div>
     </div>
 
@@ -125,7 +123,8 @@ function render(){
   document.querySelectorAll("[data-upload]").forEach(btn=>{
     btn.addEventListener("click", ()=> upload(btn.dataset.upload));
   });
-  document.getElementById("loginStatus").textContent = getToken() ? "Token saved in browser ✅" : "Not logged in";
+  document.getElementById("loginStatus").textContent =
+    getToken() ? "Token saved in browser ✅" : "Not logged in";
 }
 
 function collect(){
@@ -133,68 +132,11 @@ function collect(){
     const s = cfg.hero.slides[slot];
     s.title = document.getElementById(`title_${slot}`).value.trim();
     s.sub = document.getElementById(`sub_${slot}`).value.trim();
-    s.bullets = document.getElementById(`bul_${slot}`).value.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,5);
+    s.bullets = document.getElementById(`bul_${slot}`).value
+      .split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6);
     s.ctaText = document.getElementById(`ctaText_${slot}`).value.trim();
     s.ctaLink = document.getElementById(`ctaLink_${slot}`).value.trim();
   });
-}
-
-async function upload(slot){
-  const fileInput = document.getElementById(`file_${slot}`);
-  if (!fileInput.files[0]) return show(`Select a file for ${slot} first`, true);
-
-  const fd = new FormData();
-  fd.append("file", fileInput.files[0]);
-
-  const res = await fetch(`/api/admin/upload-banner?slot=${slot}`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: fd
-  });
-
-  if (!res.ok) return show("Upload failed: " + await res.text(), true);
-
-  const out = await res.json();
-  cfg.hero.slides[slot].bg = out.publicUrl;
-  document.getElementById(`bg_${slot}`).textContent = out.publicUrl;
-  show(`Uploaded ${slot} banner ✅`);
-}
-async function uploadAny(){
-  const fileInput = document.getElementById("file_any");
-  const keyInput  = document.getElementById("key_any");
-  const urlEl = document.getElementById("any_url");
-
-  if (!fileInput.files[0]) return show("Select a file first", true);
-  const key = keyInput.value.trim();
-  if (!key) return show("Enter an R2 key like banners/home-hero-1.webp", true);
-
-  const fd = new FormData();
-  fd.append("file", fileInput.files[0]);
-  fd.append("key", key);
-
-  const res = await fetch(`/api/admin/upload-banner`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: fd
-  });
-
-  if (!res.ok) return show("Upload failed: " + await res.text(), true);
-
-  const out = await res.json();
-  urlEl.textContent = out.url || out.publicUrl || "";
-  show("Uploaded ✅");
-}
-
-async function saveAll(){
-  collect();
-  const res = await fetch("/api/admin/save-config", {
-    method: "POST",
-    headers: { ...authHeaders(), "content-type": "application/json" },
-    body: JSON.stringify(cfg)
-  });
-
-  if (!res.ok) return show("Save failed: " + await res.text(), true);
-  show("Saved ✅ Now update your index.html to read /api/config");
 }
 
 function show(text, isErr=false){
@@ -203,21 +145,78 @@ function show(text, isErr=false){
   el.className = "text-sm mt-4 " + (isErr ? "text-red-600" : "text-green-700");
 }
 
+async function upload(slot){
+  const fileInput = document.getElementById(`file_${slot}`);
+  const file = fileInput.files && fileInput.files[0];
+  if (!file) return show(`Select a file for ${slot} first`, true);
+
+  const okTypes = ["image/png","image/jpeg","image/webp"];
+  if (!okTypes.includes(file.type)) {
+    return show("Only PNG/JPG/WEBP allowed.", true);
+  }
+
+  if (!getToken()) {
+    return show("Paste ADMIN TOKEN and click Save first.", true);
+  }
+
+  const fd = new FormData();
+  fd.append("file", file);
+
+  const res = await fetch(`/api/admin/upload-banner?slot=${encodeURIComponent(slot)}`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: fd
+  });
+
+  if (!res.ok) return show("Upload failed: " + await res.text(), true);
+
+  const out = await res.json();
+  const url = out.publicUrl || out.url || "";
+  if (!url) return show("Upload response missing publicUrl", true);
+
+  cfg.hero.slides[slot].bg = url;
+  document.getElementById(`bg_${slot}`).textContent = url;
+  fileInput.value = "";
+  show(`Uploaded ${slot} banner ✅ Now click Save Changes`);
+}
+
+async function saveAll(){
+  if (!getToken()) return show("Paste ADMIN TOKEN and click Save first.", true);
+
+  collect();
+  const res = await fetch("/api/admin/save-config", {
+    method: "POST",
+    headers: { ...authHeaders(), "content-type": "application/json" },
+    body: JSON.stringify(cfg)
+  });
+
+  if (!res.ok) return show("Save failed: " + await res.text(), true);
+  show("Saved ✅ (Frontend will read /api/config)");
+}
+
 document.getElementById("saveToken").onclick = () => {
   const t = document.getElementById("token").value.trim();
-  if (!t) return;
+  if (!t) return show("Paste token first.", true);
   setToken(t);
   render();
+  show("Token saved ✅");
 };
-document.getElementById("logout").onclick = () => { clearToken(); render(); };
+document.getElementById("logout").onclick = () => {
+  clearToken();
+  render();
+  show("Logged out ✅");
+};
 
 document.getElementById("saveAll").onclick = saveAll;
-document.getElementById("uploadAnyBtn").onclick = uploadAny;
 
 (async ()=>{
-  document.getElementById("token").value = getToken();
-  await loadConfig();
-  render();
+  try{
+    document.getElementById("token").value = getToken();
+    await loadConfig();
+    render();
+  } catch(e){
+    show(e.message || "Failed to load config", true);
+  }
 })();
 </script>
 </body>
