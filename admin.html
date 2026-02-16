@@ -7,36 +7,75 @@
   <title>Admin • Site CMS</title>
 </head>
 <body class="bg-slate-50 text-slate-800">
-  <div class="max-w-5xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-2">Site CMS</h1>
-    <p class="text-slate-600 mb-6">Upload banners + edit slide content + save.</p>
+  <div class="max-w-6xl mx-auto p-6">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <h1 class="text-2xl font-bold mb-1">Site CMS</h1>
+        <p class="text-slate-600">Hero + Menu + SEO + Pages + FAQ + Reviews + Images + Services</p>
+      </div>
+      <button id="saveAllTop" class="px-4 py-2 rounded-xl bg-green-600 text-white shadow">Save Changes</button>
+    </div>
 
     <!-- Login -->
-    <div class="bg-white rounded-2xl p-5 shadow border mb-6">
+    <div class="bg-white rounded-2xl p-5 shadow border mt-6">
       <label class="text-sm font-semibold">ADMIN TOKEN</label>
-      <div class="flex gap-2 mt-2">
-        <input id="token" class="flex-1 border rounded-xl px-3 py-2" placeholder="Paste token here"/>
+      <div class="flex gap-2 mt-2 flex-wrap">
+        <input id="token" class="flex-1 min-w-[240px] border rounded-xl px-3 py-2" placeholder="Paste token here"/>
         <button id="saveToken" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Save</button>
         <button id="logout" class="px-4 py-2 rounded-xl bg-slate-200">Logout</button>
       </div>
       <p id="loginStatus" class="text-sm mt-2 text-slate-500"></p>
     </div>
 
-    <!-- Editor -->
-    <div class="bg-white rounded-2xl p-5 shadow border">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold">Hero Slides</h2>
-        <button id="saveAll" class="px-4 py-2 rounded-xl bg-green-600 text-white">Save Changes</button>
+    <!-- Layout -->
+    <div class="grid lg:grid-cols-12 gap-6 mt-6">
+      <!-- Sidebar -->
+      <div class="lg:col-span-3">
+        <div class="bg-white rounded-2xl shadow border p-3 sticky top-4">
+          <div class="text-xs font-semibold text-slate-500 px-2 pb-2">PANELS</div>
+          <nav id="nav" class="space-y-1">
+            <!-- buttons injected -->
+          </nav>
+          <div class="mt-3 border-t pt-3 px-2">
+            <p class="text-xs text-slate-500">Tip: Save often after uploads.</p>
+          </div>
+        </div>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-4" id="cards"></div>
-      <p id="msg" class="text-sm mt-4"></p>
+      <!-- Content -->
+      <div class="lg:col-span-9">
+        <div class="bg-white rounded-2xl shadow border p-5">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <h2 id="panelTitle" class="text-lg font-bold">Loading…</h2>
+            <button id="saveAll" class="px-4 py-2 rounded-xl bg-green-600 text-white">Save Changes</button>
+          </div>
+
+          <div id="panel" class="mt-5"></div>
+
+          <p id="msg" class="text-sm mt-4"></p>
+        </div>
+      </div>
     </div>
   </div>
 
 <script>
-const SLOTS = ["terrace","toilet","heat"];
+/** -----------------------------
+ *  CONFIG + AUTH
+ *  ----------------------------- */
+const HERO_SLOTS = ["terrace","toilet","heat"];
+const PANELS = [
+  { id:"hero", title:"Hero Slides" },
+  { id:"menu", title:"Menu + Dropdowns" },
+  { id:"seo", title:"SEO Panel (Meta, Tags, H1/H2, OG, Canonical, JSON-LD)" },
+  { id:"pages", title:"Page Creator / Editor" },
+  { id:"faq", title:"FAQ Panel" },
+  { id:"reviews", title:"Reviews Updater" },
+  { id:"images", title:"Image Uploader + Mapper" },
+  { id:"services", title:"Service Editor" }
+];
+
 let cfg = null;
+let activePanel = "hero";
 
 function getToken(){ return localStorage.getItem("ADMIN_TOKEN") || ""; }
 function setToken(t){ localStorage.setItem("ADMIN_TOKEN", t); }
@@ -55,11 +94,39 @@ function escapeHtml(str){
     .replaceAll('"',"&quot;");
 }
 
+function uid(prefix="id"){
+  return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now();
+}
+
+function show(text, isErr=false){
+  const el = document.getElementById("msg");
+  el.textContent = text;
+  el.className = "text-sm mt-4 " + (isErr ? "text-red-600" : "text-green-700");
+}
+
+/** -----------------------------
+ *  ENSURE CONFIG SHAPE
+ *  ----------------------------- */
+function ensureSeoShape(s){
+  if (!s || typeof s !== "object") s = {};
+  s.title = s.title || "";
+  s.description = s.description || "";
+  s.canonical = s.canonical || "";
+  s.robots = s.robots || "";
+  s.ogTitle = s.ogTitle || "";
+  s.ogDesc = s.ogDesc || "";
+  s.ogImage = s.ogImage || "";
+  s.schemaJsonLd = s.schemaJsonLd || ""; // string (JSON-LD)
+  return s;
+}
+
 function ensureShape(c){
   if (!c || typeof c !== "object") c = {};
+
+  // HERO
   if (!c.hero || typeof c.hero !== "object") c.hero = {};
   if (!c.hero.slides || typeof c.hero.slides !== "object") c.hero.slides = {};
-  SLOTS.forEach(slot => {
+  HERO_SLOTS.forEach(slot => {
     if (!c.hero.slides[slot] || typeof c.hero.slides[slot] !== "object") c.hero.slides[slot] = {};
     const s = c.hero.slides[slot];
     s.bg = s.bg || "";
@@ -69,6 +136,84 @@ function ensureShape(c){
     s.ctaText = s.ctaText || "";
     s.ctaLink = s.ctaLink || "";
   });
+
+  // MENU
+  if (!Array.isArray(c.menu)) c.menu = [];
+  c.menu = c.menu.map(item => ({
+    label: (item && item.label) ? String(item.label) : "",
+    url: (item && item.url) ? String(item.url) : "",
+    children: Array.isArray(item && item.children) ? item.children.map(ch => ({
+      label: ch && ch.label ? String(ch.label) : "",
+      url: ch && ch.url ? String(ch.url) : ""
+    })) : []
+  }));
+
+  // SEO DEFAULTS
+  if (!c.seo || typeof c.seo !== "object") c.seo = {};
+  c.seo.siteName = c.seo.siteName || "";
+  c.seo.defaultTitle = c.seo.defaultTitle || "";
+  c.seo.defaultDescription = c.seo.defaultDescription || "";
+  c.seo.defaultOgImage = c.seo.defaultOgImage || "";
+  c.seo.robots = c.seo.robots || "index,follow";
+  c.seo.canonicalBase = c.seo.canonicalBase || "";
+  c.seo.tags = Array.isArray(c.seo.tags) ? c.seo.tags : [];
+  c.seo.h1Defaults = c.seo.h1Defaults || "";
+  c.seo.h2Defaults = c.seo.h2Defaults || "";
+
+  // PAGES
+  if (!c.pages || typeof c.pages !== "object") c.pages = {};
+  Object.keys(c.pages).forEach(k => {
+    const p = c.pages[k] || {};
+    p.slug = (p.slug || k || "").replace(/^\/+/,"");
+    p.title = p.title || "";
+    p.headImage = p.headImage || "";
+    p.contentHtml = p.contentHtml || "";
+    p.h1 = p.h1 || "";
+    p.h2 = p.h2 || "";
+    p.seo = ensureSeoShape(p.seo);
+    c.pages[k] = p;
+  });
+
+  // FAQ
+  if (!Array.isArray(c.faq)) c.faq = [];
+  c.faq = c.faq.map(x => ({
+    q: x && x.q ? String(x.q) : "",
+    a: x && x.a ? String(x.a) : ""
+  }));
+
+  // REVIEWS
+  if (!Array.isArray(c.reviews)) c.reviews = [];
+  c.reviews = c.reviews.map(r => ({
+    name: r && r.name ? String(r.name) : "",
+    rating: Number(r && r.rating ? r.rating : 5),
+    text: r && r.text ? String(r.text) : "",
+    date: r && r.date ? String(r.date) : ""
+  }));
+
+  // IMAGES MAP
+  if (!c.images || typeof c.images !== "object") c.images = {};
+  if (!Array.isArray(c.images.map)) c.images.map = [];
+  c.images.map = c.images.map.map(m => ({
+    key: m && m.key ? String(m.key) : "",
+    url: m && m.url ? String(m.url) : "",
+    notes: m && m.notes ? String(m.notes) : ""
+  }));
+
+  // SERVICES
+  if (!Array.isArray(c.services)) c.services = [];
+  c.services = c.services.map(s => {
+    const out = s && typeof s === "object" ? s : {};
+    out.slug = (out.slug || "").replace(/^\/+/,"");
+    out.name = out.name || "";
+    out.short = out.short || "";
+    out.heroImage = out.heroImage || "";
+    out.contentHtml = out.contentHtml || "";
+    out.h1 = out.h1 || "";
+    out.h2 = out.h2 || "";
+    out.seo = ensureSeoShape(out.seo);
+    return out;
+  });
+
   return c;
 }
 
@@ -79,7 +224,61 @@ async function loadConfig(){
   cfg = ensureShape(data);
 }
 
-function card(slot){
+/** -----------------------------
+ *  GENERIC UPLOAD
+ *  - You can map this to your existing endpoint.
+ *  - Expected response: { publicUrl: "https://..." }
+ *  ----------------------------- */
+async function uploadFile({ file, purpose, key }){
+  if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
+  const fd = new FormData();
+  fd.append("file", file);
+
+  const qs = new URLSearchParams();
+  if (purpose) qs.set("purpose", purpose);
+  if (key) qs.set("key", key);
+
+  const res = await fetch(`/api/admin/upload-image?${qs.toString()}`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: fd
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  const out = await res.json();
+  const url = out.publicUrl || out.url || "";
+  if (!url) throw new Error("Upload response missing publicUrl");
+  return url;
+}
+
+/** -----------------------------
+ *  NAV + PANEL SWITCH
+ *  ----------------------------- */
+function renderNav(){
+  const nav = document.getElementById("nav");
+  nav.innerHTML = PANELS.map(p => {
+    const isActive = p.id === activePanel;
+    return `
+      <button data-panel="${p.id}"
+        class="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold
+        ${isActive ? "bg-slate-900 text-white" : "hover:bg-slate-100 text-slate-800"}">
+        ${escapeHtml(p.title)}
+      </button>
+    `;
+  }).join("");
+
+  nav.querySelectorAll("[data-panel]").forEach(btn => {
+    btn.onclick = () => {
+      activePanel = btn.dataset.panel;
+      renderAll();
+    };
+  });
+}
+
+/** -----------------------------
+ *  HERO PANEL
+ *  ----------------------------- */
+function heroCard(slot){
   const s = cfg.hero.slides[slot];
   return `
   <div class="border rounded-2xl p-4 bg-white">
@@ -89,7 +288,7 @@ function card(slot){
       <label class="text-xs font-semibold">Banner Image</label>
       <input type="file" id="file_${slot}" class="block w-full text-sm mt-1"
              accept="image/png,image/jpeg,image/webp"/>
-      <button data-upload="${slot}" class="mt-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-sm w-full">
+      <button data-upload-hero="${slot}" class="mt-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-sm w-full">
         Upload Banner
       </button>
       <div class="text-xs text-slate-500 mt-2 break-words">
@@ -116,17 +315,527 @@ function card(slot){
   </div>`;
 }
 
-function render(){
-  document.getElementById("cards").innerHTML = SLOTS.map(card).join("");
-  document.querySelectorAll("[data-upload]").forEach(btn=>{
-    btn.addEventListener("click", ()=> upload(btn.dataset.upload));
-  });
-  document.getElementById("loginStatus").textContent =
-    getToken() ? "Token saved in browser ✅" : "Not logged in";
+function panelHero(){
+  return `
+    <div class="grid md:grid-cols-3 gap-4">
+      ${HERO_SLOTS.map(heroCard).join("")}
+    </div>
+  `;
 }
 
-function collect(){
-  SLOTS.forEach(slot=>{
+async function uploadHero(slot){
+  const fileInput = document.getElementById(`file_${slot}`);
+  const file = fileInput.files && fileInput.files[0];
+  if (!file) return show(`Select a file for ${slot} first`, true);
+
+  try{
+    // If you already have /api/admin/upload-banner keep using it:
+    // const res = await fetch(`/api/admin/upload-banner?slot=${encodeURIComponent(slot)}`, ...)
+
+    const url = await uploadFile({ file, purpose:"hero", key: slot });
+    cfg.hero.slides[slot].bg = url;
+    document.getElementById(`bg_${slot}`).textContent = url;
+    fileInput.value = "";
+    show(`Uploaded ${slot} banner ✅ Now click Save Changes`);
+  } catch(e){
+    show("Upload failed: " + (e.message || e), true);
+  }
+}
+
+/** -----------------------------
+ *  MENU PANEL (nested dropdowns)
+ *  ----------------------------- */
+function menuItemRow(item, idx){
+  const childRows = (item.children || []).map((ch, cidx) => `
+    <div class="ml-4 mt-2 border rounded-xl p-3 bg-slate-50">
+      <div class="flex gap-2 flex-wrap">
+        <input class="border rounded-lg px-2 py-1 flex-1 min-w-[160px]" id="menu_child_label_${idx}_${cidx}"
+          placeholder="Sub item label" value="${escapeHtml(ch.label)}"/>
+        <input class="border rounded-lg px-2 py-1 flex-1 min-w-[200px]" id="menu_child_url_${idx}_${cidx}"
+          placeholder="/subcategory-page" value="${escapeHtml(ch.url)}"/>
+        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm"
+          data-del-child="${idx}:${cidx}">Remove</button>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="border rounded-2xl p-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div class="font-semibold">Menu Item #${idx+1}</div>
+        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-menu="${idx}">Delete</button>
+      </div>
+
+      <div class="mt-3 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold">Label</label>
+          <input id="menu_label_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(item.label)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold">URL</label>
+          <input id="menu_url_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(item.url)}" placeholder="/services"/>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <div class="flex items-center justify-between">
+          <div class="text-sm font-semibold">Dropdown / Subcategory Items</div>
+          <button class="px-3 py-1 rounded-lg bg-slate-900 text-white text-sm" data-add-child="${idx}">+ Add Sub Item</button>
+        </div>
+        ${childRows || `<p class="text-sm text-slate-500 mt-2">No sub items yet.</p>`}
+      </div>
+    </div>
+  `;
+}
+
+function panelMenu(){
+  return `
+    <div class="flex items-center justify-between gap-2 flex-wrap">
+      <p class="text-sm text-slate-600">Create menu items and nested dropdown subcategories.</p>
+      <button id="addMenu" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add Menu Item</button>
+    </div>
+    <div class="mt-4 space-y-4" id="menuWrap">
+      ${(cfg.menu || []).map(menuItemRow).join("") || `<p class="text-sm text-slate-500">No menu items yet.</p>`}
+    </div>
+  `;
+}
+
+/** -----------------------------
+ *  SEO PANEL (site-wide defaults)
+ *  ----------------------------- */
+function panelSEO(){
+  const s = cfg.seo;
+  return `
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="text-xs font-semibold">Site Name</label>
+        <input id="seo_siteName" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.siteName)}"/>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold">Canonical Base (example: https://aquastrong.com)</label>
+        <input id="seo_canonicalBase" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.canonicalBase)}"/>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold">Default Title</label>
+        <input id="seo_defaultTitle" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.defaultTitle)}"/>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold">Default Description</label>
+        <textarea id="seo_defaultDescription" class="w-full border rounded-xl px-3 py-2" rows="3">${escapeHtml(s.defaultDescription)}</textarea>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold">Robots</label>
+        <input id="seo_robots" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.robots)}" placeholder="index,follow"/>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold">Default OG Image URL</label>
+        <input id="seo_defaultOgImage" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.defaultOgImage)}"/>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="text-xs font-semibold">Tags (comma separated)</label>
+        <input id="seo_tags" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml((s.tags||[]).join(", "))}" placeholder="waterproofing, terrace waterproofing, ..."/>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold">H1 Defaults (optional)</label>
+        <input id="seo_h1Defaults" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.h1Defaults)}"/>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold">H2 Defaults (optional)</label>
+        <input id="seo_h2Defaults" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.h2Defaults)}"/>
+      </div>
+    </div>
+    <div class="mt-4 p-4 rounded-2xl bg-slate-50 border">
+      <p class="text-sm text-slate-600">
+        Page/Service-level SEO can override these defaults (Title, Description, Canonical, OG, Robots, JSON-LD).
+      </p>
+    </div>
+  `;
+}
+
+
+/** -----------------------------
+ *  PAGE CREATOR / EDITOR
+ *  - stored in cfg.pages[slug]
+ *  ----------------------------- */
+function pageEditorCard(p){
+  const key = escapeHtml(p.slug || "");
+  const urlPreview = (cfg.seo.canonicalBase ? cfg.seo.canonicalBase.replace(/\/$/,"") : "") + "/" + key;
+  return `
+    <div class="border rounded-2xl p-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <div class="font-semibold">${escapeHtml(p.title || "(Untitled Page)")}</div>
+          <div class="text-xs text-slate-500 break-words">Slug: /${escapeHtml(p.slug || "")}</div>
+          ${p.slug ? `<div class="text-xs mt-1">Link: <span class="font-mono">${escapeHtml(urlPreview)}</span></div>` : ``}
+        </div>
+        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-page="${escapeHtml(p.slug)}">Delete</button>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold">Title</label>
+          <input class="w-full border rounded-xl px-3 py-2" id="page_title_${key}" value="${escapeHtml(p.title)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold">Slug (no spaces, example: faq)</label>
+          <input class="w-full border rounded-xl px-3 py-2" id="page_slug_${key}" value="${escapeHtml(p.slug)}"/>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Head Image URL</label>
+        <input class="w-full border rounded-xl px-3 py-2" id="page_head_${key}" value="${escapeHtml(p.headImage)}" placeholder="https://..."/>
+        <div class="grid md:grid-cols-2 gap-2 mt-2">
+          <input type="file" id="page_file_${key}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
+          <button class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm" data-upload-page-head="${key}">Upload Head Image</button>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-semibold">H1</label>
+        <input class="w-full border rounded-xl px-3 py-2" id="page_h1_${key}" value="${escapeHtml(p.h1)}"/>
+      </div>
+      <div class="mt-3">
+        <label class="text-xs font-semibold">H2</label>
+        <input class="w-full border rounded-xl px-3 py-2" id="page_h2_${key}" value="${escapeHtml(p.h2)}"/>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Content HTML (paste your written content)</label>
+        <textarea class="w-full border rounded-xl px-3 py-2 font-mono text-sm" rows="8" id="page_html_${key}">${escapeHtml(p.contentHtml)}</textarea>
+      </div>
+
+      <div class="mt-4 p-4 rounded-2xl border bg-slate-50">
+        <div class="font-semibold text-sm mb-2">SEO Overrides (optional)</div>
+        <div class="grid md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold">Meta Title</label>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_title_${key}" value="${escapeHtml(p.seo.title)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">Meta Description</label>
+            <textarea class="w-full border rounded-xl px-3 py-2" rows="3" id="page_seo_desc_${key}">${escapeHtml(p.seo.description)}</textarea>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">Canonical</label>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_can_${key}" value="${escapeHtml(p.seo.canonical)}" placeholder="/faq or full url"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">Robots</label>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_robots_${key}" value="${escapeHtml(p.seo.robots)}" placeholder="index,follow"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">OG Title</label>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_ogt_${key}" value="${escapeHtml(p.seo.ogTitle)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">OG Description</label>
+            <textarea class="w-full border rounded-xl px-3 py-2" rows="3" id="page_seo_ogd_${key}">${escapeHtml(p.seo.ogDesc)}</textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs font-semibold">OG Image</label>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_ogi_${key}" value="${escapeHtml(p.seo.ogImage)}"/>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs font-semibold">Schema JSON-LD (paste JSON)</label>
+            <textarea class="w-full border rounded-xl px-3 py-2 font-mono text-sm" rows="6" id="page_seo_schema_${key}">${escapeHtml(p.seo.schemaJsonLd)}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function panelPages(){
+  const pagesArr = Object.values(cfg.pages || {}).sort((a,b)=> (a.slug||"").localeCompare(b.slug||""));
+  return `
+    <div class="flex items-center justify-between gap-2 flex-wrap">
+      <p class="text-sm text-slate-600">Create pages like <span class="font-mono">/faq</span>, <span class="font-mono">/about</span>, etc.</p>
+      <button id="addPage" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ New Page</button>
+    </div>
+    <div class="mt-4 space-y-4">
+      ${pagesArr.map(pageEditorCard).join("") || `<p class="text-sm text-slate-500">No pages yet.</p>`}
+    </div>
+  `;
+}
+/** -----------------------------
+ *  FAQ PANEL
+ *  ----------------------------- */
+function faqRow(x, idx){
+  return `
+    <div class="border rounded-2xl p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-semibold">FAQ #${idx+1}</div>
+        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-faq="${idx}">Remove</button>
+      </div>
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Question</label>
+        <input id="faq_q_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(x.q)}"/>
+      </div>
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Answer</label>
+        <textarea id="faq_a_${idx}" class="w-full border rounded-xl px-3 py-2" rows="4">${escapeHtml(x.a)}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function panelFAQ(){
+  return `
+    <div class="flex items-center justify-between gap-2 flex-wrap">
+      <p class="text-sm text-slate-600">Manage FAQs shown on the site.</p>
+      <button id="addFaq" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add FAQ</button>
+    </div>
+    <div class="mt-4 space-y-4">
+      ${(cfg.faq||[]).map(faqRow).join("") || `<p class="text-sm text-slate-500">No FAQs yet.</p>`}
+    </div>
+  `;
+}
+
+/** -----------------------------
+ *  REVIEWS PANEL
+ *  ----------------------------- */
+function reviewRow(r, idx){
+  const safeRating = Math.min(5, Math.max(1, Number(r.rating||5)));
+  return `
+    <div class="border rounded-2xl p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-semibold">Review #${idx+1}</div>
+        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-review="${idx}">Remove</button>
+      </div>
+      <div class="mt-3 grid md:grid-cols-3 gap-3">
+        <div>
+          <label class="text-xs font-semibold">Name</label>
+          <input id="rev_name_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(r.name)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold">Rating (1-5)</label>
+          <input id="rev_rating_${idx}" type="number" min="1" max="5" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(String(safeRating))}"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold">Date (YYYY-MM-DD)</label>
+          <input id="rev_date_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(r.date)}"/>
+        </div>
+      </div>
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Text</label>
+        <textarea id="rev_text_${idx}" class="w-full border rounded-xl px-3 py-2" rows="4">${escapeHtml(r.text)}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function panelReviews(){
+  return `
+    <div class="flex items-center justify-between gap-2 flex-wrap">
+      <p class="text-sm text-slate-600">Update customer reviews.</p>
+      <button id="addReview" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add Review</button>
+    </div>
+    <div class="mt-4 space-y-4">
+      ${(cfg.reviews||[]).map(reviewRow).join("") || `<p class="text-sm text-slate-500">No reviews yet.</p>`}
+    </div>
+  `;
+}
+
+/** -----------------------------
+ *  IMAGES PANEL (upload + map)
+ *  ----------------------------- */
+function imageMapRow(m, idx){
+  return `
+    <div class="border rounded-2xl p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-semibold">Image Map #${idx+1}</div>
+        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-imgmap="${idx}">Remove</button>
+      </div>
+      <div class="mt-3 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold">Key (example: hero_main)</label>
+          <input id="img_key_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(m.key)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold">URL</label>
+          <input id="img_url_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(m.url)}"/>
+        </div>
+      </div>
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Notes</label>
+        <input id="img_notes_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(m.notes)}"/>
+      </div>
+      <div class="mt-3 grid md:grid-cols-2 gap-2">
+        <input type="file" id="img_file_${idx}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
+        <button class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm" data-upload-imgmap="${idx}">
+          Upload & Set URL
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function panelImages(){
+  return `
+    <div class="flex items-center justify-between gap-2 flex-wrap">
+      <p class="text-sm text-slate-600">Upload images and map them to keys for use anywhere.</p>
+      <button id="addImgMap" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add Map Row</button>
+    </div>
+    <div class="mt-4 space-y-4">
+      ${(cfg.images.map||[]).map(imageMapRow).join("") || `<p class="text-sm text-slate-500">No mapped images yet.</p>`}
+    </div>
+  `;
+}
+
+async function uploadImgMap(idx){
+  const fi = document.getElementById(`img_file_${idx}`);
+  const file = fi.files && fi.files[0];
+  if (!file) return show("Select an image first.", true);
+
+  const key = (document.getElementById(`img_key_${idx}`).value || "").trim() || ("img_"+idx);
+  try{
+    const url = await uploadFile({ file, purpose:"map", key });
+    document.getElementById(`img_url_${idx}`).value = url;
+    fi.value = "";
+    show("Uploaded ✅ Now click Save Changes");
+  } catch(e){
+    show("Upload failed: " + (e.message || e), true);
+  }
+}
+
+/** -----------------------------
+ *  SERVICES PANEL
+ *  ----------------------------- */
+function serviceCard(s, idx){
+  const k = escapeHtml(String(idx));
+  const link = s.slug ? ((cfg.seo.canonicalBase||"").replace(/\/$/,"") + "/" + escapeHtml(s.slug)) : "";
+  return `
+    <div class="border rounded-2xl p-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <div class="font-semibold">${escapeHtml(s.name || "(Unnamed Service)")}</div>
+          <div class="text-xs text-slate-500">Slug: /${escapeHtml(s.slug||"")}</div>
+          ${s.slug ? `<div class="text-xs mt-1">Link: <span class="font-mono">${escapeHtml(link)}</span></div>` : ``}
+        </div>
+        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-service="${idx}">Delete</button>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold">Service Name</label>
+          <input id="svc_name_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.name)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold">Slug (example: terrace-waterproofing)</label>
+          <input id="svc_slug_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.slug)}"/>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Short Description</label>
+        <input id="svc_short_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.short)}"/>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Hero Image URL</label>
+        <input id="svc_hero_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.heroImage)}"/>
+        <div class="grid md:grid-cols-2 gap-2 mt-2">
+          <input type="file" id="svc_file_${k}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
+          <button class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm" data-upload-svc-hero="${idx}">Upload Hero Image</button>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-semibold">H1</label>
+        <input id="svc_h1_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.h1)}"/>
+      </div>
+      <div class="mt-3">
+        <label class="text-xs font-semibold">H2</label>
+        <input id="svc_h2_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.h2)}"/>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-semibold">Content HTML</label>
+        <textarea id="svc_html_${k}" class="w-full border rounded-xl px-3 py-2 font-mono text-sm" rows="8">${escapeHtml(s.contentHtml)}</textarea>
+      </div>
+
+      <div class="mt-4 p-4 rounded-2xl border bg-slate-50">
+        <div class="font-semibold text-sm mb-2">SEO Overrides</div>
+        <div class="grid md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold">Meta Title</label>
+            <input id="svc_seo_title_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.seo.title)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">Meta Description</label>
+            <textarea id="svc_seo_desc_${k}" class="w-full border rounded-xl px-3 py-2" rows="3">${escapeHtml(s.seo.description)}</textarea>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">Canonical</label>
+            <input id="svc_seo_can_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.seo.canonical)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">Robots</label>
+            <input id="svc_seo_robots_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.seo.robots)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">OG Title</label>
+            <input id="svc_seo_ogt_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.seo.ogTitle)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold">OG Description</label>
+            <textarea id="svc_seo_ogd_${k}" class="w-full border rounded-xl px-3 py-2" rows="3">${escapeHtml(s.seo.ogDesc)}</textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs font-semibold">OG Image</label>
+            <input id="svc_seo_ogi_${k}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.seo.ogImage)}"/>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs font-semibold">Schema JSON-LD</label>
+            <textarea id="svc_seo_schema_${k}" class="w-full border rounded-xl px-3 py-2 font-mono text-sm" rows="6">${escapeHtml(s.seo.schemaJsonLd)}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function panelServices(){
+  return `
+    <div class="flex items-center justify-between gap-2 flex-wrap">
+      <p class="text-sm text-slate-600">Create and edit services (each service can be its own page).</p>
+      <button id="addService" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add Service</button>
+    </div>
+    <div class="mt-4 space-y-4">
+      ${(cfg.services||[]).map(serviceCard).join("") || `<p class="text-sm text-slate-500">No services yet.</p>`}
+    </div>
+  `;
+}
+
+async function uploadServiceHero(idx){
+  const fi = document.getElementById(`svc_file_${idx}`);
+  const file = fi && fi.files && fi.files[0];
+  if (!file) return show("Select an image first.", true);
+
+  const slug = (document.getElementById(`svc_slug_${idx}`).value || "").trim() || ("service_"+idx);
+  try{
+    const url = await uploadFile({ file, purpose:"serviceHero", key: slug });
+    document.getElementById(`svc_hero_${idx}`).value = url;
+    fi.value = "";
+    show("Uploaded ✅ Now click Save Changes");
+  } catch(e){
+    show("Upload failed: " + (e.message || e), true);
+  }
+}
+/** -----------------------------
+ *  COLLECT CHANGES (read UI -> cfg)
+ *  ----------------------------- */
+function collectHero(){
+  HERO_SLOTS.forEach(slot=>{
     const s = cfg.hero.slides[slot];
     s.title = document.getElementById(`title_${slot}`).value.trim();
     s.sub = document.getElementById(`sub_${slot}`).value.trim();
@@ -137,73 +846,365 @@ function collect(){
   });
 }
 
-function show(text, isErr=false){
-  const el = document.getElementById("msg");
-  el.textContent = text;
-  el.className = "text-sm mt-4 " + (isErr ? "text-red-600" : "text-green-700");
-}
-
-async function upload(slot){
-  const fileInput = document.getElementById(`file_${slot}`);
-  const file = fileInput.files && fileInput.files[0];
-  if (!file) return show(`Select a file for ${slot} first`, true);
-
-  if (!getToken()) return show("Paste ADMIN TOKEN and click Save first.", true);
-
-  const fd = new FormData();
-  fd.append("file", file);
-
-  const res = await fetch(`/api/admin/upload-banner?slot=${encodeURIComponent(slot)}`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: fd
+function collectMenu(){
+  const out = [];
+  (cfg.menu||[]).forEach((item, idx) => {
+    const label = (document.getElementById(`menu_label_${idx}`)?.value || "").trim();
+    const url = (document.getElementById(`menu_url_${idx}`)?.value || "").trim();
+    const children = [];
+    const childCount = (item.children||[]).length;
+    for (let cidx=0;cidx<childCount;cidx++){
+      const cl = (document.getElementById(`menu_child_label_${idx}_${cidx}`)?.value || "").trim();
+      const cu = (document.getElementById(`menu_child_url_${idx}_${cidx}`)?.value || "").trim();
+      if (cl || cu) children.push({ label: cl, url: cu });
+    }
+    if (label || url || children.length) out.push({ label, url, children });
   });
-
-  if (!res.ok) return show("Upload failed: " + await res.text(), true);
-
-  const out = await res.json();
-  const url = out.publicUrl || out.url || "";
-  if (!url) return show("Upload response missing publicUrl", true);
-
-  cfg.hero.slides[slot].bg = url;
-  document.getElementById(`bg_${slot}`).textContent = url;
-  fileInput.value = "";
-  show(`Uploaded ${slot} banner ✅ Now click Save Changes`);
+  cfg.menu = out;
 }
 
+function collectSEO(){
+  cfg.seo.siteName = (document.getElementById("seo_siteName").value || "").trim();
+  cfg.seo.canonicalBase = (document.getElementById("seo_canonicalBase").value || "").trim();
+  cfg.seo.defaultTitle = (document.getElementById("seo_defaultTitle").value || "").trim();
+  cfg.seo.defaultDescription = (document.getElementById("seo_defaultDescription").value || "").trim();
+  cfg.seo.robots = (document.getElementById("seo_robots").value || "").trim();
+  cfg.seo.defaultOgImage = (document.getElementById("seo_defaultOgImage").value || "").trim();
+  cfg.seo.tags = (document.getElementById("seo_tags").value || "")
+    .split(",").map(x=>x.trim()).filter(Boolean).slice(0,50);
+  cfg.seo.h1Defaults = (document.getElementById("seo_h1Defaults").value || "").trim();
+  cfg.seo.h2Defaults = (document.getElementById("seo_h2Defaults").value || "").trim();
+}
+
+function collectPages(){
+  const next = {};
+  const pagesArr = Object.values(cfg.pages||{});
+  pagesArr.forEach(p => {
+    const key = (p.slug||"").replace(/^\/+/,"");
+    const newSlug = (document.getElementById(`page_slug_${key}`)?.value || "").trim().replace(/^\/+/,"");
+    const slug = newSlug || key;
+    if (!slug) return;
+
+    const title = (document.getElementById(`page_title_${key}`)?.value || "").trim();
+    const headImage = (document.getElementById(`page_head_${key}`)?.value || "").trim();
+    const h1 = (document.getElementById(`page_h1_${key}`)?.value || "").trim();
+    const h2 = (document.getElementById(`page_h2_${key}`)?.value || "").trim();
+    const contentHtml = (document.getElementById(`page_html_${key}`)?.value || "");
+
+    const seo = ensureSeoShape({
+      title: (document.getElementById(`page_seo_title_${key}`)?.value || "").trim(),
+      description: (document.getElementById(`page_seo_desc_${key}`)?.value || "").trim(),
+      canonical: (document.getElementById(`page_seo_can_${key}`)?.value || "").trim(),
+      robots: (document.getElementById(`page_seo_robots_${key}`)?.value || "").trim(),
+      ogTitle: (document.getElementById(`page_seo_ogt_${key}`)?.value || "").trim(),
+      ogDesc: (document.getElementById(`page_seo_ogd_${key}`)?.value || "").trim(),
+      ogImage: (document.getElementById(`page_seo_ogi_${key}`)?.value || "").trim(),
+      schemaJsonLd: (document.getElementById(`page_seo_schema_${key}`)?.value || "").trim()
+    });
+
+    next[slug] = { slug, title, headImage, contentHtml, h1, h2, seo };
+  });
+  cfg.pages = next;
+}
+
+function collectFAQ(){
+  const out = [];
+  (cfg.faq||[]).forEach((x, idx) => {
+    const q = (document.getElementById(`faq_q_${idx}`)?.value || "").trim();
+    const a = (document.getElementById(`faq_a_${idx}`)?.value || "").trim();
+    if (q || a) out.push({ q, a });
+  });
+  cfg.faq = out;
+}
+
+function collectReviews(){
+  const out = [];
+  (cfg.reviews||[]).forEach((r, idx) => {
+    const name = (document.getElementById(`rev_name_${idx}`)?.value || "").trim();
+    const rating = Number(document.getElementById(`rev_rating_${idx}`)?.value || 5);
+    const date = (document.getElementById(`rev_date_${idx}`)?.value || "").trim();
+    const text = (document.getElementById(`rev_text_${idx}`)?.value || "").trim();
+    if (name || text) out.push({ name, rating: Math.min(5, Math.max(1, rating||5)), date, text });
+  });
+  cfg.reviews = out;
+}
+
+function collectImages(){
+  const out = [];
+  (cfg.images.map||[]).forEach((m, idx) => {
+    const key = (document.getElementById(`img_key_${idx}`)?.value || "").trim();
+    const url = (document.getElementById(`img_url_${idx}`)?.value || "").trim();
+    const notes = (document.getElementById(`img_notes_${idx}`)?.value || "").trim();
+    if (key || url || notes) out.push({ key, url, notes });
+  });
+  cfg.images.map = out;
+}
+
+function collectServices(){
+  const out = [];
+  (cfg.services||[]).forEach((s, idx) => {
+    const name = (document.getElementById(`svc_name_${idx}`)?.value || "").trim();
+    const slug = (document.getElementById(`svc_slug_${idx}`)?.value || "").trim().replace(/^\/+/,"");
+    const short = (document.getElementById(`svc_short_${idx}`)?.value || "").trim();
+    const heroImage = (document.getElementById(`svc_hero_${idx}`)?.value || "").trim();
+    const h1 = (document.getElementById(`svc_h1_${idx}`)?.value || "").trim();
+    const h2 = (document.getElementById(`svc_h2_${idx}`)?.value || "").trim();
+    const contentHtml = (document.getElementById(`svc_html_${idx}`)?.value || "");
+
+    const seo = ensureSeoShape({
+      title: (document.getElementById(`svc_seo_title_${idx}`)?.value || "").trim(),
+      description: (document.getElementById(`svc_seo_desc_${idx}`)?.value || "").trim(),
+      canonical: (document.getElementById(`svc_seo_can_${idx}`)?.value || "").trim(),
+      robots: (document.getElementById(`svc_seo_robots_${idx}`)?.value || "").trim(),
+      ogTitle: (document.getElementById(`svc_seo_ogt_${idx}`)?.value || "").trim(),
+      ogDesc: (document.getElementById(`svc_seo_ogd_${idx}`)?.value || "").trim(),
+      ogImage: (document.getElementById(`svc_seo_ogi_${idx}`)?.value || "").trim(),
+      schemaJsonLd: (document.getElementById(`svc_seo_schema_${idx}`)?.value || "").trim()
+    });
+
+    if (name || slug) out.push({ name, slug, short, heroImage, contentHtml, h1, h2, seo });
+  });
+  cfg.services = out;
+}
+
+function collectAll(){
+  // Collect only if panel exists in DOM; safe to call always.
+  if (document.getElementById("cards")) collectHero();
+  if (document.getElementById("menuWrap")) collectMenu();
+  if (document.getElementById("seo_siteName")) collectSEO();
+  // pages
+  if (activePanel === "pages" || Object.keys(cfg.pages||{}).length) collectPages();
+  if (activePanel === "faq" || (cfg.faq||[]).length) collectFAQ();
+  if (activePanel === "reviews" || (cfg.reviews||[]).length) collectReviews();
+  if (activePanel === "images" || (cfg.images.map||[]).length) collectImages();
+  if (activePanel === "services" || (cfg.services||[]).length) collectServices();
+
+  // Ensure clean shape after updates
+  cfg = ensureShape(cfg);
+}
+
+/** -----------------------------
+ *  SAVE
+ *  ----------------------------- */
 async function saveAll(){
   if (!getToken()) return show("Paste ADMIN TOKEN and click Save first.", true);
 
-  collect();
-  const res = await fetch("/api/admin/save-config", {
-    method: "POST",
-    headers: { ...authHeaders(), "content-type": "application/json" },
-    body: JSON.stringify(cfg)
-  });
-
-  if (!res.ok) return show("Save failed: " + await res.text(), true);
-  show("Saved ✅");
+  try{
+    collectAll();
+    const res = await fetch("/api/admin/save-config", {
+      method: "POST",
+      headers: { ...authHeaders(), "content-type": "application/json" },
+      body: JSON.stringify(cfg)
+    });
+    if (!res.ok) return show("Save failed: " + await res.text(), true);
+    show("Saved ✅");
+  } catch(e){
+    show(e.message || "Save failed", true);
+  }
 }
 
+/** -----------------------------
+ *  RENDER PANEL
+ *  ----------------------------- */
+function renderPanel(){
+  const title = PANELS.find(p=>p.id===activePanel)?.title || "Panel";
+  document.getElementById("panelTitle").textContent = title;
+
+  const panel = document.getElementById("panel");
+  if (activePanel === "hero") {
+    panel.innerHTML = `<div id="cards">${panelHero()}</div>`;
+    document.querySelectorAll("[data-upload-hero]").forEach(btn=>{
+      btn.onclick = ()=> uploadHero(btn.dataset.uploadHero);
+    });
+  }
+  else if (activePanel === "menu") {
+    panel.innerHTML = panelMenu();
+    document.getElementById("addMenu").onclick = ()=>{
+      cfg.menu.push({ label:"", url:"", children:[] });
+      renderAll();
+    };
+    document.querySelectorAll("[data-del-menu]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectMenu();
+        cfg.menu.splice(Number(btn.dataset.delMenu), 1);
+        renderAll();
+      };
+    });
+    document.querySelectorAll("[data-add-child]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectMenu();
+        const idx = Number(btn.dataset.addChild);
+        cfg.menu[idx].children = cfg.menu[idx].children || [];
+        cfg.menu[idx].children.push({ label:"", url:"" });
+        renderAll();
+      };
+    });
+    document.querySelectorAll("[data-del-child]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectMenu();
+        const [i,c] = btn.dataset.delChild.split(":").map(Number);
+        cfg.menu[i].children.splice(c,1);
+        renderAll();
+      };
+    });
+  }
+  else if (activePanel === "seo") {
+    panel.innerHTML = panelSEO();
+  }
+  else if (activePanel === "pages") {
+    panel.innerHTML = panelPages();
+    document.getElementById("addPage").onclick = ()=>{
+      const tmp = uid("page").slice(0,12);
+      cfg.pages[tmp] = {
+        slug: tmp,
+        title: "New Page",
+        headImage: "",
+        contentHtml: "<p>Paste your content here…</p>",
+        h1: "",
+        h2: "",
+        seo: ensureSeoShape({})
+      };
+      renderAll();
+    };
+    document.querySelectorAll("[data-del-page]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectPages();
+        const slug = btn.dataset.delPage;
+        delete cfg.pages[slug];
+        renderAll();
+      };
+    });
+    document.querySelectorAll("[data-upload-page-head]").forEach(btn=>{
+      btn.onclick = async ()=>{
+        const key = btn.dataset.uploadPageHead;
+        const fi = document.getElementById(`page_file_${key}`);
+        const file = fi && fi.files && fi.files[0];
+        if (!file) return show("Select an image first.", true);
+
+        try{
+          const slug = (document.getElementById(`page_slug_${key}`)?.value || key).trim() || key;
+          const url = await uploadFile({ file, purpose:"pageHead", key: slug });
+          document.getElementById(`page_head_${key}`).value = url;
+          fi.value = "";
+          show("Uploaded ✅ Now click Save Changes");
+        } catch(e){
+          show("Upload failed: " + (e.message || e), true);
+        }
+      };
+    });
+  }
+  else if (activePanel === "faq") {
+    panel.innerHTML = panelFAQ();
+    document.getElementById("addFaq").onclick = ()=>{
+      cfg.faq.push({ q:"", a:"" });
+      renderAll();
+    };
+    document.querySelectorAll("[data-del-faq]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectFAQ();
+        cfg.faq.splice(Number(btn.dataset.delFaq), 1);
+        renderAll();
+      };
+    });
+  }
+  else if (activePanel === "reviews") {
+    panel.innerHTML = panelReviews();
+    document.getElementById("addReview").onclick = ()=>{
+      cfg.reviews.push({ name:"", rating:5, text:"", date:"" });
+      renderAll();
+    };
+    document.querySelectorAll("[data-del-review]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectReviews();
+        cfg.reviews.splice(Number(btn.dataset.delReview), 1);
+        renderAll();
+      };
+    });
+  }
+  else if (activePanel === "images") {
+    panel.innerHTML = panelImages();
+    document.getElementById("addImgMap").onclick = ()=>{
+      cfg.images.map.push({ key:"", url:"", notes:"" });
+      renderAll();
+    };
+    document.querySelectorAll("[data-del-imgmap]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectImages();
+        cfg.images.map.splice(Number(btn.dataset.delImgmap), 1);
+        renderAll();
+      };
+    });
+    document.querySelectorAll("[data-upload-imgmap]").forEach(btn=>{
+      btn.onclick = ()=> uploadImgMap(Number(btn.dataset.uploadImgmap));
+    });
+  }
+  else if (activePanel === "services") {
+    panel.innerHTML = panelServices();
+    document.getElementById("addService").onclick = ()=>{
+      cfg.services.push({
+        slug:"",
+        name:"New Service",
+        short:"",
+        heroImage:"",
+        contentHtml:"<p>Paste service content here…</p>",
+        h1:"",
+        h2:"",
+        seo: ensureSeoShape({})
+      });
+      renderAll();
+    };
+    document.querySelectorAll("[data-del-service]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectServices();
+        cfg.services.splice(Number(btn.dataset.delService), 1);
+        renderAll();
+      };
+    });
+    document.querySelectorAll("[data-upload-svc-hero]").forEach(btn=>{
+      btn.onclick = ()=> uploadServiceHero(Number(btn.dataset.uploadSvcHero));
+    });
+  }
+  else {
+    panel.innerHTML = `<p class="text-sm text-slate-500">Panel not found.</p>`;
+  }
+}
+
+function renderAll(){
+  renderNav();
+  renderPanel();
+  document.getElementById("loginStatus").textContent =
+    getToken() ? "Token saved in browser ✅" : "Not logged in";
+}
+
+/** -----------------------------
+ *  LOGIN BUTTONS
+ *  ----------------------------- */
 document.getElementById("saveToken").onclick = () => {
   const t = document.getElementById("token").value.trim();
   if (!t) return show("Paste token first.", true);
   setToken(t);
-  render();
+  renderAll();
   show("Token saved ✅");
 };
+
 document.getElementById("logout").onclick = () => {
   clearToken();
-  render();
+  renderAll();
   show("Logged out ✅");
 };
-document.getElementById("saveAll").onclick = saveAll;
 
+document.getElementById("saveAll").onclick = saveAll;
+document.getElementById("saveAllTop").onclick = saveAll;
+
+/** -----------------------------
+ *  INIT
+ *  ----------------------------- */
 (async ()=>{
   try{
     document.getElementById("token").value = getToken();
     await loadConfig();
-    render();
+    renderAll();
+    show("Loaded ✅");
   } catch(e){
     show(e.message || "Failed to load config", true);
   }
