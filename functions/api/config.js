@@ -7,6 +7,22 @@ export async function onRequestGet({ env }) {
     return json({ error: "Failed to load config", details: String(e) }, 500);
   }
 }
+cfg.header = { links: [] };
+cfg.footer = {
+  columns: [
+    { title: "Services", links: [] },
+    { title: "Company", links: [] },
+    { title: "Legal", links: [] }
+  ],
+  trust: { warranty: true, years: 10, phone: "", whatsapp: "" },
+  seoBlocks: {
+    address: "",
+    businessHours: "",
+    serviceAreas: [],
+    socialLinks: []
+  }
+};
+
 
 function defaultConfig(env) {
   return {
