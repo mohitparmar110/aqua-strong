@@ -1,30 +1,24 @@
-async function saveConfig() {
-    if (!getToken()) {
-        document.getElementById('token-modal').classList.remove('hidden');
-        return;
+export async function onRequestPost(context) {
+  try {
+    const { request, env } = context;
+
+    // ---- AUTH ----
+    const auth = request.headers.get("Authorization") || "";
+    if (auth !== `Bearer ${env.ADMIN_TOKEN}`) {
+      return new Response("Unauthorized", { status: 401 });
     }
 
-    collectAll(); // ✅ THIS WAS BROKEN
+    // ---- READ BODY ----
+    const data = await request.json();
 
-    document.getElementById('loading-overlay').style.display = 'flex';
+    // ---- SAVE TO KV ----
+    await env.SITE_CONFIG.put("config", JSON.stringify(data));
 
-    try {
-        const res = await fetch("/api/admin/save-config", {
-            method: "POST",
-            headers: {
-                "Authorization": "Bearer " + getToken(),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(cfg)
-        });
+    return new Response(JSON.stringify({ ok: true }), {
+      headers: { "Content-Type": "application/json" }
+    });
 
-        if (!res.ok) throw new Error();
-        markDirty(false);
-        showToast("PUBLISHED LIVE");
-
-    } catch (e) {
-        showToast("SYNC FAILED", true);
-    } finally {
-        document.getElementById('loading-overlay').style.display = 'none';
-    }
+  } catch (err) {
+    return new Response(err.toString(), { status: 500 });
+  }
 }
