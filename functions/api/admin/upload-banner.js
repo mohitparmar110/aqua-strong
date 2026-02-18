@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
     httpMetadata: { contentType: file.type }
   });
 
-  const publicUrl = `https://pub-${env.ACCOUNT_ID}.r2.dev/${key}`;
+  const publicUrl = `https://pub-09321f8ca9a34f4488380929701489fb.r2.dev${key}`;
 
   return new Response(JSON.stringify({ publicUrl }), {
     headers: { "Content-Type": "application/json" }
