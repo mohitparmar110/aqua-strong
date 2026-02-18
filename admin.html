@@ -143,13 +143,13 @@
         </div>
 
         <div class="flex-1 p-8 overflow-y-auto flex justify-center bg-slate-100/50 scrollbar-hide">
-            <div id="preview-frame" class="desktop-view shadow-2xl overflow-hidden bg-white">
-                <div id="site-render-container" class="h-full overflow-y-auto scrollbar-hide">
-                    <!-- Live Website Rendering -->
-                </div>
-            </div>
-        </div>
-    </main>
+           <iframe 
+    id="preview-iframe"
+    src="/"
+    class="desktop-view shadow-2xl bg-white"
+    style="border:0;">
+</iframe>
+
 
     <!-- Token Modal -->
     <div id="token-modal" class="hidden fixed inset-0 bg-slate-900/60 z-[100] items-center justify-center p-4 backdrop-blur-md">
@@ -206,7 +206,11 @@
         function uid(prefix="id"){ return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now(); }
         function escapeHtml(str){ return (str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;"); }
         function domSafeKey(str){ return String(str||"").trim().replace(/^\/+/,"").replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 64) || ("k_" + Math.random().toString(16).slice(2)); }
-        function markDirty(v=true) { isDirty = v; document.getElementById('dirty-pill').classList.toggle('hidden', !v); }
+        function markDirty(v=true) { 
+    isDirty = v; 
+    document.getElementById('dirty-pill').classList.toggle('hidden', !v); 
+    pushLivePreview();   // ⭐ THIS is the magic
+        }
         function showToast(msg, isErr=false) {
             const t = document.getElementById('toast');
             document.getElementById('toast-text').innerText = msg;
@@ -260,7 +264,7 @@
                 document.getElementById('loading-overlay').style.display = 'none';
                 syncTargetDropdown();
                 renderSidebar();
-                renderPreview();
+                
                 markDirty(false);
             }
         }
@@ -565,77 +569,7 @@
                     </div>
                 </div>`;
         }
-
-        // --- PREVIEW ENGINE ---
-        function renderPreview() {
-            const container = document.getElementById('site-render-container');
-            const target = document.getElementById('preview-target-select').value;
-            const nav = cfg.navigation;
-            
-            let content = '';
-
-            if (target === 'home') {
-                const s = cfg.hero.slides[0] || { title: 'NO ACTIVE SLIDES', sub: '', desktopBg: '', bullets: [] };
-                content = `
-                    <section class="relative h-[650px] bg-[#0c4a6e] overflow-hidden flex items-center px-12 text-white">
-                        <img src="${s.desktopBg}" class="absolute inset-0 w-full h-full object-cover opacity-25">
-                        <div class="relative z-10 max-w-3xl">
-                            <div class="inline-flex items-center gap-2 trust-badge px-4 py-2 rounded-full mb-6">
-                                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                                <span class="text-[10px] font-black text-green-300 uppercase tracking-widest">Trusted by 10,000+ Customers</span>
-                            </div>
-                            <h1 class="text-6xl font-extrabold leading-[1.1] mb-6">${s.title.replace(' ', ' <span class="text-green-400">') + '</span>'}</h1>
-                            <p class="text-xl text-sky-100 mb-8 max-w-xl font-medium leading-relaxed">${s.sub}</p>
-                            <div class="flex flex-wrap gap-3 mb-10">
-                                ${s.bullets.slice(0,3).map(b => `<div class="flex items-center gap-2 text-sm font-bold bg-white/10 px-4 py-2 rounded-full border border-white/10"><i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i>${b}</div>`).join('')}
-                            </div>
-                            <div class="flex gap-4">
-                                <button class="px-10 py-5 bg-green-500 text-white rounded-full font-black text-xs shadow-2xl uppercase tracking-widest">GET FREE INSPECTION</button>
-                                <button class="px-10 py-5 bg-white/10 backdrop-blur-md rounded-full font-bold border border-white/20 uppercase text-xs">CALL NOW</button>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0"><svg viewBox="0 0 1440 120" fill="none" class="w-full h-24"><path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1440Z" fill="white" /></svg></div>
-                    </section>`;
-            } else {
-                const p = cfg.pages[target] || { h1: "404", headImage: "" };
-                content = `
-                    <div class="relative h-[450px] bg-slate-900 overflow-hidden flex items-center justify-center text-center text-white">
-                        <img src="${p.headImage}" class="absolute inset-0 w-full h-full object-cover opacity-40">
-                        <div class="relative z-10 max-w-3xl">
-                            <div class="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400 mb-4 opacity-70">AQUASHIELD SERVICE DIRECTORY</div>
-                            <h1 class="text-6xl font-black mb-6 uppercase tracking-tighter leading-none">${p.h1 || p.title}</h1>
-                            <div class="w-24 h-1.5 bg-green-500 mx-auto rounded-full"></div>
-                        </div>
-                    </div>
-                    <div class="max-w-4xl mx-auto py-24 px-8">
-                        <div class="text-lg text-slate-500 font-medium italic mb-12 uppercase tracking-widest text-xs">Previewing Section Data from /${target}/index.html</div>
-                        <div class="text-slate-600 leading-relaxed">${p.contentHtml || 'Add HTML content in the editor to see it here.'}</div>
-                    </div>`;
-            }
-
-            container.innerHTML = `
-                <div class="bg-white min-h-full flex flex-col">
-                    <nav class="sticky top-0 bg-white/95 backdrop-blur px-12 py-6 flex items-center justify-between border-b z-50 water-wave">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-sky-500 text-white grid place-items-center shadow-lg shadow-sky-100"><i data-lucide="shield" class="w-6 h-6"></i></div>
-                            <span class="text-2xl font-black tracking-tighter uppercase leading-none font-bold">${nav.companyName}</span>
-                        </div>
-                        <div class="hidden lg:flex items-center gap-10 font-black text-[10px] uppercase tracking-widest text-slate-400">
-                            ${cfg.menu.slice(0, 4).map(m => `<span class="hover:text-sky-600 transition-colors cursor-pointer font-bold">${m.label}</span>`).join('')}
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="text-right">
-                                <div class="text-[8px] font-black text-slate-300 uppercase tracking-widest">Call Expert</div>
-                                <div class="text-sm font-black text-sky-600 font-bold">${nav.phone}</div>
-                            </div>
-                        </div>
-                    </nav>
-                    <div class="flex-1">${content}</div>
-                </div>`;
-            lucide.createIcons();
-        }
-
-        // --- COLLECTION ENGINE ---
+               // --- COLLECTION ENGINE ---
         function collectAll() {
             if (activeTab === 'hero') collectHero();
             if (activeTab === 'pages') collectPages();
@@ -705,7 +639,7 @@
             const target = idx + dir;
             if (target < 0 || target >= arr.length) return;
             [arr[idx], arr[target]] = [arr[target], arr[idx]];
-            renderSidebar(); renderPreview();
+            renderSidebar(); 
         }
 
         function deleteInArr(path, idx) {
@@ -714,7 +648,7 @@
             const parts = path.split('.'); let arr = cfg;
             parts.forEach(p => arr = arr[p]);
             arr.splice(idx, 1);
-            renderSidebar(); renderPreview();
+            renderSidebar(); 
         }
 
         function addItem(path, item) {
@@ -738,7 +672,7 @@
             if(!confirm("Delete this page folder?")) return;
             const next = {};
             Object.values(cfg.pages).forEach(p => { if(p._id !== id) next[p.slug] = p; });
-            cfg.pages = next; syncTargetDropdown(); renderSidebar(); renderPreview();
+            cfg.pages = next; syncTargetDropdown(); renderSidebar(); 
         }
 
         // --- UPLOADS ---
@@ -748,7 +682,7 @@
                 const url = await doUpload(file, cfg.hero.slides[idx].id, variant);
                 const field = variant === 'mobile' ? 'mobileBg' : 'desktopBg';
                 cfg.hero.slides[idx][field] = url;
-                markDirty(); renderSidebar(); renderPreview();
+                markDirty(); renderSidebar(); 
             } catch(e) { showToast("Upload Failed", true); }
         }
 
@@ -757,7 +691,7 @@
             try {
                 const url = await doUpload(file, id);
                 Object.values(cfg.pages).find(p => p._id === id).headImage = url;
-                markDirty(); renderSidebar(); renderPreview();
+                markDirty(); renderSidebar(); 
             } catch(e) { showToast("Upload Failed", true); }
         }
 
@@ -783,10 +717,23 @@
             document.getElementById('token-save-btn').onclick = () => { setToken(document.getElementById('token-input-field').value); document.getElementById('token-modal').classList.add('hidden'); };
             document.getElementById('token-logout-btn').onclick = () => { clearToken(); document.getElementById('token-modal').classList.add('hidden'); };
             document.getElementById('preview-target-select').onchange = renderPreview;
-            document.getElementById('view-desktop').onclick = () => { previewMode='desktop'; document.getElementById('preview-frame').className="desktop-view shadow-2xl bg-white"; renderPreview(); };
-            document.getElementById('view-mobile').onclick = () => { previewMode='mobile'; document.getElementById('preview-frame').className="mobile-view shadow-2xl bg-white"; renderPreview(); };
-            document.getElementById('manual-refresh').onclick = renderPreview;
+            document.getElementById('view-desktop').onclick = () => { previewMode='desktop'; document.getElementById('preview-frame').className="desktop-view shadow-2xl bg-white";  };
+            document.getElementById('view-mobile').onclick = () => { previewMode='mobile'; document.getElementById('preview-frame').className="mobile-view shadow-2xl bg-white";  };
+            document.getElementById('manual-refresh').onclick = () => {
+            document.getElementById("preview-iframe").contentWindow.location.reload();
+        };
+
         }
+       function pushLivePreview() {
+    if (!cfg) return;
+    const frame = document.getElementById("preview-iframe");
+    if (!frame?.contentWindow) return;
+
+    frame.contentWindow.postMessage({
+        type: "AQUASHIELD_CONFIG_PREVIEW",
+        config: cfg
+    }, "*");
+}
 
         window.onload = () => { updateAuthUI(); attachEvents(); loadConfig(); };
     </script>
