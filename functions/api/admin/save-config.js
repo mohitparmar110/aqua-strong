@@ -1,27 +1,30 @@
-export async function onRequestPost({ request, env }) {
-  try {
-    assertAuth(request, env);
+async function saveConfig() {
+    if (!getToken()) {
+        document.getElementById('token-modal').classList.remove('hidden');
+        return;
+    }
 
-    const cfg = await request.json();
-    if (!cfg || typeof cfg !== "object") return json({ error: "Invalid JSON body" }, 400);
+    collectAll(); // ✅ THIS WAS BROKEN
 
-    await env.KV.put("site_config", JSON.stringify(cfg));
-    return json({ ok: true }, 200);
-  } catch (e) {
-    const msg = String(e?.message || e);
-    return json({ error: msg }, msg.toLowerCase().includes("unauthorized") ? 401 : 500);
-  }
-}
+    document.getElementById('loading-overlay').style.display = 'flex';
 
-function assertAuth(request, env) {
-  const auth = request.headers.get("authorization") || "";
-  const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
-  if (!token || token !== (env.ADMIN_TOKEN || "")) throw new Error("Unauthorized");
-}
+    try {
+        const res = await fetch("/api/admin/save-config", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + getToken(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(cfg)
+        });
 
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
-  });
+        if (!res.ok) throw new Error();
+        markDirty(false);
+        showToast("PUBLISHED LIVE");
+
+    } catch (e) {
+        showToast("SYNC FAILED", true);
+    } finally {
+        document.getElementById('loading-overlay').style.display = 'none';
+    }
 }
