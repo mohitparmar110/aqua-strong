@@ -417,12 +417,7 @@
 };
 
 } // ✅ THIS closes renderHeroPanel(container)
-
 function renderPagesPanel(container) {
-
-        
-
-        function renderPagesPanel(container) {
             const pages = Object.values(cfg.pages).sort((a,b) => (a.slug||"").localeCompare(b.slug||""));
             container.innerHTML = `
                 <div class="flex justify-between items-center mb-6">
@@ -771,14 +766,8 @@ function renderPagesPanel(container) {
             document.getElementById('token-close-btn').onclick = () => document.getElementById('token-modal').classList.add('hidden');
             document.getElementById('token-save-btn').onclick = () => { setToken(document.getElementById('token-input-field').value); document.getElementById('token-modal').classList.add('hidden'); };
             document.getElementById('token-logout-btn').onclick = () => { clearToken(); document.getElementById('token-modal').classList.add('hidden'); };
-            document.getElementById('preview-target-select').onchange = () => {
-  const v = document.getElementById('preview-target-select').value;
-  const frame = document.getElementById('preview-iframe');
-  frame.src = v === "home" ? "/" : `/${v}/`;
-  document.getElementById('preview-label').innerText = v === "home" ? "/index.html" : `/${v}/index.html`;
-};
-
-            document.getElementById('view-desktop').onclick = () => {
+           document.getElementById('preview-target-select').onchange = renderPreview;
+           document.getElementById('view-desktop').onclick = () => {
             previewMode='desktop';
           document.getElementById('preview-iframe').className="desktop-view shadow-2xl bg-white";
 };
@@ -788,7 +777,7 @@ document.getElementById('view-mobile').onclick = () => {
 };
 
             document.getElementById('manual-refresh').onclick = () => {
-            document.getElementById("preview-iframe").contentWindow.location.reload();
+            document.getElementById('manual-refresh').onclick = renderPreview;
         };
 
         }
@@ -802,13 +791,12 @@ document.getElementById('view-mobile').onclick = () => {
         config: cfg
     }, "*");
 }
-   window.onload = () => {
-    updateAuthUI();
-    attachEvents();
-    loadConfig();
+ window.onload = () => {
+  updateAuthUI();
+  attachEvents();
+  loadConfig();
 };
 
-}
 </script>
 </body>
 </html>
