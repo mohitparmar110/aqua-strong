@@ -1190,72 +1190,83 @@ if (navCta) navCta.textContent = config.cta_button_text;
     setHero(heroIndex);
   }
 
-  // ✅ Remote config loader (KV/Sheet → /api/config)
-  async function loadRemoteConfig() {
-    try {
-      const res = await fetch('/api/config', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Config fetch failed');
-      const cfg = await res.json();
+async function loadRemoteConfig() {
+  try {
+    const res = await fetch('/api/config', { cache: 'no-store' });
+    if (!res.ok) throw new Error('Config fetch failed');
+    const cfg = await res.json();
 
-      // merge company/whatsapp into your existing config shape
-      if (cfg?.company?.whatsapp) {
-        config.whatsapp_number = cfg.company.whatsapp;
-        config.phone_number = cfg.company.phone || config.phone_number;
-        config.company_name = cfg.company.name || config.company_name;
-      }
+    // ✅ Map "navigation" (your real JSON) to local config
+    const nav = cfg?.navigation || {};
+    config.whatsapp_number = nav.whatsapp || config.whatsapp_number;
+    config.phone_number = nav.phone || config.phone_number;
+    config.company_name = nav.companyName || config.company_name;
 
-      // ✅ override slides dynamically
-      if (cfg?.hero?.slides && Array.isArray(cfg.hero.slides) && cfg.hero.slides.length) {
-        heroSlides = cfg.hero.slides.map(s => ({
+    // ✅ Update UI text immediately
+    const setText = (id, val) => {
+      const el = document.getElementById(id);
+      if (el && val) el.textContent = val;
+    };
+
+    setText('nav-company-name', config.company_name);
+    setText('footer-company-name', config.company_name);
+    setText('copyright-company-name', config.company_name + ' Waterproofing');
+
+    setText('nav-phone-text', config.phone_number);
+    setText('contact-phone', config.phone_number);
+    setText('footer-phone', config.phone_number);
+    setText('cta-phone-text', 'Call ' + config.phone_number);
+
+    // ✅ Update WhatsApp links
+    ['whatsapp-float', 'hero-whatsapp', 'cta-whatsapp', 'success-whatsapp'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent('Hi! I need waterproofing services')}`;
+    });
+
+    // ✅ Override slides dynamically (use desktopBg/mobileBg)
+    if (cfg?.hero?.slides && Array.isArray(cfg.hero.slides) && cfg.hero.slides.length) {
+      const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+
+      heroSlides = cfg.hero.slides.map(s => {
+        const img =
+          (isMobile && s.mobileBg) ? s.mobileBg :
+          s.desktopBg || s.mobileBg || 'assets/images/wterprofingwholehome.png';
+
+        return {
           key: s.id || s.key || String(Math.random()),
-          leftBg: s.bg || 'assets/images/wterprofingwholehome.png',
+          leftBg: img,
           gradFrom: s.gradFrom || '#0c4a6e',
           gradMid: s.gradMid || '#075985',
           gradTo: s.gradTo || '#0369a1',
           leftTitle: s.title || defaultConfig.hero_headline,
           leftSub: s.sub || defaultConfig.hero_subtext,
           bullets: Array.isArray(s.bullets) ? s.bullets : [],
-          bannerImg: s.banner || s.bg || 'assets/images/wterprofingwholehome.png',
+          bannerImg: img,
           badgeTitle: s.badgeTitle || '✓ AquaShield',
           badgeSub: s.badgeSub || '10-Year Warranty Included',
           waText: s.waText || 'Hi! I need waterproofing services',
           ctaText: s.ctaText || defaultConfig.cta_button_text,
           ctaLink: s.ctaLink || '#contact'
-        }));
-
-        // ✅ refresh hero UI after replacing slides
-        buildHeroDots();
-        setHero(0, { userAction: true });
-        restartHeroAuto();
-      }
-
-      // update UI text from cfg (company)
-      if (cfg?.company?.name) {
-        const name = cfg.company.name;
-        const setText = (id, val) => {
-          const el = document.getElementById(id);
-          if (el) el.textContent = val;
         };
-        setText('nav-company-name', name);
-        setText('footer-company-name', name);
-        setText('copyright-company-name', name + ' Waterproofing');
-      }
-      if (cfg?.company?.phone) {
-        const phone = cfg.company.phone;
-        const setText = (id, val) => {
-          const el = document.getElementById(id);
-          if (el) el.textContent = val;
-        };
-        setText('nav-phone-text', phone);
-        setText('contact-phone', phone);
-        setText('footer-phone', phone);
-        setText('cta-phone-text', 'Call ' + phone);
-      }
+      });
 
-    } catch (e) {
-      console.warn('Using default config:', e);
+      // ✅ Use server rotate timing if provided
+      const rotateMs = Number(cfg?.hero?.autoRotateMs) || 5000;
+
+      buildHeroDots();
+      setHero(0, { userAction: true });
+
+      if (heroTimer) clearInterval(heroTimer);
+      if (heroSlides.length > 1) {
+        heroTimer = setInterval(() => setHero(heroIndex + 1), rotateMs);
+      }
     }
+
+  } catch (e) {
+    console.warn('Using default config:', e);
   }
+}
+
 
   // Element SDK init
   if (window.elementSdk) {
