@@ -401,10 +401,25 @@
                     }).join('')}
                 </div>`;
             document.getElementById('heroAdd').onclick = () => {
-                collectAll();
-                cfg.hero.slides.push({ id: uid("slide"), label: "New Slide", tag: "", title: "Water Damage Solution", sub: "10-Year Warranty", bullets: [], desktopBg: "", mobileBg: "" });
-                renderSidebar(); markDirty();
-            };
+  collectAll();
+  cfg.hero.slides.push({
+    id: uid("slide"),
+    label: "New Slide",
+    tag: "",
+    title: "Water Damage Solution",
+    sub: "10-Year Warranty",
+    bullets: [],
+    desktopBg: "",
+    mobileBg: ""
+  });
+  renderSidebar(); 
+  markDirty();
+};
+
+} // ✅ THIS closes renderHeroPanel(container)
+
+function renderPagesPanel(container) {
+
         
 
         function renderPagesPanel(container) {
