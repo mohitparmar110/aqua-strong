@@ -324,7 +324,50 @@
             const data = await res.json();
             return data.publicUrl || data.url;
         }
-
+        // --- PREMAP DEFAULT SLIDES (ONLY IF EMPTY) ---
+if (c.hero.slides.length === 0) {
+  c.hero.slides = [
+    {
+      id: "terrace",
+      label: "Terrace",
+      tag: "Most Popular",
+      linkedServiceSlug: "terrace-waterproofing",
+      desktopBg: "",
+      mobileBg: "",
+      title: "Terrace Waterproofing",
+      sub: "Stop leakage before it damages your slab. 10-year warranty options available.",
+      bullets: ["Leakage inspection", "Crack filling", "Membrane / coating options"],
+      ctaText: "Get Terrace Quote",
+      ctaLink: "/#contact"
+    },
+    {
+      id: "toilet",
+      label: "Toilet",
+      tag: "Quick Fix",
+      linkedServiceSlug: "bathroom-waterproofing",
+      desktopBg: "",
+      mobileBg: "",
+      title: "Toilet & Bathroom Waterproofing",
+      sub: "Eliminate seepage, damp walls & tile damage with the right system.",
+      bullets: ["Chemical grouting", "Tile rework options", "Water test included"],
+      ctaText: "Get Bathroom Quote",
+      ctaLink: "/#contact"
+    },
+    {
+      id: "heat",
+      label: "Heat Reflection",
+      tag: "Summer Ready",
+      linkedServiceSlug: "heat-reflection-coating",
+      desktopBg: "",
+      mobileBg: "",
+      title: "Heat Reflection Coating",
+      sub: "Reduce roof heat and keep your home cooler with reflective coating.",
+      bullets: ["Reflective layer", "Lower indoor temps", "Long-lasting finish"],
+      ctaText: "Get Coating Quote",
+      ctaLink: "/#contact"
+    }
+  ];
+}
         // --- PANEL RENDERING ---
         function renderSidebar() {
             const container = document.getElementById('controls-container');
@@ -403,15 +446,18 @@
             document.getElementById('heroAdd').onclick = () => {
   collectAll();
   cfg.hero.slides.push({
-    id: uid("slide"),
-    label: "New Slide",
-    tag: "",
-    title: "Water Damage Solution",
-    sub: "10-Year Warranty",
-    bullets: [],
-    desktopBg: "",
-    mobileBg: ""
-  });
+  id: uid("slide"),
+  label: "New Slot",
+  tag: "",
+  linkedServiceSlug: "",
+  desktopBg: "",
+  mobileBg: "",
+  title: "New Headline",
+  sub: "New description",
+  bullets: [],
+  ctaText: "Get Quote",
+  ctaLink: "/#contact"
+});
   renderSidebar(); 
   markDirty();
 };
