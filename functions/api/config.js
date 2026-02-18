@@ -1,28 +1,53 @@
 export async function onRequestGet({ env }) {
   try {
-    const raw = await env.SITE_KV.get("site_config");
-    const data = raw ? JSON.parse(raw) : defaultConfig(env);
+    const raw = await env.KV.get("site_config"); // ✅ KV binding
+    let data = raw ? JSON.parse(raw) : defaultConfig(env);
+
+    // ✅ ensure header/footer always exist
+    data = ensureShape(data, env);
+
     return json(data, 200);
   } catch (e) {
-    return json({ error: "Failed to load config", details: String(e) }, 500);
+    return json({ error: "Failed to load config", details: String(e?.message || e) }, 500);
   }
 }
-cfg.header = { links: [] };
-cfg.footer = {
-  columns: [
-    { title: "Services", links: [] },
-    { title: "Company", links: [] },
-    { title: "Legal", links: [] }
-  ],
-  trust: { warranty: true, years: 10, phone: "", whatsapp: "" },
-  seoBlocks: {
-    address: "",
-    businessHours: "",
-    serviceAreas: [],
-    socialLinks: []
-  }
-};
 
+function ensureShape(cfg, env) {
+  if (!cfg || typeof cfg !== "object") cfg = defaultConfig(env);
+
+  // keep your existing defaults too
+  if (!cfg.company) cfg.company = { name: "AquaShield", phone: "+91 97695 31112", whatsapp: "919769531112" };
+  if (!cfg.hero) cfg.hero = { slides: [] };
+  if (!Array.isArray(cfg.hero.slides)) cfg.hero.slides = [];
+  if (!Array.isArray(cfg.menu)) cfg.menu = [];
+  if (!Array.isArray(cfg.services)) cfg.services = [];
+  if (!Array.isArray(cfg.faq)) cfg.faq = [];
+  if (!Array.isArray(cfg.reviews)) cfg.reviews = [];
+  if (!cfg.pages || typeof cfg.pages !== "object") cfg.pages = {};
+  if (!cfg.seo) cfg.seo = {};
+
+  // ✅ header/footer you want
+  if (!cfg.header) cfg.header = { links: [] };
+
+  if (!cfg.footer) {
+    cfg.footer = {
+      columns: [
+        { title: "Services", links: [] },
+        { title: "Company", links: [] },
+        { title: "Legal", links: [] }
+      ],
+      trust: { warranty: true, years: 10, phone: cfg.company?.phone || "", whatsapp: cfg.company?.whatsapp || "" },
+      seoBlocks: {
+        address: "",
+        businessHours: "",
+        serviceAreas: [],
+        socialLinks: []
+      }
+    };
+  }
+
+  return cfg;
+}
 
 function defaultConfig(env) {
   return {
@@ -31,8 +56,17 @@ function defaultConfig(env) {
       phone: "+91 97695 31112",
       whatsapp: "919769531112"
     },
+    header: { links: [] },
+    footer: {
+      columns: [
+        { title: "Services", links: [] },
+        { title: "Company", links: [] },
+        { title: "Legal", links: [] }
+      ],
+      trust: { warranty: true, years: 10, phone: "+91 97695 31112", whatsapp: "919769531112" },
+      seoBlocks: { address: "", businessHours: "", serviceAreas: [], socialLinks: [] }
+    },
     hero: {
-      // ✅ dynamic array
       slides: [
         {
           id: "home",
@@ -41,8 +75,8 @@ function defaultConfig(env) {
           bullets: ["10 Year Warranty", "Free Inspection", "24/7 Support"],
           ctaText: "Get Free Inspection",
           ctaLink: "#contact",
-          bg: "",       // optional (left bg)
-          banner: "",   // optional (right image)
+          bg: "",
+          banner: "",
           gradFrom: "#0c4a6e",
           gradMid: "#075985",
           gradTo: "#0369a1",
@@ -72,9 +106,6 @@ function defaultConfig(env) {
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
     status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store"
-    }
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
   });
 }
