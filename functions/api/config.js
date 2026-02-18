@@ -1,6 +1,6 @@
 export async function onRequestGet({ env }) {
   try {
-    const raw = await env.KV.get("config");
+    const raw = await env.KV.get("aquashield_config");
     return json(raw ? JSON.parse(raw) : {}, 200);
   } catch (e) {
     return json({ error: String(e?.message || e) }, 500);
@@ -14,7 +14,7 @@ export async function onRequestPost({ request, env }) {
     const cfg = await request.json();
     if (!cfg || typeof cfg !== "object") return json({ error: "Invalid JSON body" }, 400);
 
-    await env.KV.put("site_config", JSON.stringify(cfg));
+    await env.KV.put("aquashield_config", JSON.stringify(cfg));
     return json({ ok: true }, 200);
   } catch (e) {
     const msg = String(e?.message || e);
