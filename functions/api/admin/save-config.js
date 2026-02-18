@@ -10,7 +10,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     // Store
-    await env.SITE_KV.put("site_config", JSON.stringify(cfg));
+    await env.KV.put("site_config", JSON.stringify(cfg));
 
     return json({ ok: true }, 200);
   } catch (e) {
