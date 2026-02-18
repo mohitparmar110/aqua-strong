@@ -33,8 +33,17 @@
         }
         @keyframes wave { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
 
-        #preview-frame { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .mobile-view { width: 375px; height: 700px; border: 12px solid #0f172a; border-radius: 3rem; }
+       #preview-iframe {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+        .mobile-view {
+  width: 390px;
+  height: 844px;
+  border: 14px solid #0f172a;
+  border-radius: 2.5rem;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.25);
+}
         .desktop-view { width: 100%; max-width: 1200px; height: 100%; border: 0 solid transparent; border-radius: 0; }
 
         #loading-overlay {
