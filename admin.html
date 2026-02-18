@@ -1,2001 +1,794 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>AquaShield • Site CMS (Admin)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    .glass { background: rgba(255,255,255,.78); backdrop-filter: blur(10px); }
-    .soft-shadow { box-shadow: 0 20px 60px rgba(2, 6, 23, .10); }
-    .ring-soft { box-shadow: 0 0 0 1px rgba(15, 23, 42, .08) inset; }
-    .scrollbar::-webkit-scrollbar { width: 10px; height: 10px; }
-    .scrollbar::-webkit-scrollbar-thumb { background: rgba(15,23,42,.16); border-radius: 999px; }
-    .scrollbar::-webkit-scrollbar-track { background: rgba(15,23,42,.04); border-radius: 999px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaShield Advanced CMS Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Frontend Specific Styles for Preview Rendering */
+        .gradient-text {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .trust-badge {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+        }
+        .water-wave { position: relative; }
+        .water-wave::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #22c55e, #0ea5e9);
+            background-size: 200% 100%; animation: wave 3s linear infinite;
+        }
+        @keyframes wave { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
+
+        #preview-frame { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .mobile-view { width: 375px; height: 700px; border: 12px solid #0f172a; border-radius: 3rem; }
+        .desktop-view { width: 100%; max-width: 1200px; height: 100%; border: 0 solid transparent; border-radius: 0; }
+
+        #loading-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.8);
+            z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(4px);
+        }
+        .tab-btn.active { border-bottom-color: #0ea5e9; color: #0284c7; background-color: #f0f9ff; }
+        .ring-soft { box-shadow: 0 0 0 1px rgba(15, 23, 42, .08) inset; }
+    </style>
 </head>
+<body class="bg-slate-100 h-screen overflow-hidden flex text-slate-900">
 
-<body class="bg-slate-50 text-slate-900">
-  <!-- Top bar -->
-  <div class="sticky top-0 z-40 border-b bg-white/80 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="h-10 w-10 rounded-2xl bg-slate-900 text-white grid place-items-center font-extrabold">AS</div>
-        <div>
-          <div class="text-sm font-extrabold leading-4">AquaShield • Site CMS</div>
-          <div class="text-xs text-slate-500">Hero • Menu • SEO • Pages • FAQ • Reviews • Images • Services</div>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <button id="btnPreview" class="hidden sm:inline-flex px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold">
-          Preview
-        </button>
-        <button id="saveAllTop" class="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold soft-shadow">
-          Save Changes
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="max-w-7xl mx-auto px-4 py-6">
-    <!-- Alerts -->
-    <div id="toast" class="fixed right-4 top-20 z-50 hidden max-w-[360px]">
-      <div id="toastBox" class="rounded-2xl border bg-white soft-shadow p-4">
-        <div class="flex items-start gap-3">
-          <div id="toastDot" class="mt-1 h-2.5 w-2.5 rounded-full bg-green-600"></div>
-          <div class="min-w-0">
-            <div id="toastTitle" class="text-sm font-bold">Done</div>
-            <div id="toastMsg" class="text-sm text-slate-600 mt-1 break-words">...</div>
-          </div>
-          <button id="toastClose" class="ml-auto text-slate-400 hover:text-slate-700">✕</button>
-        </div>
-      </div>
+    <div id="loading-overlay" class="flex flex-col gap-4">
+        <div class="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="font-bold text-slate-700 uppercase tracking-widest text-[10px]">Syncing with Production API...</p>
     </div>
 
-    <!-- Login / token -->
-    <div class="rounded-3xl border bg-white soft-shadow p-5">
-      <div class="flex items-start justify-between gap-4 flex-wrap">
-        <div class="min-w-[260px]">
-          <div class="text-xs font-bold text-slate-500">ADMIN TOKEN</div>
-          <div class="mt-2 flex gap-2 flex-wrap">
-            <input id="token" class="flex-1 min-w-[240px] border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   placeholder="Paste token here (example: admin123)"/>
-            <button id="saveToken" class="px-4 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold">
-              Save
-            </button>
-            <button id="logout" class="px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold">
-              Logout
-            </button>
-          </div>
-          <div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
-            <span id="loginStatus" class="inline-flex items-center gap-2">Not logged in</span>
-            <span class="text-slate-300">•</span>
-            <span>Config source: <span class="font-mono" id="cfgSource">/api/config</span></span>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <div id="dirtyPill" class="hidden px-3 py-2 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold">
-            Unsaved changes
-          </div>
-          <button id="saveAll" class="px-4 py-3 rounded-2xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold soft-shadow">
-            Save Changes
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Layout -->
-    <div class="grid lg:grid-cols-12 gap-6 mt-6">
-      <!-- Sidebar -->
-      <aside class="lg:col-span-3">
-        <div class="rounded-3xl border bg-white soft-shadow p-4 sticky top-20">
-          <div class="flex items-center justify-between">
-            <div class="text-xs font-extrabold text-slate-500">PANELS</div>
-            <button id="openDrawer" class="lg:hidden px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold">Menu</button>
-          </div>
-          <nav id="nav" class="mt-3 space-y-1"></nav>
-
-          <div class="mt-4 rounded-2xl bg-slate-50 border p-3">
-            <div class="text-xs font-bold">Quick tips</div>
-            <ul class="text-xs text-slate-600 mt-2 space-y-1">
-              <li>• Upload → then click <b>Save Changes</b>.</li>
-              <li>• Switching panels auto-collects edits.</li>
-              <li>• If a section shows empty, it means that section is empty in <span class="font-mono">/api/config</span>.</li>
-            </ul>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Content -->
-      <main class="lg:col-span-9">
-        <div class="rounded-3xl border bg-white soft-shadow p-5">
-          <div class="flex items-start justify-between gap-3 flex-wrap">
-            <div>
-              <div id="panelTitle" class="text-lg font-extrabold">Loading…</div>
-              <div id="panelSub" class="text-sm text-slate-500 mt-1">Please wait…</div>
+    <!-- --- SIDEBAR --- -->
+    <aside class="w-[520px] bg-slate-50 border-r border-slate-200 flex flex-col shadow-2xl z-20">
+        <!-- Header -->
+        <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-black italic shadow-lg">AS</div>
+                <div>
+                    <h2 class="font-black text-lg tracking-tight uppercase leading-none">Admin <span class="text-sky-500">CMS</span></h2>
+                    <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Site Management Panel</p>
+                </div>
             </div>
             <div class="flex items-center gap-2">
-              <button id="panelSaveBtn" class="px-4 py-2 rounded-2xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold">
-                Save Changes
-              </button>
+                <div id="dirty-pill" class="hidden px-2 py-1 rounded-full bg-amber-100 text-amber-600 text-[8px] font-black uppercase">Unsaved</div>
+                <button id="save-all-btn" class="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-2xl text-xs font-black transition-all hover:bg-green-700 shadow-lg active:scale-95 uppercase tracking-wider">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Save Changes</span>
+                </button>
             </div>
-          </div>
-
-          <div id="panel" class="mt-5"></div>
-        </div>
-      </main>
-    </div>
-  </div>
-
-  <!-- Preview modal -->
-  <div id="previewModal" class="fixed inset-0 z-50 hidden">
-    <div class="absolute inset-0 bg-slate-900/50"></div>
-    <div class="absolute inset-0 flex items-center justify-center p-4">
-      <div class="w-full max-w-5xl rounded-3xl bg-white border soft-shadow overflow-hidden">
-        <div class="px-5 py-4 border-b flex items-center justify-between">
-          <div>
-            <div class="text-sm font-extrabold">Hero Preview</div>
-            <div class="text-xs text-slate-500">Desktop + Mobile preview from your current config (not saved yet)</div>
-          </div>
-          <button id="closePreview" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-bold">Close</button>
         </div>
 
-        <div class="p-5 grid md:grid-cols-2 gap-5">
-          <div>
-            <div class="text-xs font-extrabold text-slate-500">DESKTOP (hero card)</div>
-            <div class="mt-2 rounded-3xl border overflow-hidden">
-              <div id="prevDesktop" class="aspect-[16/9] bg-slate-100 relative">
-                <!-- injected -->
-              </div>
+        <!-- Security / Auth Header -->
+        <div class="px-6 py-2.5 bg-slate-100 border-b flex items-center justify-between">
+            <div id="auth-status-ui" class="text-[10px] font-black text-slate-500 flex items-center gap-2 uppercase tracking-tighter">
+                <span class="w-2 h-2 rounded-full bg-slate-300" id="auth-indicator"></span>
+                <span id="auth-text">Initializing...</span>
             </div>
-          </div>
+            <button id="token-toggle" class="text-[10px] font-black text-sky-600 hover:underline uppercase tracking-tighter">Manage Token</button>
+        </div>
 
-          <div>
-            <div class="text-xs font-extrabold text-slate-500">MOBILE (banner slider)</div>
-            <div class="mt-2 rounded-3xl border overflow-hidden">
-              <div class="mx-auto w-[330px] bg-slate-50">
-                <div id="prevMobile" class="aspect-[9/16] bg-slate-100 relative">
-                  <!-- injected -->
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-slate-200 bg-white overflow-x-auto scrollbar-hide">
+            <button data-tab="hero" class="tab-btn min-w-[85px] flex-shrink-0 flex flex-col items-center gap-1 py-4 border-b-2 transition-all border-transparent text-slate-400 active">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                <span class="text-[9px] uppercase font-black">Hero</span>
+            </button>
+            <button data-tab="pages" class="tab-btn min-w-[85px] flex-shrink-0 flex flex-col items-center gap-1 py-4 border-b-2 transition-all border-transparent text-slate-400">
+                <i data-lucide="file-plus" class="w-5 h-5"></i>
+                <span class="text-[9px] uppercase font-black">Pages</span>
+            </button>
+            <button data-tab="menu" class="tab-btn min-w-[85px] flex-shrink-0 flex flex-col items-center gap-1 py-4 border-b-2 transition-all border-transparent text-slate-400">
+                <i data-lucide="list" class="w-5 h-5"></i>
+                <span class="text-[9px] uppercase font-black">Menu</span>
+            </button>
+            <button data-tab="services" class="tab-btn min-w-[85px] flex-shrink-0 flex flex-col items-center gap-1 py-4 border-b-2 transition-all border-transparent text-slate-400">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                <span class="text-[9px] uppercase font-black">Services</span>
+            </button>
+            <button data-tab="faq" class="tab-btn min-w-[85px] flex-shrink-0 flex flex-col items-center gap-1 py-4 border-b-2 transition-all border-transparent text-slate-400">
+                <i data-lucide="help-circle" class="w-5 h-5"></i>
+                <span class="text-[9px] uppercase font-black">FAQ</span>
+            </button>
+            <button data-tab="reviews" class="tab-btn min-w-[85px] flex-shrink-0 flex flex-col items-center gap-1 py-4 border-b-2 transition-all border-transparent text-slate-400">
+                <i data-lucide="star" class="w-5 h-5"></i>
+                <span class="text-[9px] uppercase font-black">Reviews</span>
+            </button>
+            <button data-tab="seo" class="tab-btn min-w-[85px] flex-shrink-0 flex flex-col items-center gap-1 py-4 border-b-2 transition-all border-transparent text-slate-400">
+                <i data-lucide="search" class="w-5 h-5"></i>
+                <span class="text-[9px] uppercase font-black">SEO</span>
+            </button>
+        </div>
+
+        <!-- Dynamic Controls Content Area -->
+        <div id="controls-container" class="flex-1 overflow-y-auto p-6 scrollbar-hide space-y-8 pb-32 bg-slate-50/50">
+            <!-- Content Injected via JS -->
+        </div>
+    </aside>
+
+    <!-- --- PREVIEW AREA --- -->
+    <main class="flex-1 flex flex-col">
+        <div class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
+            <div class="flex items-center gap-4">
+                <div class="flex bg-slate-100 p-1 rounded-xl">
+                    <button id="view-desktop" class="p-2 rounded-lg bg-white shadow-sm text-sky-600"><i data-lucide="monitor" class="w-4 h-4"></i></button>
+                    <button id="view-mobile" class="p-2 rounded-lg text-slate-400 hover:text-slate-600"><i data-lucide="smartphone" class="w-4 h-4"></i></button>
                 </div>
-              </div>
+                <div class="text-sm font-bold uppercase tracking-tight text-[11px] text-slate-400">Preview Target: <span id="preview-label" class="text-slate-800 font-black">/index.html</span></div>
             </div>
-          </div>
-        </div>
-
-        <div class="px-5 pb-5">
-          <div class="text-xs text-slate-500">
-            Tip: if you don’t see images here, upload the banner URLs in the Hero panel (Desktop + Mobile).
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<script>
-/* ============================================================
-  AquaShield Admin (Improved UI + Understandable Hero Slider)
-
-  ✅ Uses your existing endpoints:
-    - GET  /api/config
-    - POST /api/admin/save-config    (JSON body)
-    - POST /api/admin/upload-banner  (multipart file)
-      Supports:
-        /api/admin/upload-banner?slot=<something>
-        /api/admin/upload-banner?slot=<something>&variant=desktop|mobile
-      If your backend ignores variant, it still works.
-
-  ✅ Hero is now "Slides" (dynamic) instead of terrace/toilet/heat:
-    cfg.hero.slides = [ { id, label, desktopBg, mobileBg, title, sub, bullets[], ctaText, ctaLink, tag, linkedServiceSlug } ]
-
-  ✅ Mobile banner slider style:
-    - Each slide has Mobile Banner image upload + preview
-    - Built-in preview modal (Desktop + Mobile)
-
-  ✅ All other panels kept (Menu/SEO/Pages/FAQ/Reviews/Images/Services)
-============================================================ */
-
-const PANELS = [
-  { id:"hero",    title:"Hero (Slider + Buttons)", sub:"Create slides for your homepage hero. Desktop + Mobile banner images." },
-  { id:"menu",    title:"Menu + Dropdowns",        sub:"Top navigation links + dropdown items." },
-  { id:"seo",     title:"SEO (Site Defaults)",     sub:"Default title/description/canonical + tags used across site." },
-  { id:"pages",   title:"Page Creator / Editor",   sub:"Create static pages like /about, /privacy, /faq." },
-  { id:"faq",     title:"FAQ Panel",               sub:"FAQ entries shown on site." },
-  { id:"reviews", title:"Reviews Updater",         sub:"Testimonials shown on site." },
-  { id:"images",  title:"Image Uploader + Mapper", sub:"Upload images and map to keys used across site." },
-  { id:"services",title:"Service Editor",          sub:"Create/edit services (and optionally link hero slides to a service)." },
-];
-
-let cfg = null;
-let activePanel = "hero";
-let isDirty = false;
-
-/* -----------------------------
-  Auth
------------------------------ */
-function getToken(){ return localStorage.getItem("ADMIN_TOKEN") || ""; }
-function setToken(t){ localStorage.setItem("ADMIN_TOKEN", t); }
-function clearToken(){ localStorage.removeItem("ADMIN_TOKEN"); }
-function authHeaders(){
-  const t = getToken();
-  return t ? { "authorization": "Bearer " + t } : {};
-}
-
-/* -----------------------------
-  Helpers
------------------------------ */
-function uid(prefix="id"){
-  return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now();
-}
-function escapeHtml(str){
-  return (str||"")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;");
-}
-function domSafeKey(str){
-  return String(str || "")
-    .trim()
-    .replace(/^\/+/,"")
-    .replace(/[^a-zA-Z0-9_-]/g, "_")
-    .slice(0, 64) || ("k_" + Math.random().toString(16).slice(2));
-}
-function toast(msg, type="ok", title="Done"){
-  const wrap = document.getElementById("toast");
-  const dot = document.getElementById("toastDot");
-  const tTitle = document.getElementById("toastTitle");
-  const tMsg = document.getElementById("toastMsg");
-
-  tTitle.textContent = title;
-  tMsg.textContent = msg;
-
-  dot.className = "mt-1 h-2.5 w-2.5 rounded-full " + (
-    type === "err" ? "bg-red-600" :
-    type === "warn" ? "bg-amber-600" : "bg-green-600"
-  );
-
-  wrap.classList.remove("hidden");
-  clearTimeout(window.__toastTimer);
-  window.__toastTimer = setTimeout(()=>wrap.classList.add("hidden"), 2800);
-}
-document.getElementById("toastClose").onclick = ()=>document.getElementById("toast").classList.add("hidden");
-
-function setDirty(v){
-  isDirty = !!v;
-  const pill = document.getElementById("dirtyPill");
-  if (isDirty) pill.classList.remove("hidden");
-  else pill.classList.add("hidden");
-}
-
-/* -----------------------------
-  Ensure Config Shape
------------------------------ */
-function ensureSeoShape(s){
-  if (!s || typeof s !== "object") s = {};
-  s.title = s.title || "";
-  s.description = s.description || "";
-  s.canonical = s.canonical || "";
-  s.robots = s.robots || "";
-  s.ogTitle = s.ogTitle || "";
-  s.ogDesc = s.ogDesc || "";
-  s.ogImage = s.ogImage || "";
-  s.schemaJsonLd = s.schemaJsonLd || "";
-  return s;
-}
-
-function ensureHeroSlides(hero){
-  if (!hero || typeof hero !== "object") hero = {};
-  // Support both old object-shape and new array-shape
-  // If old shape exists hero.slides as object, convert to array once.
-  if (!hero.slides) hero.slides = [];
-
-  if (Array.isArray(hero.slides)) {
-    hero.slides = hero.slides.map(s => ({
-      id: s.id || uid("slide"),
-      label: s.label || s.tag || "Slide",
-      tag: s.tag || "",
-      linkedServiceSlug: (s.linkedServiceSlug || "").replace(/^\/+/,""),
-      desktopBg: s.desktopBg || s.bg || "",
-      mobileBg: s.mobileBg || "",
-      title: s.title || "",
-      sub: s.sub || "",
-      bullets: Array.isArray(s.bullets) ? s.bullets : [],
-      ctaText: s.ctaText || "Get Quote",
-      ctaLink: s.ctaLink || "/#contact"
-    }));
-  } else if (typeof hero.slides === "object") {
-    // convert old slots object -> slides array
-    const out = [];
-    Object.keys(hero.slides).forEach(k=>{
-      const s = hero.slides[k] || {};
-      out.push({
-        id: k || uid("slide"),
-        label: (s.title || k || "Slide"),
-        tag: "",
-        linkedServiceSlug: "",
-        desktopBg: s.bg || "",
-        mobileBg: "",
-        title: s.title || "",
-        sub: s.sub || "",
-        bullets: Array.isArray(s.bullets) ? s.bullets : [],
-        ctaText: s.ctaText || "Get Quote",
-        ctaLink: s.ctaLink || "/#contact"
-      });
-    });
-    hero.slides = out;
-  }
-
-  // Always at least 1 slide for clarity
-  if (!hero.slides.length) {
-    hero.slides.push({
-      id: uid("slide"),
-      label: "Terrace Waterproofing",
-      tag: "Popular",
-      linkedServiceSlug: "terrace-waterproofing",
-      desktopBg: "",
-      mobileBg: "",
-      title: "Stop Water Damage Before It Starts",
-      sub: "Leak protection, crack repair and long-life coating systems.",
-      bullets: ["Inspection + Quote", "Premium materials", "Fast turnaround"],
-      ctaText: "Get Free Inspection",
-      ctaLink: "/#contact"
-    });
-  }
-
-  return hero;
-}
-
-function ensureShape(c){
-  if (!c || typeof c !== "object") c = {};
-
-  // HERO
-  c.hero = ensureHeroSlides(c.hero);
-
-  // MENU
-  if (!Array.isArray(c.menu)) c.menu = [];
-  c.menu = c.menu.map(item => ({
-    label: item?.label ? String(item.label) : "",
-    url: item?.url ? String(item.url) : "",
-    children: Array.isArray(item?.children) ? item.children.map(ch => ({
-      label: ch?.label ? String(ch.label) : "",
-      url: ch?.url ? String(ch.url) : ""
-    })) : []
-  }));
-
-  // SEO
-  if (!c.seo || typeof c.seo !== "object") c.seo = {};
-  c.seo.siteName = c.seo.siteName || "";
-  c.seo.defaultTitle = c.seo.defaultTitle || "";
-  c.seo.defaultDescription = c.seo.defaultDescription || "";
-  c.seo.defaultOgImage = c.seo.defaultOgImage || "";
-  c.seo.robots = c.seo.robots || "index,follow";
-  c.seo.canonicalBase = c.seo.canonicalBase || "";
-  c.seo.tags = Array.isArray(c.seo.tags) ? c.seo.tags : [];
-  c.seo.h1Defaults = c.seo.h1Defaults || "";
-  c.seo.h2Defaults = c.seo.h2Defaults || "";
-
-  // PAGES (object keyed by slug)
-  if (!c.pages || typeof c.pages !== "object") c.pages = {};
-  const normalizedPages = {};
-  Object.keys(c.pages).forEach(k => {
-    const p = c.pages[k] || {};
-    p.slug = (p.slug || k || "").replace(/^\/+/,"");
-    p._id = p._id || uid("page");
-    p.title = p.title || "";
-    p.headImage = p.headImage || "";
-    p.contentHtml = p.contentHtml || "";
-    p.h1 = p.h1 || "";
-    p.h2 = p.h2 || "";
-    p.seo = ensureSeoShape(p.seo);
-    normalizedPages[p.slug || k] = p;
-  });
-  c.pages = normalizedPages;
-
-  // FAQ
-  if (!Array.isArray(c.faq)) c.faq = [];
-  c.faq = c.faq.map(x => ({ q: x?.q ? String(x.q) : "", a: x?.a ? String(x.a) : "" }));
-
-  // REVIEWS
-  if (!Array.isArray(c.reviews)) c.reviews = [];
-  c.reviews = c.reviews.map(r => ({
-    name: r?.name ? String(r.name) : "",
-    rating: Number(r?.rating ? r.rating : 5),
-    text: r?.text ? String(r.text) : "",
-    date: r?.date ? String(r.date) : ""
-  }));
-
-  // IMAGES MAP
-  if (!c.images || typeof c.images !== "object") c.images = {};
-  if (!Array.isArray(c.images.map)) c.images.map = [];
-  c.images.map = c.images.map.map(m => ({
-    key: m?.key ? String(m.key) : "",
-    url: m?.url ? String(m.url) : "",
-    notes: m?.notes ? String(m.notes) : ""
-  }));
-
-  // SERVICES
-  if (!Array.isArray(c.services)) c.services = [];
-  c.services = c.services.map(s => {
-    const out = (s && typeof s === "object") ? s : {};
-    out.slug = (out.slug || "").replace(/^\/+/,"");
-    out.name = out.name || "";
-    out.short = out.short || "";
-    out.heroImage = out.heroImage || "";
-    out.contentHtml = out.contentHtml || "";
-    out.h1 = out.h1 || "";
-    out.h2 = out.h2 || "";
-    out.seo = ensureSeoShape(out.seo);
-    return out;
-  });
-
-  return c;
-}
-
-/* -----------------------------
-  API
------------------------------ */
-async function loadConfig(){
-  const res = await fetch("/api/config", { cache:"no-store" });
-  if (!res.ok) throw new Error("Failed to load /api/config: " + await res.text());
-  const data = await res.json();
-  cfg = ensureShape(data);
-  setDirty(false);
-}
-
-async function saveConfig(){
-  if (!getToken()) { toast("Paste ADMIN TOKEN and click Save.", "err", "Missing token"); return; }
-  try {
-    collectAll();
-    const res = await fetch("/api/admin/save-config", {
-      method: "POST",
-      headers: { ...authHeaders(), "content-type":"application/json" },
-      body: JSON.stringify(cfg)
-    });
-    if (!res.ok) throw new Error(await res.text());
-    setDirty(false);
-    toast("Saved successfully.", "ok", "Saved");
-  } catch(e){
-    toast(String(e.message || e), "err", "Save failed");
-  }
-}
-
-/* Upload banner (hero only) */
-async function uploadBanner({ file, slot, variant }){
-  if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
-  const fd = new FormData();
-  fd.append("file", file);
-
-  const qs = new URLSearchParams();
-  qs.set("slot", slot);
-  if (variant) qs.set("variant", variant);
-
-  const res = await fetch(`/api/admin/upload-banner?${qs.toString()}`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: fd
-  });
-  if (!res.ok) throw new Error(await res.text());
-  const out = await res.json();
-  const url = out.publicUrl || out.url || "";
-  if (!url) throw new Error("Upload response missing publicUrl");
-  return url;
-}
-
-/* Upload generic image (images/pages/services). If your backend doesn't have this endpoint, you can remove it. */
-async function uploadImageGeneric({ file, purpose, key }){
-  if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
-  const fd = new FormData();
-  fd.append("file", file);
-
-  const qs = new URLSearchParams();
-  if (purpose) qs.set("purpose", purpose);
-  if (key) qs.set("key", key);
-
-  const res = await fetch(`/api/admin/upload-image?${qs.toString()}`, {
-    method:"POST",
-    headers: authHeaders(),
-    body: fd
-  });
-  if (!res.ok) throw new Error(await res.text());
-  const out = await res.json();
-  const url = out.publicUrl || out.url || "";
-  if (!url) throw new Error("Upload response missing publicUrl");
-  return url;
-}
-
-/* -----------------------------
-  NAV
------------------------------ */
-function renderNav(){
-  const nav = document.getElementById("nav");
-  nav.innerHTML = PANELS.map(p=>{
-    const active = p.id === activePanel;
-    return `
-      <button data-panel="${p.id}"
-        class="w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition
-        ${active ? "bg-slate-900 text-white" : "hover:bg-slate-100 text-slate-800"}">
-        ${escapeHtml(p.title)}
-        <div class="${active ? "text-white/70" : "text-slate-500"} text-xs font-semibold mt-1">
-          ${escapeHtml(p.sub)}
-        </div>
-      </button>
-    `;
-  }).join("");
-
-  nav.querySelectorAll("[data-panel]").forEach(btn=>{
-    btn.onclick = ()=>{
-      try { collectAll(); } catch(e){}
-      activePanel = btn.dataset.panel;
-      renderAll();
-    };
-  });
-}
-
-/* -----------------------------
-  HERO PANEL (Dynamic slider)
------------------------------ */
-function heroSlideCard(s, idx){
-  const k = domSafeKey(s.id);
-  const serviceOptions = (cfg.services || []).map(ss => {
-    const val = ss.slug || "";
-    const label = ss.name ? `${ss.name}  (/${ss.slug})` : `/${ss.slug}`;
-    return `<option value="${escapeHtml(val)}" ${val===s.linkedServiceSlug ? "selected":""}>${escapeHtml(label)}</option>`;
-  }).join("");
-
-  const bullets = (s.bullets || []).join("\n");
-
-  return `
-    <div class="rounded-3xl border p-4 bg-white">
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <div class="text-sm font-extrabold flex items-center gap-2">
-            <span class="inline-flex items-center justify-center h-7 px-3 rounded-2xl bg-slate-900 text-white text-xs font-extrabold">Slide ${idx+1}</span>
-            <span class="truncate">${escapeHtml(s.label || "Slide")}</span>
-          </div>
-          <div class="text-xs text-slate-500 mt-1">ID: <span class="font-mono">${escapeHtml(s.id)}</span></div>
-        </div>
-        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold"
-                data-del-slide="${idx}">
-          Delete
-        </button>
-      </div>
-
-      <div class="mt-4 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Slide Label (for admin)</label>
-          <input id="hs_label_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.label)}" placeholder="Terrace Waterproofing / Basement / Bathroom ..."/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Badge / Tag (optional)</label>
-          <input id="hs_tag_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.tag)}" placeholder="Popular / New / Monsoon Ready"/>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Link this slide to a Service (optional)</label>
-        <select id="hs_service_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm bg-white ring-soft focus:outline-none focus:ring-2 focus:ring-green-500">
-          <option value="">— Not linked —</option>
-          ${serviceOptions}
-        </select>
-        <div class="text-xs text-slate-500 mt-1">
-          If linked, you can set CTA Link to that service page like <span class="font-mono">/${escapeHtml(s.linkedServiceSlug||"service-slug")}</span>.
-        </div>
-      </div>
-
-      <div class="mt-4 grid lg:grid-cols-2 gap-4">
-        <!-- Desktop banner -->
-        <div class="rounded-3xl border p-4 bg-slate-50">
-          <div class="flex items-center justify-between gap-2">
-            <div>
-              <div class="text-xs font-extrabold">Desktop Banner (16:9)</div>
-              <div class="text-xs text-slate-500 mt-1">Recommended: 1600×900 / 1920×1080</div>
+            
+            <div class="flex items-center gap-4">
+                <select id="preview-target-select" class="text-[11px] font-black uppercase bg-slate-50 border border-slate-200 rounded-xl p-2 focus:ring-2 focus:ring-sky-500">
+                    <option value="home">Homepage (index.html)</option>
+                </select>
+                <div class="h-6 w-px bg-slate-200"></div>
+                <button id="manual-refresh" class="flex items-center gap-2 text-[10px] font-black text-sky-600 uppercase hover:bg-sky-50 px-3 py-2 rounded-lg transition-all">
+                    <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                    <span>Reload Preview</span>
+                </button>
             </div>
-            <button class="px-3 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold"
-                    data-upload-desktop="${idx}">
-              Upload
-            </button>
-          </div>
-          <input type="file" id="hs_file_desktop_${k}" class="mt-3 block w-full text-sm"
-                 accept="image/png,image/jpeg,image/webp"/>
-          <div class="mt-3 text-xs text-slate-600 break-words">
-            URL:
-            <input id="hs_desktop_${k}" class="mt-1 w-full border rounded-2xl px-3 py-2 text-xs font-mono bg-white"
-                   value="${escapeHtml(s.desktopBg)}" placeholder="https://..."/>
-          </div>
+        </div>
 
-          <div class="mt-3 rounded-2xl overflow-hidden border bg-white">
-            <div class="aspect-[16/9] bg-slate-200 relative">
-              ${s.desktopBg ? `<img src="${escapeHtml(s.desktopBg)}" class="absolute inset-0 w-full h-full object-cover" alt="desktop"/>` : `
-                <div class="absolute inset-0 grid place-items-center text-xs text-slate-500 font-semibold">No desktop banner yet</div>
-              `}
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/45 via-transparent to-transparent"></div>
-              <div class="absolute bottom-3 left-3 right-3 text-white">
-                <div class="text-xs font-extrabold">${escapeHtml(s.tag||"")}</div>
-                <div class="text-sm font-extrabold leading-tight">${escapeHtml(s.title||"Hero Title")}</div>
-              </div>
+        <div class="flex-1 p-8 overflow-y-auto flex justify-center bg-slate-100/50 scrollbar-hide">
+            <div id="preview-frame" class="desktop-view shadow-2xl overflow-hidden bg-white">
+                <div id="site-render-container" class="h-full overflow-y-auto scrollbar-hide">
+                    <!-- Live Website Rendering -->
+                </div>
             </div>
-          </div>
         </div>
+    </main>
 
-        <!-- Mobile banner -->
-        <div class="rounded-3xl border p-4 bg-slate-50">
-          <div class="flex items-center justify-between gap-2">
-            <div>
-              <div class="text-xs font-extrabold">Mobile Banner (9:16)</div>
-              <div class="text-xs text-slate-500 mt-1">Recommended: 1080×1920</div>
+    <!-- Token Modal -->
+    <div id="token-modal" class="hidden fixed inset-0 bg-slate-900/60 z-[100] items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl">
+            <h3 class="text-3xl font-black text-slate-900 mb-2 uppercase tracking-tighter">Auth Security</h3>
+            <p class="text-sm text-slate-500 mb-8">Paste your Admin Token to allow push-to-production updates.</p>
+            <input type="password" id="token-input-field" class="w-full p-5 bg-slate-100 border-none rounded-2xl mb-6 focus:ring-4 focus:ring-sky-500/20 outline-none font-bold" placeholder="••••••••••••">
+            <div class="flex gap-4">
+                <button id="token-save-btn" class="flex-1 bg-slate-900 text-white font-black py-4 rounded-2xl hover:bg-black uppercase tracking-widest text-xs">Save</button>
+                <button id="token-logout-btn" class="flex-1 bg-red-50 text-red-600 font-black py-4 rounded-2xl hover:bg-red-100 uppercase tracking-widest text-xs">Clear</button>
             </div>
-            <button class="px-3 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold"
-                    data-upload-mobile="${idx}">
-              Upload
-            </button>
-          </div>
-          <input type="file" id="hs_file_mobile_${k}" class="mt-3 block w-full text-sm"
-                 accept="image/png,image/jpeg,image/webp"/>
-          <div class="mt-3 text-xs text-slate-600 break-words">
-            URL:
-            <input id="hs_mobile_${k}" class="mt-1 w-full border rounded-2xl px-3 py-2 text-xs font-mono bg-white"
-                   value="${escapeHtml(s.mobileBg)}" placeholder="https://..."/>
-          </div>
-
-          <div class="mt-3 rounded-2xl overflow-hidden border bg-white">
-            <div class="aspect-[9/16] bg-slate-200 relative">
-              ${s.mobileBg ? `<img src="${escapeHtml(s.mobileBg)}" class="absolute inset-0 w-full h-full object-cover" alt="mobile"/>` : `
-                <div class="absolute inset-0 grid place-items-center text-xs text-slate-500 font-semibold">No mobile banner yet</div>
-              `}
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-transparent"></div>
-              <div class="absolute bottom-3 left-3 right-3 text-white">
-                <div class="text-xs font-extrabold">${escapeHtml(s.tag||"")}</div>
-                <div class="text-sm font-extrabold leading-tight">${escapeHtml(s.title||"Hero Title")}</div>
-              </div>
-            </div>
-          </div>
+            <button id="token-close-btn" class="w-full mt-6 text-[10px] font-black text-slate-300 uppercase tracking-widest hover:text-slate-600">Dismiss</button>
         </div>
-      </div>
-
-      <div class="mt-4 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Title (shown on hero)</label>
-          <input id="hs_title_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.title)}" placeholder="Stop Water Damage Before It Starts"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">CTA Text</label>
-          <input id="hs_ctaText_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.ctaText)}" placeholder="Get Free Inspection"/>
-        </div>
-      </div>
-
-      <div class="mt-3 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Sub text (short description)</label>
-          <textarea id="hs_sub_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                    rows="3" placeholder="Professional waterproofing solutions with 10-year warranty.">${escapeHtml(s.sub)}</textarea>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">CTA Link</label>
-          <input id="hs_ctaLink_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.ctaLink)}" placeholder="/#contact or /terrace-waterproofing"/>
-          <div class="text-xs text-slate-500 mt-2">
-            Tip: Use <span class="font-mono">/#contact</span> or a service page like <span class="font-mono">/bathroom-waterproofing</span>.
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Bullets (one per line, max 6)</label>
-        <textarea id="hs_bullets_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                  rows="4" placeholder="Inspection + Quote&#10;Premium materials&#10;Fast turnaround">${escapeHtml(bullets)}</textarea>
-      </div>
-
-      <div class="mt-4 flex items-center justify-between gap-2 flex-wrap">
-        <div class="text-xs text-slate-500">
-          Reorder slides with ↑ ↓ (this controls your hero slider order).
-        </div>
-        <div class="flex items-center gap-2">
-          <button class="px-3 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-xs font-extrabold" data-move-up="${idx}">↑ Up</button>
-          <button class="px-3 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-xs font-extrabold" data-move-down="${idx}">↓ Down</button>
-        </div>
-      </div>
     </div>
-  `;
-}
 
-function panelHero(){
-  const slides = cfg.hero.slides || [];
-  return `
-    <div class="rounded-3xl border bg-slate-50 p-4">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">Hero Slider</div>
-          <div class="text-sm text-slate-600 mt-1">
-            Think of this as a <b>carousel</b>. Each slide can be for any service (Terrace, Basement, Bathroom, etc).
-            Upload both <b>Desktop</b> + <b>Mobile</b> banners for best look.
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="heroAdd" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
-            + Add Slide
-          </button>
-          <button id="heroPreview" class="px-4 py-2 rounded-2xl bg-white hover:bg-slate-100 border text-sm font-extrabold">
-            Preview
-          </button>
-        </div>
-      </div>
-
-      <div class="mt-4 grid gap-4" id="heroWrap">
-        ${slides.map(heroSlideCard).join("")}
-      </div>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-10 py-5 rounded-[2rem] shadow-2xl font-black text-[10px] uppercase tracking-widest opacity-0 pointer-events-none transition-all duration-500 z-[101] flex items-center gap-4">
+        <div id="toast-indicator" class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
+        <span id="toast-text">System Updated</span>
     </div>
-  `;
-}
 
-async function doUploadHero(idx, variant){
-  const s = cfg.hero.slides[idx];
-  const k = domSafeKey(s.id);
-  const inputId = variant === "mobile" ? `hs_file_mobile_${k}` : `hs_file_desktop_${k}`;
-  const file = document.getElementById(inputId)?.files?.[0];
-  if (!file) { toast("Select an image first.", "warn", "No file"); return; }
-
-  try{
-    // slot strategy:
-    // - Use slide.id so you can have unlimited slides.
-    // - Keep variant so backend can store desktop/mobile separately if supported.
-    const slot = s.id;
-    const url = await uploadBanner({ file, slot, variant });
-
-    if (variant === "mobile") {
-      s.mobileBg = url;
-      document.getElementById(`hs_mobile_${k}`).value = url;
-      document.getElementById(inputId).value = "";
-      setDirty(true);
-      toast("Mobile banner uploaded. Now click Save Changes.", "ok", "Uploaded");
-    } else {
-      s.desktopBg = url;
-      document.getElementById(`hs_desktop_${k}`).value = url;
-      document.getElementById(inputId).value = "";
-      setDirty(true);
-      toast("Desktop banner uploaded. Now click Save Changes.", "ok", "Uploaded");
-    }
-
-    renderAll(); // refresh preview tiles inside card
-  } catch(e){
-    toast(String(e.message || e), "err", "Upload failed");
-  }
-}
-
-/* Preview modal (desktop + mobile) */
-function openPreview(){
-  try { collectAll(); } catch(e){}
-  const s = (cfg.hero.slides && cfg.hero.slides[0]) ? cfg.hero.slides[0] : null;
-  const d = document.getElementById("prevDesktop");
-  const m = document.getElementById("prevMobile");
-
-  if (!s){
-    d.innerHTML = `<div class="absolute inset-0 grid place-items-center text-sm text-slate-600 font-semibold">No slides</div>`;
-    m.innerHTML = `<div class="absolute inset-0 grid place-items-center text-sm text-slate-600 font-semibold">No slides</div>`;
-  } else {
-    d.innerHTML = `
-      ${s.desktopBg ? `<img src="${escapeHtml(s.desktopBg)}" class="absolute inset-0 w-full h-full object-cover" alt="desktop"/>` : ""}
-      <div class="absolute inset-0 ${s.desktopBg ? "bg-gradient-to-r from-slate-900/60 via-slate-900/25 to-transparent" : "bg-slate-200"}"></div>
-      <div class="absolute left-6 bottom-6 right-6 text-white">
-        <div class="inline-flex items-center gap-2">
-          ${s.tag ? `<span class="px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-extrabold">${escapeHtml(s.tag)}</span>` : ""}
-          <span class="text-xs font-bold text-white/80">${escapeHtml(s.label||"")}</span>
-        </div>
-        <div class="text-2xl font-extrabold mt-2 leading-tight">${escapeHtml(s.title||"")}</div>
-        <div class="text-sm text-white/85 mt-2 max-w-[520px]">${escapeHtml(s.sub||"")}</div>
-        <div class="mt-3 flex gap-2 flex-wrap">
-          ${(s.bullets||[]).slice(0,3).map(b=>`<span class="text-xs px-3 py-1 rounded-full bg-white/12 border border-white/15">${escapeHtml(b)}</span>`).join("")}
-        </div>
-        <div class="mt-4 inline-flex px-4 py-2 rounded-2xl bg-green-600 text-white text-sm font-extrabold">${escapeHtml(s.ctaText||"Get Quote")}</div>
-      </div>
-    `;
-
-    m.innerHTML = `
-      ${s.mobileBg ? `<img src="${escapeHtml(s.mobileBg)}" class="absolute inset-0 w-full h-full object-cover" alt="mobile"/>`
-                  : (s.desktopBg ? `<img src="${escapeHtml(s.desktopBg)}" class="absolute inset-0 w-full h-full object-cover" alt="mobilefallback"/>` : "")}
-      <div class="absolute inset-0 ${ (s.mobileBg||s.desktopBg) ? "bg-gradient-to-t from-slate-900/65 via-slate-900/20 to-transparent" : "bg-slate-200"}"></div>
-      <div class="absolute left-4 right-4 bottom-5 text-white">
-        ${s.tag ? `<div class="inline-flex px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-extrabold">${escapeHtml(s.tag)}</div>` : ""}
-        <div class="text-xl font-extrabold mt-2 leading-tight">${escapeHtml(s.title||"")}</div>
-        <div class="text-sm text-white/85 mt-2">${escapeHtml(s.sub||"")}</div>
-        <div class="mt-3 grid gap-2">
-          ${(s.bullets||[]).slice(0,3).map(b=>`
-            <div class="text-xs px-3 py-2 rounded-2xl bg-white/10 border border-white/15">${escapeHtml(b)}</div>
-          `).join("")}
-        </div>
-        <div class="mt-4 w-full text-center px-4 py-3 rounded-2xl bg-green-600 text-white text-sm font-extrabold">${escapeHtml(s.ctaText||"Get Quote")}</div>
-      </div>
-    `;
-  }
-
-  document.getElementById("previewModal").classList.remove("hidden");
-}
-function closePreview(){
-  document.getElementById("previewModal").classList.add("hidden");
-}
-
-/* -----------------------------
-  MENU PANEL
------------------------------ */
-function menuItemRow(item, idx){
-  const childRows = (item.children||[]).map((ch,cidx)=>`
-    <div class="mt-2 rounded-2xl border bg-slate-50 p-3">
-      <div class="grid md:grid-cols-2 gap-2">
-        <input class="border rounded-2xl px-3 py-2 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-               id="menu_child_label_${idx}_${cidx}" placeholder="Sub item label" value="${escapeHtml(ch.label)}"/>
-        <div class="flex gap-2">
-          <input class="flex-1 border rounded-2xl px-3 py-2 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 id="menu_child_url_${idx}_${cidx}" placeholder="/terrace-waterproofing" value="${escapeHtml(ch.url)}"/>
-          <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold"
-                  data-del-child="${idx}:${cidx}">Remove</button>
-        </div>
-      </div>
-    </div>
-  `).join("");
-
-  return `
-    <div class="rounded-3xl border p-4 bg-white">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">Menu item ${idx+1}</div>
-          <div class="text-xs text-slate-500 mt-1">Use absolute paths like <span class="font-mono">/services</span> or anchor <span class="font-mono">/#contact</span></div>
-        </div>
-        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-menu="${idx}">
-          Delete
-        </button>
-      </div>
-
-      <div class="mt-4 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Label</label>
-          <input id="menu_label_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(item.label)}" placeholder="Services"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">URL</label>
-          <input id="menu_url_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(item.url)}" placeholder="/services"/>
-        </div>
-      </div>
-
-      <div class="mt-4 rounded-3xl border bg-slate-50 p-4">
-        <div class="flex items-center justify-between gap-2 flex-wrap">
-          <div>
-            <div class="text-sm font-extrabold">Dropdown items</div>
-            <div class="text-xs text-slate-500 mt-1">Optional: add sub items for dropdown</div>
-          </div>
-          <button class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold"
-                  data-add-child="${idx}">
-            + Add Sub Item
-          </button>
-        </div>
-        <div class="mt-3">
-          ${childRows || `<div class="text-sm text-slate-500">No sub items yet.</div>`}
-        </div>
-      </div>
-    </div>
-  `;
-}
-function panelMenu(){
-  return `
-    <div class="rounded-3xl border bg-slate-50 p-4">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">Menu + Dropdowns</div>
-          <div class="text-sm text-slate-600 mt-1">
-            If you see empty here, it means <span class="font-mono">cfg.menu</span> is empty in <span class="font-mono">/api/config</span>.
-            Add items below and Save.
-          </div>
-        </div>
-        <button id="addMenu" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
-          + Add Menu Item
-        </button>
-      </div>
-
-      <div class="mt-4 space-y-4" id="menuWrap">
-        ${(cfg.menu||[]).map(menuItemRow).join("") || `
-          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">
-            No menu items yet. Click <b>+ Add Menu Item</b>.
-          </div>
-        `}
-      </div>
-    </div>
-  `;
-}
-
-/* -----------------------------
-  SEO PANEL
------------------------------ */
-function panelSEO(){
-  const s = cfg.seo;
-  return `
-    <div class="rounded-3xl border bg-slate-50 p-4">
-      <div class="text-sm font-extrabold">SEO (Site Defaults)</div>
-      <div class="text-sm text-slate-600 mt-1">These are defaults. Pages/services can override.</div>
-
-      <div class="mt-4 grid md:grid-cols-2 gap-4">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Site Name</label>
-          <input id="seo_siteName" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.siteName)}"/>
-        </div>
-
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Canonical Base (example: https://aquastrong.com)</label>
-          <input id="seo_canonicalBase" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.canonicalBase)}"/>
-        </div>
-
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Default Title</label>
-          <input id="seo_defaultTitle" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.defaultTitle)}"/>
-        </div>
-
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Default OG Image</label>
-          <input id="seo_defaultOgImage" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.defaultOgImage)}"/>
-        </div>
-
-        <div class="md:col-span-2">
-          <label class="text-xs font-extrabold text-slate-600">Default Description</label>
-          <textarea id="seo_defaultDescription" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                    rows="3">${escapeHtml(s.defaultDescription)}</textarea>
-        </div>
-
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Robots</label>
-          <input id="seo_robots" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.robots)}" placeholder="index,follow"/>
-        </div>
-
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Tags (comma separated)</label>
-          <input id="seo_tags" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml((s.tags||[]).join(", "))}"/>
-        </div>
-
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">H1 Defaults (optional)</label>
-          <input id="seo_h1Defaults" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.h1Defaults)}"/>
-        </div>
-
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">H2 Defaults (optional)</label>
-          <input id="seo_h2Defaults" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.h2Defaults)}"/>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-/* -----------------------------
-  PAGES PANEL
------------------------------ */
-function pageEditorCard(p){
-  const domKey = domSafeKey(p._id);
-  const urlPreview = (cfg.seo.canonicalBase ? cfg.seo.canonicalBase.replace(/\/$/,"") : "") + "/" + (p.slug || "");
-  return `
-    <div class="rounded-3xl border p-4 bg-white" data-page-id="${escapeHtml(p._id)}">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div class="min-w-0">
-          <div class="text-sm font-extrabold truncate">${escapeHtml(p.title || "(Untitled Page)")}</div>
-          <div class="text-xs text-slate-500 mt-1 break-words">Slug: <span class="font-mono">/${escapeHtml(p.slug || "")}</span></div>
-          ${p.slug ? `<div class="text-xs text-slate-500 mt-1 break-words">Link: <span class="font-mono">${escapeHtml(urlPreview)}</span></div>` : ``}
-        </div>
-        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-page-id="${escapeHtml(p._id)}">
-          Delete
-        </button>
-      </div>
-
-      <div class="mt-4 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Title</label>
-          <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 id="page_title_${domKey}" value="${escapeHtml(p.title)}"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Slug (example: about)</label>
-          <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 id="page_slug_${domKey}" value="${escapeHtml(p.slug)}"/>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Head Image URL</label>
-        <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-               id="page_head_${domKey}" value="${escapeHtml(p.headImage)}" placeholder="https://..."/>
-        <div class="mt-2 grid md:grid-cols-2 gap-2">
-          <input type="file" id="page_file_${domKey}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
-          <button class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold"
-                  data-upload-page-head="${escapeHtml(p._id)}">Upload Head Image</button>
-        </div>
-      </div>
-
-      <div class="mt-3 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">H1</label>
-          <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 id="page_h1_${domKey}" value="${escapeHtml(p.h1)}"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">H2</label>
-          <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 id="page_h2_${domKey}" value="${escapeHtml(p.h2)}"/>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Content HTML</label>
-        <textarea class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                  rows="8" id="page_html_${domKey}">${escapeHtml(p.contentHtml)}</textarea>
-      </div>
-
-      <div class="mt-4 rounded-3xl border bg-slate-50 p-4">
-        <div class="text-sm font-extrabold">SEO Overrides (optional)</div>
-        <div class="mt-3 grid md:grid-cols-2 gap-3">
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">Meta Title</label>
-            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   id="page_seo_title_${domKey}" value="${escapeHtml(p.seo.title)}"/>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">Meta Description</label>
-            <textarea class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                      rows="3" id="page_seo_desc_${domKey}">${escapeHtml(p.seo.description)}</textarea>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">Canonical</label>
-            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   id="page_seo_can_${domKey}" value="${escapeHtml(p.seo.canonical)}" placeholder="/about or full url"/>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">Robots</label>
-            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   id="page_seo_robots_${domKey}" value="${escapeHtml(p.seo.robots)}" placeholder="index,follow"/>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">OG Title</label>
-            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   id="page_seo_ogt_${domKey}" value="${escapeHtml(p.seo.ogTitle)}"/>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">OG Description</label>
-            <textarea class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                      rows="3" id="page_seo_ogd_${domKey}">${escapeHtml(p.seo.ogDesc)}</textarea>
-          </div>
-          <div class="md:col-span-2">
-            <label class="text-xs font-extrabold text-slate-600">OG Image</label>
-            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   id="page_seo_ogi_${domKey}" value="${escapeHtml(p.seo.ogImage)}"/>
-          </div>
-          <div class="md:col-span-2">
-            <label class="text-xs font-extrabold text-slate-600">Schema JSON-LD</label>
-            <textarea class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                      rows="6" id="page_seo_schema_${domKey}">${escapeHtml(p.seo.schemaJsonLd)}</textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-function panelPages(){
-  const pagesArr = Object.values(cfg.pages||{}).sort((a,b)=> (a.slug||"").localeCompare(b.slug||""));
-  return `
-    <div class="rounded-3xl border bg-slate-50 p-4">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">Pages</div>
-          <div class="text-sm text-slate-600 mt-1">Create pages like <span class="font-mono">/about</span>, <span class="font-mono">/privacy</span>.</div>
-        </div>
-        <button id="addPage" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
-          + New Page
-        </button>
-      </div>
-
-      <div class="mt-4 space-y-4" id="pagesWrap">
-        ${pagesArr.map(pageEditorCard).join("") || `
-          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No pages yet. Click <b>+ New Page</b>.</div>
-        `}
-      </div>
-    </div>
-  `;
-}
-
-/* -----------------------------
-  FAQ PANEL
------------------------------ */
-function faqRow(x, idx){
-  return `
-    <div class="rounded-3xl border p-4 bg-white">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <div class="text-sm font-extrabold">FAQ ${idx+1}</div>
-          <div class="text-xs text-slate-500 mt-1">Question + Answer</div>
-        </div>
-        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-faq="${idx}">
-          Remove
-        </button>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Question</label>
-        <input id="faq_q_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-               value="${escapeHtml(x.q)}"/>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Answer</label>
-        <textarea id="faq_a_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                  rows="4">${escapeHtml(x.a)}</textarea>
-      </div>
-    </div>
-  `;
-}
-function panelFAQ(){
-  return `
-    <div class="rounded-3xl border bg-slate-50 p-4">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">FAQ Panel</div>
-          <div class="text-sm text-slate-600 mt-1">Manage FAQs shown on the website.</div>
-        </div>
-        <button id="addFaq" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
-          + Add FAQ
-        </button>
-      </div>
-
-      <div class="mt-4 space-y-4" id="faqWrap">
-        ${(cfg.faq||[]).map(faqRow).join("") || `
-          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No FAQs yet. Click <b>+ Add FAQ</b>.</div>
-        `}
-      </div>
-    </div>
-  `;
-}
-
-/* -----------------------------
-  REVIEWS PANEL
------------------------------ */
-function reviewRow(r, idx){
-  const safeRating = Math.min(5, Math.max(1, Number(r.rating||5)));
-  return `
-    <div class="rounded-3xl border p-4 bg-white">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">Review ${idx+1}</div>
-          <div class="text-xs text-slate-500 mt-1">Customer testimonial</div>
-        </div>
-        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-review="${idx}">
-          Remove
-        </button>
-      </div>
-
-      <div class="mt-4 grid md:grid-cols-3 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Name</label>
-          <input id="rev_name_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(r.name)}"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Rating (1-5)</label>
-          <input id="rev_rating_${idx}" type="number" min="1" max="5"
-                 class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(String(safeRating))}"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Date (YYYY-MM-DD)</label>
-          <input id="rev_date_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(r.date)}"/>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Text</label>
-        <textarea id="rev_text_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                  rows="4">${escapeHtml(r.text)}</textarea>
-      </div>
-    </div>
-  `;
-}
-function panelReviews(){
-  return `
-    <div class="rounded-3xl border bg-slate-50 p-4">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">Reviews</div>
-          <div class="text-sm text-slate-600 mt-1">Update testimonials shown on site.</div>
-        </div>
-        <button id="addReview" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
-          + Add Review
-        </button>
-      </div>
-
-      <div class="mt-4 space-y-4" id="reviewsWrap">
-        ${(cfg.reviews||[]).map(reviewRow).join("") || `
-          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No reviews yet. Click <b>+ Add Review</b>.</div>
-        `}
-      </div>
-    </div>
-  `;
-}
-
-/* -----------------------------
-  IMAGES PANEL
------------------------------ */
-function imageMapRow(m, idx){
-  return `
-    <div class="rounded-3xl border p-4 bg-white">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <div class="text-sm font-extrabold">Image Map ${idx+1}</div>
-          <div class="text-xs text-slate-500 mt-1">Key → URL mapping</div>
-        </div>
-        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-imgmap="${idx}">
-          Remove
-        </button>
-      </div>
-
-      <div class="mt-3 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Key</label>
-          <input id="img_key_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(m.key)}" placeholder="hero_main"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">URL</label>
-          <input id="img_url_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(m.url)}" placeholder="https://..."/>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Notes</label>
-        <input id="img_notes_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-               value="${escapeHtml(m.notes)}" placeholder="Used in about page banner"/>
-      </div>
-
-      <div class="mt-3 grid md:grid-cols-2 gap-2">
-        <input type="file" id="img_file_${idx}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
-        <button class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold" data-upload-imgmap="${idx}">
-          Upload & Set URL
-        </button>
-      </div>
-    </div>
-  `;
-}
-function panelImages(){
-  return `
-    <div class="rounded-3xl border bg-slate-50 p-4">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">Image Mapper</div>
-          <div class="text-sm text-slate-600 mt-1">Upload images and map them to keys for use anywhere.</div>
-        </div>
-        <button id="addImgMap" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
-          + Add Map Row
-        </button>
-      </div>
-
-      <div class="mt-4 space-y-4" id="imagesWrap">
-        ${(cfg.images.map||[]).map(imageMapRow).join("") || `
-          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No mapped images yet. Click <b>+ Add Map Row</b>.</div>
-        `}
-      </div>
-    </div>
-  `;
-}
-async function uploadImgMap(idx){
-  const fi = document.getElementById(`img_file_${idx}`);
-  const file = fi?.files?.[0];
-  if (!file) { toast("Select an image first.", "warn", "No file"); return; }
-
-  const key = (document.getElementById(`img_key_${idx}`)?.value || "").trim() || ("img_"+idx);
-  try{
-    const url = await uploadImageGeneric({ file, purpose:"map", key });
-    document.getElementById(`img_url_${idx}`).value = url;
-    fi.value = "";
-    setDirty(true);
-    toast("Image uploaded. Now click Save Changes.", "ok", "Uploaded");
-  } catch(e){
-    toast(String(e.message || e), "err", "Upload failed");
-  }
-}
-
-/* -----------------------------
-  SERVICES PANEL
------------------------------ */
-function serviceCard(s, idx){
-  const k = String(idx);
-  const link = s.slug ? ((cfg.seo.canonicalBase||"").replace(/\/$/,"") + "/" + escapeHtml(s.slug)) : "";
-  return `
-    <div class="rounded-3xl border p-4 bg-white">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div class="min-w-0">
-          <div class="text-sm font-extrabold truncate">${escapeHtml(s.name || "(Unnamed Service)")}</div>
-          <div class="text-xs text-slate-500 mt-1">Slug: <span class="font-mono">/${escapeHtml(s.slug||"")}</span></div>
-          ${s.slug ? `<div class="text-xs text-slate-500 mt-1 break-words">Link: <span class="font-mono">${escapeHtml(link)}</span></div>` : ``}
-        </div>
-        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-service="${idx}">
-          Delete
-        </button>
-      </div>
-
-      <div class="mt-4 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Service Name</label>
-          <input id="svc_name_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.name)}"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">Slug (example: terrace-waterproofing)</label>
-          <input id="svc_slug_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.slug)}"/>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Short Description</label>
-        <input id="svc_short_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-               value="${escapeHtml(s.short)}"/>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Hero Image URL</label>
-        <input id="svc_hero_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-               value="${escapeHtml(s.heroImage)}"/>
-        <div class="mt-2 grid md:grid-cols-2 gap-2">
-          <input type="file" id="svc_file_${k}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
-          <button class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold"
-                  data-upload-svc-hero="${idx}">Upload Hero Image</button>
-        </div>
-      </div>
-
-      <div class="mt-3 grid md:grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">H1</label>
-          <input id="svc_h1_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.h1)}"/>
-        </div>
-        <div>
-          <label class="text-xs font-extrabold text-slate-600">H2</label>
-          <input id="svc_h2_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                 value="${escapeHtml(s.h2)}"/>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <label class="text-xs font-extrabold text-slate-600">Content HTML</label>
-        <textarea id="svc_html_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                  rows="8">${escapeHtml(s.contentHtml)}</textarea>
-      </div>
-
-      <div class="mt-4 rounded-3xl border bg-slate-50 p-4">
-        <div class="text-sm font-extrabold">SEO Overrides</div>
-        <div class="mt-3 grid md:grid-cols-2 gap-3">
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">Meta Title</label>
-            <input id="svc_seo_title_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   value="${escapeHtml(s.seo.title)}"/>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">Meta Description</label>
-            <textarea id="svc_seo_desc_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                      rows="3">${escapeHtml(s.seo.description)}</textarea>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">Canonical</label>
-            <input id="svc_seo_can_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   value="${escapeHtml(s.seo.canonical)}"/>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">Robots</label>
-            <input id="svc_seo_robots_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   value="${escapeHtml(s.seo.robots)}"/>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">OG Title</label>
-            <input id="svc_seo_ogt_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   value="${escapeHtml(s.seo.ogTitle)}"/>
-          </div>
-          <div>
-            <label class="text-xs font-extrabold text-slate-600">OG Description</label>
-            <textarea id="svc_seo_ogd_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                      rows="3">${escapeHtml(s.seo.ogDesc)}</textarea>
-          </div>
-          <div class="md:col-span-2">
-            <label class="text-xs font-extrabold text-slate-600">OG Image</label>
-            <input id="svc_seo_ogi_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
-                   value="${escapeHtml(s.seo.ogImage)}"/>
-          </div>
-          <div class="md:col-span-2">
-            <label class="text-xs font-extrabold text-slate-600">Schema JSON-LD</label>
-            <textarea id="svc_seo_schema_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
-                      rows="6">${escapeHtml(s.seo.schemaJsonLd)}</textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-function panelServices(){
-  return `
-    <div class="rounded-3xl border bg-slate-50 p-4">
-      <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div class="text-sm font-extrabold">Services</div>
-          <div class="text-sm text-slate-600 mt-1">Create/edit services (used across homepage + service pages).</div>
-        </div>
-        <button id="addService" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
-          + Add Service
-        </button>
-      </div>
-
-      <div class="mt-4 space-y-4" id="servicesWrap">
-        ${(cfg.services||[]).map(serviceCard).join("") || `
-          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No services yet. Click <b>+ Add Service</b>.</div>
-        `}
-      </div>
-    </div>
-  `;
-}
-async function uploadServiceHero(idx){
-  const fi = document.getElementById(`svc_file_${idx}`);
-  const file = fi?.files?.[0];
-  if (!file) { toast("Select an image first.", "warn", "No file"); return; }
-
-  const slug = (document.getElementById(`svc_slug_${idx}`)?.value || "").trim().replace(/^\/+/,"") || ("service_"+idx);
-  try{
-    const url = await uploadImageGeneric({ file, purpose:"serviceHero", key: slug });
-    document.getElementById(`svc_hero_${idx}`).value = url;
-    fi.value = "";
-    setDirty(true);
-    toast("Service hero uploaded. Now Save Changes.", "ok", "Uploaded");
-  } catch(e){
-    toast(String(e.message || e), "err", "Upload failed");
-  }
-}
-
-/* -----------------------------
-  Collect (UI -> cfg)
------------------------------ */
-function collectHero(){
-  const slides = cfg.hero.slides || [];
-  slides.forEach(s=>{
-    const k = domSafeKey(s.id);
-    s.label = (document.getElementById(`hs_label_${k}`)?.value || "").trim();
-    s.tag = (document.getElementById(`hs_tag_${k}`)?.value || "").trim();
-    s.linkedServiceSlug = (document.getElementById(`hs_service_${k}`)?.value || "").trim().replace(/^\/+/,"");
-
-    s.desktopBg = (document.getElementById(`hs_desktop_${k}`)?.value || "").trim();
-    s.mobileBg  = (document.getElementById(`hs_mobile_${k}`)?.value || "").trim();
-
-    s.title = (document.getElementById(`hs_title_${k}`)?.value || "").trim();
-    s.sub = (document.getElementById(`hs_sub_${k}`)?.value || "").trim();
-    s.bullets = (document.getElementById(`hs_bullets_${k}`)?.value || "")
-      .split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6);
-    s.ctaText = (document.getElementById(`hs_ctaText_${k}`)?.value || "").trim();
-    s.ctaLink = (document.getElementById(`hs_ctaLink_${k}`)?.value || "").trim();
-  });
-  cfg.hero = ensureHeroSlides(cfg.hero);
-}
-
-function collectMenu(){
-  const out = [];
-  (cfg.menu||[]).forEach((item, idx)=>{
-    const label = (document.getElementById(`menu_label_${idx}`)?.value || "").trim();
-    const url   = (document.getElementById(`menu_url_${idx}`)?.value || "").trim();
-    const children = [];
-    const childCount = (item.children||[]).length;
-    for (let cidx=0;cidx<childCount;cidx++){
-      const cl = (document.getElementById(`menu_child_label_${idx}_${cidx}`)?.value || "").trim();
-      const cu = (document.getElementById(`menu_child_url_${idx}_${cidx}`)?.value || "").trim();
-      if (cl || cu) children.push({ label:cl, url:cu });
-    }
-    if (label || url || children.length) out.push({ label, url, children });
-  });
-  cfg.menu = out;
-}
-function collectSEO(){
-  cfg.seo.siteName = (document.getElementById("seo_siteName")?.value || "").trim();
-  cfg.seo.canonicalBase = (document.getElementById("seo_canonicalBase")?.value || "").trim();
-  cfg.seo.defaultTitle = (document.getElementById("seo_defaultTitle")?.value || "").trim();
-  cfg.seo.defaultDescription = (document.getElementById("seo_defaultDescription")?.value || "").trim();
-  cfg.seo.robots = (document.getElementById("seo_robots")?.value || "").trim();
-  cfg.seo.defaultOgImage = (document.getElementById("seo_defaultOgImage")?.value || "").trim();
-  cfg.seo.tags = (document.getElementById("seo_tags")?.value || "").split(",").map(x=>x.trim()).filter(Boolean).slice(0,50);
-  cfg.seo.h1Defaults = (document.getElementById("seo_h1Defaults")?.value || "").trim();
-  cfg.seo.h2Defaults = (document.getElementById("seo_h2Defaults")?.value || "").trim();
-}
-function collectPages(){
-  const cards = Array.from(document.querySelectorAll("[data-page-id]"));
-  const next = {};
-  cards.forEach(card=>{
-    const pid = card.getAttribute("data-page-id");
-    const domKey = domSafeKey(pid);
-
-    const slug = (document.getElementById(`page_slug_${domKey}`)?.value || "").trim().replace(/^\/+/,"");
-    if (!slug) return;
-
-    const title = (document.getElementById(`page_title_${domKey}`)?.value || "").trim();
-    const headImage = (document.getElementById(`page_head_${domKey}`)?.value || "").trim();
-    const h1 = (document.getElementById(`page_h1_${domKey}`)?.value || "").trim();
-    const h2 = (document.getElementById(`page_h2_${domKey}`)?.value || "").trim();
-    const contentHtml = (document.getElementById(`page_html_${domKey}`)?.value || "");
-
-    const seo = ensureSeoShape({
-      title: (document.getElementById(`page_seo_title_${domKey}`)?.value || "").trim(),
-      description: (document.getElementById(`page_seo_desc_${domKey}`)?.value || "").trim(),
-      canonical: (document.getElementById(`page_seo_can_${domKey}`)?.value || "").trim(),
-      robots: (document.getElementById(`page_seo_robots_${domKey}`)?.value || "").trim(),
-      ogTitle: (document.getElementById(`page_seo_ogt_${domKey}`)?.value || "").trim(),
-      ogDesc: (document.getElementById(`page_seo_ogd_${domKey}`)?.value || "").trim(),
-      ogImage: (document.getElementById(`page_seo_ogi_${domKey}`)?.value || "").trim(),
-      schemaJsonLd: (document.getElementById(`page_seo_schema_${domKey}`)?.value || "").trim()
-    });
-
-    next[slug] = { _id: pid, slug, title, headImage, contentHtml, h1, h2, seo };
-  });
-  cfg.pages = next;
-}
-function collectFAQ(){
-  const out = [];
-  (cfg.faq||[]).forEach((x,idx)=>{
-    const q = (document.getElementById(`faq_q_${idx}`)?.value || "").trim();
-    const a = (document.getElementById(`faq_a_${idx}`)?.value || "").trim();
-    if (q || a) out.push({ q, a });
-  });
-  cfg.faq = out;
-}
-function collectReviews(){
-  const out = [];
-  (cfg.reviews||[]).forEach((r,idx)=>{
-    const name = (document.getElementById(`rev_name_${idx}`)?.value || "").trim();
-    const rating = Number(document.getElementById(`rev_rating_${idx}`)?.value || 5);
-    const date = (document.getElementById(`rev_date_${idx}`)?.value || "").trim();
-    const text = (document.getElementById(`rev_text_${idx}`)?.value || "").trim();
-    if (name || text) out.push({ name, rating: Math.min(5, Math.max(1, rating||5)), date, text });
-  });
-  cfg.reviews = out;
-}
-function collectImages(){
-  const out = [];
-  (cfg.images.map||[]).forEach((m,idx)=>{
-    const key = (document.getElementById(`img_key_${idx}`)?.value || "").trim();
-    const url = (document.getElementById(`img_url_${idx}`)?.value || "").trim();
-    const notes = (document.getElementById(`img_notes_${idx}`)?.value || "").trim();
-    if (key || url || notes) out.push({ key, url, notes });
-  });
-  cfg.images.map = out;
-}
-function collectServices(){
-  const out = [];
-  (cfg.services||[]).forEach((s,idx)=>{
-    const name = (document.getElementById(`svc_name_${idx}`)?.value || "").trim();
-    const slug = (document.getElementById(`svc_slug_${idx}`)?.value || "").trim().replace(/^\/+/,"");
-    const short = (document.getElementById(`svc_short_${idx}`)?.value || "").trim();
-    const heroImage = (document.getElementById(`svc_hero_${idx}`)?.value || "").trim();
-    const h1 = (document.getElementById(`svc_h1_${idx}`)?.value || "").trim();
-    const h2 = (document.getElementById(`svc_h2_${idx}`)?.value || "").trim();
-    const contentHtml = (document.getElementById(`svc_html_${idx}`)?.value || "");
-
-    const seo = ensureSeoShape({
-      title: (document.getElementById(`svc_seo_title_${idx}`)?.value || "").trim(),
-      description: (document.getElementById(`svc_seo_desc_${idx}`)?.value || "").trim(),
-      canonical: (document.getElementById(`svc_seo_can_${idx}`)?.value || "").trim(),
-      robots: (document.getElementById(`svc_seo_robots_${idx}`)?.value || "").trim(),
-      ogTitle: (document.getElementById(`svc_seo_ogt_${idx}`)?.value || "").trim(),
-      ogDesc: (document.getElementById(`svc_seo_ogd_${idx}`)?.value || "").trim(),
-      ogImage: (document.getElementById(`svc_seo_ogi_${idx}`)?.value || "").trim(),
-      schemaJsonLd: (document.getElementById(`svc_seo_schema_${idx}`)?.value || "").trim()
-    });
-
-    if (name || slug) out.push({ name, slug, short, heroImage, contentHtml, h1, h2, seo });
-  });
-  cfg.services = out;
-}
-
-function collectAll(){
-  // collect only panels present in DOM
-  if (document.getElementById("heroWrap")) collectHero();
-  if (document.getElementById("menuWrap")) collectMenu();
-  if (document.getElementById("seo_siteName")) collectSEO();
-  if (document.getElementById("pagesWrap")) collectPages();
-  if (document.getElementById("faqWrap")) collectFAQ();
-  if (document.getElementById("reviewsWrap")) collectReviews();
-  if (document.getElementById("imagesWrap")) collectImages();
-  if (document.getElementById("servicesWrap")) collectServices();
-
-  cfg = ensureShape(cfg);
-  setDirty(true);
-}
-
-/* -----------------------------
-  Render
------------------------------ */
-function renderPanel(){
-  const meta = PANELS.find(p=>p.id===activePanel) || PANELS[0];
-  document.getElementById("panelTitle").textContent = meta.title;
-  document.getElementById("panelSub").textContent = meta.sub;
-
-  const panel = document.getElementById("panel");
-
-  if (activePanel === "hero") {
-    panel.innerHTML = panelHero();
-
-    document.getElementById("heroAdd").onclick = ()=>{
-      collectHero();
-      cfg.hero.slides.push({
-        id: uid("slide"),
-        label: "New Slide",
-        tag: "",
-        linkedServiceSlug: "",
-        desktopBg: "",
-        mobileBg: "",
-        title: "New Hero Title",
-        sub: "Add a short line here…",
-        bullets: ["Bullet 1","Bullet 2","Bullet 3"],
-        ctaText: "Get Quote",
-        ctaLink: "/#contact"
-      });
-      setDirty(true);
-      renderAll();
-      toast("Slide added.", "ok", "Hero");
-    };
-
-    document.getElementById("heroPreview").onclick = openPreview;
-
-    panel.querySelectorAll("[data-del-slide]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectHero();
-        const i = Number(btn.dataset.delSlide);
-        cfg.hero.slides.splice(i,1);
-        setDirty(true);
-        renderAll();
-      };
-    });
-
-    panel.querySelectorAll("[data-move-up]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectHero();
-        const i = Number(btn.dataset.moveUp);
-        if (i<=0) return;
-        const tmp = cfg.hero.slides[i-1];
-        cfg.hero.slides[i-1] = cfg.hero.slides[i];
-        cfg.hero.slides[i] = tmp;
-        setDirty(true);
-        renderAll();
-      };
-    });
-    panel.querySelectorAll("[data-move-down]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectHero();
-        const i = Number(btn.dataset.moveDown);
-        if (i>=cfg.hero.slides.length-1) return;
-        const tmp = cfg.hero.slides[i+1];
-        cfg.hero.slides[i+1] = cfg.hero.slides[i];
-        cfg.hero.slides[i] = tmp;
-        setDirty(true);
-        renderAll();
-      };
-    });
-
-    panel.querySelectorAll("[data-upload-desktop]").forEach(btn=>{
-      btn.onclick = ()=> doUploadHero(Number(btn.dataset.uploadDesktop), "desktop");
-    });
-    panel.querySelectorAll("[data-upload-mobile]").forEach(btn=>{
-      btn.onclick = ()=> doUploadHero(Number(btn.dataset.uploadMobile), "mobile");
-    });
-  }
-
-  else if (activePanel === "menu") {
-    panel.innerHTML = panelMenu();
-
-    document.getElementById("addMenu").onclick = ()=>{
-      collectMenu();
-      cfg.menu.push({ label:"", url:"", children:[] });
-      setDirty(true);
-      renderAll();
-    };
-
-    panel.querySelectorAll("[data-del-menu]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectMenu();
-        cfg.menu.splice(Number(btn.dataset.delMenu), 1);
-        setDirty(true);
-        renderAll();
-      };
-    });
-
-    panel.querySelectorAll("[data-add-child]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectMenu();
-        const idx = Number(btn.dataset.addChild);
-        cfg.menu[idx].children = cfg.menu[idx].children || [];
-        cfg.menu[idx].children.push({ label:"", url:"" });
-        setDirty(true);
-        renderAll();
-      };
-    });
-
-    panel.querySelectorAll("[data-del-child]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectMenu();
-        const [i,c] = btn.dataset.delChild.split(":").map(Number);
-        cfg.menu[i].children.splice(c,1);
-        setDirty(true);
-        renderAll();
-      };
-    });
-  }
-
-  else if (activePanel === "seo") {
-    panel.innerHTML = panelSEO();
-  }
-
-  else if (activePanel === "pages") {
-    panel.innerHTML = panelPages();
-
-    document.getElementById("addPage").onclick = ()=>{
-      const tmpSlug = uid("page").slice(0,10);
-      cfg.pages[tmpSlug] = {
-        _id: uid("page"),
-        slug: tmpSlug,
-        title: "New Page",
-        headImage: "",
-        contentHtml: "<p>Paste your content here…</p>",
-        h1: "",
-        h2: "",
-        seo: ensureSeoShape({})
-      };
-      setDirty(true);
-      renderAll();
-      toast("Page added.", "ok", "Pages");
-    };
-
-    panel.querySelectorAll("[data-del-page-id]").forEach(btn=>{
-      btn.onclick = ()=>{
-        const pid = btn.dataset.delPageId;
-        const next = {};
-        Object.values(cfg.pages||{}).forEach(p=>{
-          if (p._id !== pid) next[p.slug] = p;
-        });
-        cfg.pages = next;
-        setDirty(true);
-        renderAll();
-      };
-    });
-
-    panel.querySelectorAll("[data-upload-page-head]").forEach(btn=>{
-      btn.onclick = async ()=>{
-        const pid = btn.dataset.uploadPageHead;
-        const page = Object.values(cfg.pages||{}).find(p => p._id === pid);
-        if (!page) return toast("Page not found.", "err", "Upload failed");
-
-        const domKey = domSafeKey(pid);
-        const fi = document.getElementById(`page_file_${domKey}`);
-        const file = fi?.files?.[0];
-        if (!file) return toast("Select an image first.", "warn", "No file");
-
-        try{
-          const slug = (document.getElementById(`page_slug_${domKey}`)?.value || page.slug || "page").trim().replace(/^\/+/,"");
-          const url = await uploadImageGeneric({ file, purpose:"pageHead", key: slug });
-          document.getElementById(`page_head_${domKey}`).value = url;
-          fi.value = "";
-          setDirty(true);
-          toast("Page head uploaded. Now Save Changes.", "ok", "Uploaded");
-        } catch(e){          toast(String(e.message || e), "err", "Upload failed");
+    <script>
+        // --- DATA STATE ---
+        let activeTab = 'hero';
+        let previewMode = 'desktop';
+        let isDirty = false;
+        let cfg = null;
+
+        const DEFAULTS = {
+            hero: { slides: [], autoRotateMs: 5000 },
+            menu: [],
+            pages: {},
+            services: [],
+            faq: [],
+            reviews: [],
+            images: { map: [] },
+            seo: { siteName: "AquaShield", defaultTitle: "", defaultDescription: "", canonicalBase: "", robots: "index,follow", tags: [] },
+            navigation: { companyName: "AquaShield", phone: "+91 97695 31112", whatsapp: "919769531112" }
+        };
+
+        // --- AUTH ---
+        function getToken() { return localStorage.getItem("ADMIN_TOKEN") || ""; }
+        function setToken(t) { localStorage.setItem("ADMIN_TOKEN", t); updateAuthUI(); }
+        function clearToken() { localStorage.removeItem("ADMIN_TOKEN"); updateAuthUI(); }
+        function updateAuthUI() {
+            const t = getToken();
+            const ind = document.getElementById('auth-indicator');
+            const txt = document.getElementById('auth-text');
+            if(t) { ind.className = "w-2 h-2 rounded-full bg-green-500"; txt.innerText = "AUTHENTICATED SESSION"; }
+            else { ind.className = "w-2 h-2 rounded-full bg-red-500"; txt.innerText = "READ-ONLY MODE"; }
         }
-      };
-    });
-  }
 
-  else if (activePanel === "faq") {
-    panel.innerHTML = panelFAQ();
+        // --- UTILS ---
+        function uid(prefix="id"){ return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now(); }
+        function escapeHtml(str){ return (str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;"); }
+        function domSafeKey(str){ return String(str||"").trim().replace(/^\/+/,"").replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 64) || ("k_" + Math.random().toString(16).slice(2)); }
+        function markDirty(v=true) { isDirty = v; document.getElementById('dirty-pill').classList.toggle('hidden', !v); }
+        function showToast(msg, isErr=false) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = msg;
+            document.getElementById('toast-indicator').className = `w-2.5 h-2.5 rounded-full ${isErr ? 'bg-red-500' : 'bg-green-500'}`;
+            t.style.opacity = '1'; t.style.bottom = '40px';
+            setTimeout(() => { t.style.opacity = '0'; t.style.bottom = '30px'; }, 3000);
+        }
 
-    document.getElementById("addFaq").onclick = ()=>{
-      collectFAQ();
-      cfg.faq.push({ q:"", a:"" });
-      setDirty(true);
-      renderAll();
-    };
+        // --- SCHEMA NORMALIZATION ---
+        function ensureSeoShape(s){
+            if (!s || typeof s !== "object") s = {};
+            return {
+                title: s.title || "", description: s.description || "", canonical: s.canonical || "",
+                robots: s.robots || "index,follow", ogTitle: s.ogTitle || "", ogDesc: s.ogDesc || "",
+                ogImage: s.ogImage || "", schemaJsonLd: s.schemaJsonLd || ""
+            };
+        }
 
-    panel.querySelectorAll("[data-del-faq]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectFAQ();
-        cfg.faq.splice(Number(btn.dataset.delFaq), 1);
-        setDirty(true);
-        renderAll();
-      };
-    });
-  }
+        function ensureShape(c){
+            if (!c || typeof c !== "object") c = {};
+            if (!c.hero) c.hero = { slides: [], autoRotateMs: 5000 };
+            if (!Array.isArray(c.hero.slides)) c.hero.slides = [];
+            c.hero.slides = c.hero.slides.map(s => ({
+                id: s.id || uid("slide"), label: s.label || "Slide", tag: s.tag || "", linkedServiceSlug: (s.linkedServiceSlug || "").replace(/^\/+/,""),
+                desktopBg: s.desktopBg || s.bg || "", mobileBg: s.mobileBg || "", title: s.title || "", sub: s.sub || "",
+                bullets: Array.isArray(s.bullets) ? s.bullets : [], ctaText: s.ctaText || "Get Quote", ctaLink: s.ctaLink || "/#contact"
+            }));
+            if (!Array.isArray(c.menu)) c.menu = [];
+            if (!c.pages) c.pages = {};
+            if (!Array.isArray(c.services)) c.services = [];
+            if (!Array.isArray(c.faq)) c.faq = [];
+            if (!Array.isArray(c.reviews)) c.reviews = [];
+            if (!c.images) c.images = { map: [] };
+            if (!Array.isArray(c.images.map)) c.images.map = [];
+            if (!c.seo) c.seo = { siteName: "AquaShield", defaultTitle: "", defaultDescription: "", canonicalBase: "", robots: "index,follow", tags: [] };
+            if (!c.navigation) c.navigation = { companyName: "AquaShield", phone: "+91 97695 31112", whatsapp: "919769531112" };
+            return c;
+        }
 
-  else if (activePanel === "reviews") {
-    panel.innerHTML = panelReviews();
+        // --- API HANDLERS ---
+        async function loadConfig() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+            try {
+                const res = await fetch("/api/config", { cache: "no-store" });
+                const data = await res.json();
+                cfg = ensureShape(data);
+                showToast("SITE DATA LOADED");
+            } catch (e) {
+                cfg = ensureShape(JSON.parse(JSON.stringify(DEFAULTS)));
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+                syncTargetDropdown();
+                renderSidebar();
+                renderPreview();
+                markDirty(false);
+            }
+        }
 
-    document.getElementById("addReview").onclick = ()=>{
-      collectReviews();
-      cfg.reviews.push({ name:"", rating:5, date:"", text:"" });
-      setDirty(true);
-      renderAll();
-    };
+        async function saveConfig() {
+            if (!getToken()) { document.getElementById('token-modal').classList.remove('hidden'); return; }
+            collectAll();
+            document.getElementById('loading-overlay').style.display = 'flex';
+            try {
+                const res = await fetch("/api/admin/save-config", {
+                    method: "POST",
+                    headers: { "Authorization": "Bearer " + getToken(), "Content-Type": "application/json" },
+                    body: JSON.stringify(cfg)
+                });
+                if (!res.ok) throw new Error();
+                markDirty(false);
+                showToast("PUBLISHED LIVE");
+            } catch (e) {
+                showToast("SYNC FAILED", true);
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
 
-    panel.querySelectorAll("[data-del-review]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectReviews();
-        cfg.reviews.splice(Number(btn.dataset.delReview), 1);
-        setDirty(true);
-        renderAll();
-      };
-    });
-  }
+        async function doUpload(file, slot, variant=null) {
+            if (!getToken()) { document.getElementById('token-modal').classList.remove('hidden'); return; }
+            const fd = new FormData();
+            fd.append("file", file);
+            let url = `/api/admin/upload-banner?slot=${slot}`;
+            if (variant) url += `&variant=${variant}`;
+            const res = await fetch(url, { method: "POST", headers: { "Authorization": "Bearer " + getToken() }, body: fd });
+            const data = await res.json();
+            return data.publicUrl || data.url;
+        }
 
-  else if (activePanel === "images") {
-    panel.innerHTML = panelImages();
+        // --- PANEL RENDERING ---
+        function renderSidebar() {
+            const container = document.getElementById('controls-container');
+            container.innerHTML = '';
+            if (activeTab === 'hero') renderHeroPanel(container);
+            else if (activeTab === 'pages') renderPagesPanel(container);
+            else if (activeTab === 'menu') renderMenuPanel(container);
+            else if (activeTab === 'services') renderServicesPanel(container);
+            else if (activeTab === 'faq') renderFaqPanel(container);
+            else if (activeTab === 'reviews') renderReviewsPanel(container);
+            else if (activeTab === 'images') renderImagesPanel(container);
+            else if (activeTab === 'seo') renderSeoPanel(container);
+            lucide.createIcons();
+        }
 
-    document.getElementById("addImgMap").onclick = ()=>{
-      collectImages();
-      cfg.images.map.push({ key:"", url:"", notes:"" });
-      setDirty(true);
-      renderAll();
-    };
+        function renderHeroPanel(container) {
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Homepage Slides</h3>
+                    <button id="heroAdd" class="p-2.5 bg-slate-900 text-white rounded-xl shadow-xl hover:scale-105 transition-all"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <div id="heroWrap" class="space-y-6">
+                    ${cfg.hero.slides.map((s, idx) => {
+                        const k = domSafeKey(s.id);
+                        return `
+                        <div class="p-6 bg-white border border-slate-100 rounded-[2rem] space-y-4 shadow-sm relative group" data-idx="${idx}">
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-50">
+                                <span class="text-[10px] font-black bg-sky-500 text-white px-3 py-1 rounded-full uppercase">Slide #${idx+1}</span>
+                                <div class="flex gap-1">
+                                    <button onclick="moveInArr('hero.slides', ${idx}, -1)" class="p-1.5 text-slate-300 hover:text-slate-600"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+                                    <button onclick="moveInArr('hero.slides', ${idx}, 1)" class="p-1.5 text-slate-300 hover:text-slate-600"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+                                    <button onclick="deleteInArr('hero.slides', ${idx})" class="p-1.5 text-red-300 hover:text-red-500 ml-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[9px] font-black text-slate-500 uppercase">Label</label>
+                                    <input type="text" id="hs_label_${k}" value="${escapeHtml(s.label)}" class="w-full mt-1 p-3 bg-slate-50 border-none rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-sky-500">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-black text-slate-500 uppercase">Badge</label>
+                                    <input type="text" id="hs_tag_${k}" value="${escapeHtml(s.tag)}" class="w-full mt-1 p-3 bg-slate-50 border-none rounded-xl text-xs font-bold outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-black text-slate-500 uppercase">H1 Headline</label>
+                                <input type="text" id="hs_title_${k}" value="${escapeHtml(s.title)}" class="w-full mt-1 p-3 bg-slate-50 border-none rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-black text-slate-500 uppercase">Description</label>
+                                <textarea id="hs_sub_${k}" class="w-full mt-1 p-3 bg-slate-50 border-none rounded-xl text-xs h-16 font-medium outline-none">${escapeHtml(s.sub)}</textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-slate-500 uppercase">Desktop Image</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="hs_desktop_${k}" value="${s.desktopBg}" class="flex-1 p-2 bg-white border border-slate-100 rounded-lg text-[9px] truncate" readonly>
+                                        <label class="cursor-pointer bg-slate-900 text-white p-2 rounded-lg hover:bg-black"><i data-lucide="upload" class="w-3.5 h-3.5"></i><input type="file" class="hidden" onchange="handleHeroUpload(this, ${idx}, 'desktop')"></label>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-slate-500 uppercase">Mobile Image</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="hs_mobile_${k}" value="${s.mobileBg}" class="flex-1 p-2 bg-white border border-slate-100 rounded-lg text-[9px] truncate" readonly>
+                                        <label class="cursor-pointer bg-slate-900 text-white p-2 rounded-lg hover:bg-black"><i data-lucide="upload" class="w-3.5 h-3.5"></i><input type="file" class="hidden" onchange="handleHeroUpload(this, ${idx}, 'mobile')"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-black text-slate-500 uppercase">Bullets (Enter separated)</label>
+                                <textarea id="hs_bullets_${k}" class="w-full mt-1 p-3 bg-slate-50 border-none rounded-xl text-[10px] font-bold h-24 tracking-tight outline-none focus:ring-2 focus:ring-sky-500">${s.bullets.join('\n')}</textarea>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            document.getElementById('heroAdd').onclick = () => {
+                collectAll();
+                cfg.hero.slides.push({ id: uid("slide"), label: "New Slide", tag: "", title: "Water Damage Solution", sub: "10-Year Warranty", bullets: [], desktopBg: "", mobileBg: "" });
+                renderSidebar(); markDirty();
+            };
+        }
 
-    panel.querySelectorAll("[data-del-imgmap]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectImages();
-        cfg.images.map.splice(Number(btn.dataset.delImgmap), 1);
-        setDirty(true);
-        renderAll();
-      };
-    });
+        function renderPagesPanel(container) {
+            const pages = Object.values(cfg.pages).sort((a,b) => (a.slug||"").localeCompare(b.slug||""));
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Internal Folders</h3>
+                    <button id="pageAdd" class="p-2.5 bg-slate-900 text-white rounded-xl shadow-xl"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <div id="pagesWrap" class="space-y-4">
+                    ${pages.map(p => {
+                        const domKey = domSafeKey(p._id);
+                        return `
+                        <div class="p-6 bg-white border border-slate-100 rounded-[2rem] space-y-4 shadow-sm" data-page-id="${p._id}">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-black text-slate-800 bg-slate-100 px-3 py-1 rounded-full uppercase">Path: /${p.slug}</span>
+                                <button onclick="deletePage('${p._id}')" class="text-red-400 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                            <input type="text" id="page_title_${domKey}" value="${escapeHtml(p.title)}" placeholder="Title" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-sky-500">
+                            <input type="text" id="page_slug_${domKey}" value="${escapeHtml(p.slug)}" placeholder="url-slug" class="w-full p-2 bg-slate-50 border-none rounded-lg text-[10px] font-mono outline-none">
+                            
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Header Banner</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="page_head_${domKey}" value="${p.headImage}" class="flex-1 p-3 bg-slate-50 border-none rounded-xl text-[10px] truncate" readonly>
+                                    <label class="cursor-pointer bg-slate-900 text-white p-3 rounded-xl"><i data-lucide="upload" class="w-3.5 h-3.5"></i><input type="file" class="hidden" onchange="handlePageUpload(this, '${p._id}')"></label>
+                                </div>
+                            </div>
 
-    panel.querySelectorAll("[data-upload-imgmap]").forEach(btn=>{
-      btn.onclick = ()=> uploadImgMap(Number(btn.dataset.uploadImgmap));
-    });
-  }
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[9px] font-black text-slate-500 uppercase">H1 Tag</label>
+                                    <input type="text" id="page_h1_${domKey}" value="${escapeHtml(p.h1)}" class="w-full p-2 bg-slate-50 border-none rounded-lg text-xs font-bold outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-black text-slate-500 uppercase">H2 Tag</label>
+                                    <input type="text" id="page_h2_${domKey}" value="${escapeHtml(p.h2)}" class="w-full p-2 bg-slate-50 border-none rounded-lg text-xs font-bold outline-none">
+                                </div>
+                            </div>
+                            
+                            <div class="border rounded-2xl p-4 bg-slate-50/50 space-y-3">
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Page SEO & Meta</span>
+                                <input type="text" id="page_seo_title_${domKey}" value="${escapeHtml(p.seo.title)}" placeholder="Meta Title" class="w-full p-2 border-b border-slate-100 bg-transparent text-xs font-bold outline-none">
+                                <textarea id="page_seo_desc_${domKey}" placeholder="Meta Description" class="w-full p-2 bg-transparent text-xs outline-none h-12">${escapeHtml(p.seo.description)}</textarea>
+                            </div>
 
-  else if (activePanel === "services") {
-    panel.innerHTML = panelServices();
+                            <textarea id="page_html_${domKey}" class="w-full p-4 bg-slate-50 border-none rounded-2xl text-[11px] h-32 font-mono outline-none focus:ring-2 focus:ring-sky-500">${escapeHtml(p.contentHtml)}</textarea>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            document.getElementById('pageAdd').onclick = () => {
+                collectAll();
+                const tmp = uid("page").slice(0,8);
+                cfg.pages[tmp] = { _id: uid("page"), slug: tmp, title: "New Page", headImage: "", h1: "", h2: "", contentHtml: "", seo: ensureSeoShape({}) };
+                renderSidebar(); markDirty(); syncTargetDropdown();
+            };
+        }
 
-    document.getElementById("addService").onclick = ()=>{
-      collectServices();
-      cfg.services.push({
-        slug: "",
-        name: "",
-        short: "",
-        heroImage: "",
-        contentHtml: "<p>Service description…</p>",
-        h1: "",
-        h2: "",
-        seo: ensureSeoShape({})
-      });
-      setDirty(true);
-      renderAll();
-    };
+        function renderMenuPanel(container) {
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Site Menu</h3>
+                    <button id="addMenu" class="p-2.5 bg-slate-900 text-white rounded-xl shadow-xl"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <div id="menuWrap" class="space-y-4">
+                    ${cfg.menu.map((m, idx) => `
+                        <div class="p-6 bg-white border border-slate-100 rounded-[2rem] space-y-4 shadow-sm">
+                            <div class="flex gap-2">
+                                <input type="text" id="menu_label_${idx}" value="${escapeHtml(m.label)}" placeholder="Label" class="flex-1 p-3 bg-slate-50 border-none rounded-xl text-xs font-black outline-none focus:ring-2 focus:ring-sky-500">
+                                <input type="text" id="menu_url_${idx}" value="${escapeHtml(m.url)}" placeholder="URL" class="flex-1 p-3 bg-slate-50 border-none rounded-xl text-[10px] outline-none">
+                                <button onclick="deleteInArr('menu', ${idx})" class="text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                            <div class="pl-4 border-l-2 border-sky-100 space-y-3">
+                                ${(m.children||[]).map((ch, ci) => `
+                                    <div class="flex gap-2 items-center">
+                                        <input type="text" id="menu_child_label_${idx}_${ci}" value="${escapeHtml(ch.label)}" placeholder="Sub Label" class="flex-1 p-2 bg-white border border-slate-100 rounded-lg text-[10px] outline-none">
+                                        <input type="text" id="menu_child_url_${idx}_${ci}" value="${escapeHtml(ch.url)}" placeholder="/slug" class="flex-1 p-2 bg-white border border-slate-100 rounded-lg text-[10px] outline-none">
+                                        <button onclick="deleteChildMenu(${idx}, ${ci})" class="text-red-200"><i data-lucide="minus-circle" class="w-3.5 h-3.5"></i></button>
+                                    </div>`).join('')}
+                                <button onclick="addChildMenu(${idx})" class="text-[9px] font-black text-sky-500 uppercase hover:underline tracking-widest font-black">+ Add Dropdown Item</button>
+                            </div>
+                        </div>`).join('')}
+                </div>`;
+            document.getElementById('addMenu').onclick = () => {
+                collectAll();
+                cfg.menu.push({ label: "New Item", url: "/", children: [] });
+                renderSidebar(); markDirty();
+            };
+        }
 
-    panel.querySelectorAll("[data-del-service]").forEach(btn=>{
-      btn.onclick = ()=>{
-        collectServices();
-        cfg.services.splice(Number(btn.dataset.delService), 1);
-        setDirty(true);
-        renderAll();
-      };
-    });
+        // --- LIST PANELS (FAQ, REVIEWS, SERVICES, IMAGES, SEO) ---
+        function renderFaqPanel(c) {
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">FAQ Content</h3>
+                    <button onclick="addItem('faq', { q: '', a: '' })" class="p-2.5 bg-slate-900 text-white rounded-xl"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <div class="space-y-4">
+                    ${cfg.faq.map((f, i) => `
+                        <div class="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm space-y-3">
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-50">
+                                <span class="text-[9px] font-black text-slate-400">FAQ #${i+1}</span>
+                                <button onclick="deleteInArr('faq', ${i})" class="text-red-400"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                            <input type="text" id="faq_q_${i}" value="${escapeHtml(f.q)}" placeholder="The Question" class="w-full p-3 bg-slate-50 border-none rounded-xl text-xs font-black outline-none focus:ring-2 focus:ring-sky-500">
+                            <textarea id="faq_a_${i}" placeholder="The Answer" class="w-full p-3 bg-slate-50 border-none rounded-xl text-xs h-20 outline-none">${escapeHtml(f.a)}</textarea>
+                        </div>`).join('')}
+                </div>`;
+        }
 
-    panel.querySelectorAll("[data-upload-svc-hero]").forEach(btn=>{
-      btn.onclick = ()=> uploadServiceHero(Number(btn.dataset.uploadSvcHero));
-    });
-  }
+        function renderReviewsPanel(c) {
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Testimonials</h3>
+                    <button onclick="addItem('reviews', { name: '', rating: 5, date: '', text: '' })" class="p-2.5 bg-slate-900 text-white rounded-xl"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <div class="space-y-4">
+                    ${cfg.reviews.map((r, i) => `
+                        <div class="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm space-y-3">
+                            <div class="flex gap-2">
+                                <input type="text" id="rev_name_${i}" value="${escapeHtml(r.name)}" placeholder="Client Name" class="flex-1 p-3 bg-slate-50 border-none rounded-xl text-xs font-black outline-none">
+                                <input type="number" id="rev_rating_${i}" value="${r.rating}" min="1" max="5" class="w-12 p-3 bg-slate-50 border-none rounded-xl text-xs font-bold text-center">
+                                <button onclick="deleteInArr('reviews', ${i})" class="text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                            <textarea id="rev_text_${i}" placeholder="Client Review Text..." class="w-full p-3 bg-slate-50 border-none rounded-xl text-xs h-20 outline-none">${escapeHtml(r.text)}</textarea>
+                        </div>`).join('')}
+                </div>`;
+        }
 
-  // Dirty tracking (simple)
-  panel.querySelectorAll("input, textarea, select").forEach(el=>{
-    el.addEventListener("input", ()=> setDirty(true), { passive:true });
-    el.addEventListener("change", ()=> setDirty(true), { passive:true });
-  });
-}
+        function renderServicesPanel(c) {
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Service Cards</h3>
+                    <button onclick="addItem('services', { name: '', slug: '', short: '', heroImage: '', h1: '', h2: '', seo: ensureSeoShape({}) })" class="p-2.5 bg-slate-900 text-white rounded-xl"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <div class="space-y-4">
+                    ${cfg.services.map((s, i) => `
+                        <div class="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm space-y-3">
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-50">
+                                <input type="text" id="svc_name_${i}" value="${escapeHtml(s.name)}" placeholder="Service Title" class="flex-1 bg-transparent border-none text-sm font-black outline-none focus:ring-2 focus:ring-sky-500">
+                                <button onclick="deleteInArr('services', ${i})" class="text-red-400"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                            </div>
+                            <input type="text" id="svc_slug_${i}" value="${escapeHtml(s.slug)}" placeholder="url-slug" class="w-full p-2 bg-slate-50 border-none rounded-lg text-[10px] font-mono outline-none">
+                            <textarea id="svc_short_${i}" placeholder="Short Card Summary..." class="w-full p-2 bg-slate-50 border-none rounded-lg text-xs h-12 outline-none">${escapeHtml(s.short)}</textarea>
+                        </div>`).join('')}
+                </div>`;
+        }
 
-function renderAll(){
-  renderNav();
-  renderPanel();
-}
+        function renderImagesPanel(c) {
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Image Asset Mapping</h3>
+                    <button onclick="addItem('images.map', { key: '', url: '' })" class="p-2.5 bg-slate-900 text-white rounded-xl"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <div class="space-y-4">
+                    ${cfg.images.map.map((m, i) => `
+                        <div class="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm space-y-2">
+                            <div class="flex gap-2 items-center">
+                                <input type="text" id="img_key_${i}" value="${escapeHtml(m.key)}" placeholder="Asset Key" class="flex-1 p-2 bg-slate-50 border-none rounded-lg text-[10px] font-mono outline-none">
+                                <button onclick="deleteInArr('images.map', ${i})" class="text-red-300 hover:text-red-500"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                            <input type="text" id="img_url_${i}" value="${escapeHtml(m.url)}" placeholder="https://..." class="w-full p-2 bg-white border border-slate-100 rounded-lg text-[10px] outline-none">
+                        </div>`).join('')}
+                </div>`;
+        }
 
-/* -----------------------------
-  Wiring: top controls
------------------------------ */
-document.getElementById("saveAll").onclick = saveConfig;
-document.getElementById("saveAllTop").onclick = saveConfig;
-document.getElementById("panelSaveBtn").onclick = saveConfig;
+        function renderSeoPanel(c) {
+            const s = cfg.seo;
+            c.innerHTML = `
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Site-Wide SEO Defaults</h3>
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[9px] font-black text-slate-700 uppercase">Site Name</label>
+                        <input type="text" id="seo_siteName" value="${escapeHtml(s.siteName)}" class="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl text-sm font-black outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black text-slate-700 uppercase">Meta Title Default</label>
+                        <input type="text" id="seo_defaultTitle" value="${escapeHtml(s.defaultTitle)}" class="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black text-slate-700 uppercase">Meta Description Default</label>
+                        <textarea id="seo_defaultDescription" class="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl text-sm h-32 outline-none focus:ring-2 focus:ring-sky-500">${escapeHtml(s.defaultDescription)}</textarea>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black text-slate-700 uppercase">Canonical Base URL</label>
+                        <input type="text" id="seo_canonicalBase" value="${escapeHtml(s.canonicalBase)}" class="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl text-xs font-mono outline-none">
+                    </div>
+                </div>`;
+        }
 
-document.getElementById("btnPreview").onclick = openPreview;
-document.getElementById("closePreview").onclick = closePreview;
-document.getElementById("previewModal").addEventListener("click",(e)=>{
-  if (e.target.id === "previewModal") closePreview();
-});
+        // --- PREVIEW ENGINE ---
+        function renderPreview() {
+            const container = document.getElementById('site-render-container');
+            const target = document.getElementById('preview-target-select').value;
+            const nav = cfg.navigation;
+            
+            let content = '';
 
-document.getElementById("saveToken").onclick = ()=>{
-  const t = (document.getElementById("token").value || "").trim();
-  if (!t) return toast("Please paste token.", "warn", "Token");
-  setToken(t);
-  updateLoginUI();
-  toast("Token saved in browser.", "ok", "Token");
-};
-document.getElementById("logout").onclick = ()=>{
-  clearToken();
-  document.getElementById("token").value = "";
-  updateLoginUI();
-  toast("Logged out.", "ok", "Logout");
-};
+            if (target === 'home') {
+                const s = cfg.hero.slides[0] || { title: 'NO ACTIVE SLIDES', sub: '', desktopBg: '', bullets: [] };
+                content = `
+                    <section class="relative h-[650px] bg-[#0c4a6e] overflow-hidden flex items-center px-12 text-white">
+                        <img src="${s.desktopBg}" class="absolute inset-0 w-full h-full object-cover opacity-25">
+                        <div class="relative z-10 max-w-3xl">
+                            <div class="inline-flex items-center gap-2 trust-badge px-4 py-2 rounded-full mb-6">
+                                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                <span class="text-[10px] font-black text-green-300 uppercase tracking-widest">Trusted by 10,000+ Customers</span>
+                            </div>
+                            <h1 class="text-6xl font-extrabold leading-[1.1] mb-6">${s.title.replace(' ', ' <span class="text-green-400">') + '</span>'}</h1>
+                            <p class="text-xl text-sky-100 mb-8 max-w-xl font-medium leading-relaxed">${s.sub}</p>
+                            <div class="flex flex-wrap gap-3 mb-10">
+                                ${s.bullets.slice(0,3).map(b => `<div class="flex items-center gap-2 text-sm font-bold bg-white/10 px-4 py-2 rounded-full border border-white/10"><i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i>${b}</div>`).join('')}
+                            </div>
+                            <div class="flex gap-4">
+                                <button class="px-10 py-5 bg-green-500 text-white rounded-full font-black text-xs shadow-2xl uppercase tracking-widest">GET FREE INSPECTION</button>
+                                <button class="px-10 py-5 bg-white/10 backdrop-blur-md rounded-full font-bold border border-white/20 uppercase text-xs">CALL NOW</button>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0"><svg viewBox="0 0 1440 120" fill="none" class="w-full h-24"><path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1440Z" fill="white" /></svg></div>
+                    </section>`;
+            } else {
+                const p = cfg.pages[target] || { h1: "404", headImage: "" };
+                content = `
+                    <div class="relative h-[450px] bg-slate-900 overflow-hidden flex items-center justify-center text-center text-white">
+                        <img src="${p.headImage}" class="absolute inset-0 w-full h-full object-cover opacity-40">
+                        <div class="relative z-10 max-w-3xl">
+                            <div class="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400 mb-4 opacity-70">AQUASHIELD SERVICE DIRECTORY</div>
+                            <h1 class="text-6xl font-black mb-6 uppercase tracking-tighter leading-none">${p.h1 || p.title}</h1>
+                            <div class="w-24 h-1.5 bg-green-500 mx-auto rounded-full"></div>
+                        </div>
+                    </div>
+                    <div class="max-w-4xl mx-auto py-24 px-8">
+                        <div class="text-lg text-slate-500 font-medium italic mb-12 uppercase tracking-widest text-xs">Previewing Section Data from /${target}/index.html</div>
+                        <div class="text-slate-600 leading-relaxed">${p.contentHtml || 'Add HTML content in the editor to see it here.'}</div>
+                    </div>`;
+            }
 
-function updateLoginUI(){
-  const t = getToken();
-  const status = document.getElementById("loginStatus");
-  if (t) status.innerHTML = `Token saved in browser <span class="inline-flex h-2 w-2 rounded-full bg-green-600"></span>`;
-  else status.innerHTML = `Not logged in <span class="inline-flex h-2 w-2 rounded-full bg-slate-300"></span>`;
-}
+            container.innerHTML = `
+                <div class="bg-white min-h-full flex flex-col">
+                    <nav class="sticky top-0 bg-white/95 backdrop-blur px-12 py-6 flex items-center justify-between border-b z-50 water-wave">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-sky-500 text-white grid place-items-center shadow-lg shadow-sky-100"><i data-lucide="shield" class="w-6 h-6"></i></div>
+                            <span class="text-2xl font-black tracking-tighter uppercase leading-none font-bold">${nav.companyName}</span>
+                        </div>
+                        <div class="hidden lg:flex items-center gap-10 font-black text-[10px] uppercase tracking-widest text-slate-400">
+                            ${cfg.menu.slice(0, 4).map(m => `<span class="hover:text-sky-600 transition-colors cursor-pointer font-bold">${m.label}</span>`).join('')}
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <div class="text-[8px] font-black text-slate-300 uppercase tracking-widest">Call Expert</div>
+                                <div class="text-sm font-black text-sky-600 font-bold">${nav.phone}</div>
+                            </div>
+                        </div>
+                    </nav>
+                    <div class="flex-1">${content}</div>
+                </div>`;
+            lucide.createIcons();
+        }
 
-/* -----------------------------
-  Why you saw "no items" in Menu panel?
-  If cfg.menu is empty in /api/config, admin will show empty.
-  This admin DOES NOT read HTML from frontend; it reads /api/config.
------------------------------ */
+        // --- COLLECTION ENGINE ---
+        function collectAll() {
+            if (activeTab === 'hero') collectHero();
+            if (activeTab === 'pages') collectPages();
+            if (activeTab === 'menu') collectMenu();
+            if (activeTab === 'services') collectServices();
+            if (activeTab === 'faq') collectFaq();
+            if (activeTab === 'reviews') collectReviews();
+            if (activeTab === 'images') collectImages();
+            if (activeTab === 'seo') collectSeo();
+            cfg = ensureShape(cfg);
+            markDirty(true);
+        }
 
-/* -----------------------------
-  Init
------------------------------ */
-(async function init(){
-  // Token restore
-  const t = getToken();
-  if (t) document.getElementById("token").value = t;
-  updateLoginUI();
+        function collectHero() {
+            cfg.hero.slides.forEach((s, idx) => {
+                const k = domSafeKey(s.id);
+                s.label = document.getElementById(`hs_label_${k}`).value;
+                s.tag = document.getElementById(`hs_tag_${k}`).value;
+                s.title = document.getElementById(`hs_title_${k}`).value;
+                s.sub = document.getElementById(`hs_sub_${k}`).value;
+                s.bullets = document.getElementById(`hs_bullets_${k}`).value.split('\n').filter(Boolean);
+            });
+        }
 
-  try{
-    await loadConfig();
-    renderAll();
-    toast("Config loaded.", "ok", "Ready");
-  } catch(e){
-    document.getElementById("panelTitle").textContent = "Failed to load config";
-    document.getElementById("panelSub").textContent = "Check /api/config endpoint and console logs.";
-    document.getElementById("panel").innerHTML = `
-      <div class="rounded-3xl border bg-red-50 p-5">
-        <div class="text-sm font-extrabold text-red-700">Error</div>
-        <div class="text-sm text-red-700 mt-2 break-words">${escapeHtml(String(e.message || e))}</div>
-        <div class="text-xs text-red-700 mt-3">Open DevTools → Console for details.</div>
-      </div>
-    `;
-    toast(String(e.message || e), "err", "Load failed");
-  }
-})();
+        function collectPages() {
+            Object.values(cfg.pages).forEach(p => {
+                const k = domSafeKey(p._id);
+                const el = document.getElementById(`page_title_${k}`);
+                if(!el) return;
+                p.title = el.value;
+                p.slug = document.getElementById(`page_slug_${k}`).value;
+                p.h1 = document.getElementById(`page_h1_${k}`).value;
+                p.h2 = document.getElementById(`page_h2_${k}`).value;
+                p.contentHtml = document.getElementById(`page_html_${k}`).value;
+                p.seo.title = document.getElementById(`page_seo_title_${k}`).value;
+                p.seo.description = document.getElementById(`page_seo_desc_${k}`).value;
+            });
+        }
 
-/* -----------------------------
-  Collect-all-safe wrapper
------------------------------ */
-function collectAll(){
-  // Only collect what's currently rendered (avoid errors on hidden panels)
-  if (activePanel === "hero") collectHero();
-  if (activePanel === "menu") collectMenu();
-  if (activePanel === "seo") collectSEO();
-  if (activePanel === "pages") collectPages();
-  if (activePanel === "faq") collectFAQ();
-  if (activePanel === "reviews") collectReviews();
-  if (activePanel === "images") collectImages();
-  if (activePanel === "services") collectServices();
+        function collectMenu() {
+            cfg.menu.forEach((m, i) => {
+                m.label = document.getElementById(`menu_label_${i}`).value;
+                m.url = document.getElementById(`menu_url_${i}`).value;
+                (m.children||[]).forEach((ch, ci) => {
+                    ch.label = document.getElementById(`menu_child_label_${i}_${ci}`).value;
+                    ch.url = document.getElementById(`menu_child_url_${i}_${ci}`).value;
+                });
+            });
+        }
+        
+        function collectFaq() { cfg.faq = cfg.faq.map((f, i) => ({ q: document.getElementById(`faq_q_${i}`).value, a: document.getElementById(`faq_a_${i}`).value })); }
+        function collectReviews() { cfg.reviews = cfg.reviews.map((r, i) => ({ name: document.getElementById(`rev_name_${i}`).value, rating: Number(document.getElementById(`rev_rating_${i}`).value), text: document.getElementById(`rev_text_${i}`).value })); }
+        function collectImages() { cfg.images.map = cfg.images.map.map((m, i) => ({ key: document.getElementById(`img_key_${i}`).value, url: document.getElementById(`img_url_${i}`).value })); }
+        function collectServices() { cfg.services = cfg.services.map((s, i) => ({ name: document.getElementById(`svc_name_${i}`).value, slug: document.getElementById(`svc_slug_${i}`).value, short: document.getElementById(`svc_short_${i}`).value })); }
+        function collectSeo() { 
+            cfg.seo.siteName = document.getElementById('seo_siteName').value; 
+            cfg.seo.defaultTitle = document.getElementById('seo_defaultTitle').value; 
+            cfg.seo.defaultDescription = document.getElementById('seo_defaultDescription').value;
+            cfg.seo.canonicalBase = document.getElementById('seo_canonicalBase').value;
+        }
 
-  cfg = ensureShape(cfg);
-  setDirty(true);
-}
-</script>
+        // --- ITEM ACTIONS ---
+        function moveInArr(path, idx, dir) {
+            collectAll();
+            const parts = path.split('.'); let arr = cfg;
+            parts.forEach(p => arr = arr[p]);
+            const target = idx + dir;
+            if (target < 0 || target >= arr.length) return;
+            [arr[idx], arr[target]] = [arr[target], arr[idx]];
+            renderSidebar(); renderPreview();
+        }
 
+        function deleteInArr(path, idx) {
+            if(!confirm("Permanently delete this entry?")) return;
+            collectAll();
+            const parts = path.split('.'); let arr = cfg;
+            parts.forEach(p => arr = arr[p]);
+            arr.splice(idx, 1);
+            renderSidebar(); renderPreview();
+        }
+
+        function addItem(path, item) {
+            collectAll();
+            const parts = path.split('.'); let arr = cfg;
+            parts.forEach(p => arr = arr[p]);
+            arr.push(item);
+            renderSidebar();
+        }
+
+        function addChildMenu(idx) {
+            collectAll();
+            if(!cfg.menu[idx].children) cfg.menu[idx].children = [];
+            cfg.menu[idx].children.push({ label: "", url: "" });
+            renderSidebar();
+        }
+
+        function deleteChildMenu(idx, ci) { collectAll(); cfg.menu[idx].children.splice(ci, 1); renderSidebar(); }
+
+        function deletePage(id) {
+            if(!confirm("Delete this page folder?")) return;
+            const next = {};
+            Object.values(cfg.pages).forEach(p => { if(p._id !== id) next[p.slug] = p; });
+            cfg.pages = next; syncTargetDropdown(); renderSidebar(); renderPreview();
+        }
+
+        // --- UPLOADS ---
+        async function handleHeroUpload(input, idx, variant) {
+            const file = input.files[0]; if(!file) return;
+            try {
+                const url = await doUpload(file, cfg.hero.slides[idx].id, variant);
+                const field = variant === 'mobile' ? 'mobileBg' : 'desktopBg';
+                cfg.hero.slides[idx][field] = url;
+                markDirty(); renderSidebar(); renderPreview();
+            } catch(e) { showToast("Upload Failed", true); }
+        }
+
+        async function handlePageUpload(input, id) {
+            const file = input.files[0]; if(!file) return;
+            try {
+                const url = await doUpload(file, id);
+                Object.values(cfg.pages).find(p => p._id === id).headImage = url;
+                markDirty(); renderSidebar(); renderPreview();
+            } catch(e) { showToast("Upload Failed", true); }
+        }
+
+        // --- EVENTS & INIT ---
+        function syncTargetDropdown() {
+            const sel = document.getElementById('preview-target-select');
+            sel.innerHTML = '<option value="home">Homepage (index.html)</option>';
+            Object.values(cfg.pages).forEach(p => {
+                const opt = document.createElement('option'); opt.value = p.slug; opt.innerText = `/${p.slug}/index.html`;
+                sel.appendChild(opt);
+            });
+        }
+
+        function attachEvents() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
+                collectAll();
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                b.classList.add('active'); activeTab = b.dataset.tab; renderSidebar();
+            });
+            document.getElementById('save-all-btn').onclick = saveConfig;
+            document.getElementById('token-toggle').onclick = () => document.getElementById('token-modal').classList.toggle('hidden');
+            document.getElementById('token-close-btn').onclick = () => document.getElementById('token-modal').classList.add('hidden');
+            document.getElementById('token-save-btn').onclick = () => { setToken(document.getElementById('token-input-field').value); document.getElementById('token-modal').classList.add('hidden'); };
+            document.getElementById('token-logout-btn').onclick = () => { clearToken(); document.getElementById('token-modal').classList.add('hidden'); };
+            document.getElementById('preview-target-select').onchange = renderPreview;
+            document.getElementById('view-desktop').onclick = () => { previewMode='desktop'; document.getElementById('preview-frame').className="desktop-view shadow-2xl bg-white"; renderPreview(); };
+            document.getElementById('view-mobile').onclick = () => { previewMode='mobile'; document.getElementById('preview-frame').className="mobile-view shadow-2xl bg-white"; renderPreview(); };
+            document.getElementById('manual-refresh').onclick = renderPreview;
+        }
+
+        window.onload = () => { updateAuthUI(); attachEvents(); loadConfig(); };
+    </script>
 </body>
 </html>
