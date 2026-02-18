@@ -1023,186 +1023,199 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   let heroIndex = 0;
-  let heroTimer = null;
+let heroTimer = null;
 
-  const heroSection = document.getElementById('home');
-  const heroLeftBg = document.getElementById('hero-left-bg');
-  const heroLeftTitle = document.getElementById('hero-left-title');
-  const heroLeftSub = document.getElementById('hero-left-sub');
-  const heroBulletsWrap = document.getElementById('hero-bullets');
+const heroSection = document.getElementById('home');
+const heroLeftBg = document.getElementById('hero-left-bg');
+const heroLeftTitle = document.getElementById('hero-left-title');
+const heroLeftSub = document.getElementById('hero-left-sub');
+const heroBulletsWrap = document.getElementById('hero-bullets');
 
-  const heroBannerImg = document.getElementById('hero-banner-img');
-  const heroBadgeTitle = document.getElementById('hero-badge-title');
-  const heroBadgeSub = document.getElementById('hero-badge-sub');
-  const heroDots = document.getElementById('hero-dots');
+const heroBannerImg = document.getElementById('hero-banner-img');
+const heroBadgeTitle = document.getElementById('hero-badge-title');
+const heroBadgeSub = document.getElementById('hero-badge-sub');
+const heroDots = document.getElementById('hero-dots');
 
-  function buildHeroDots() {
-    if (!heroDots) return;
-    heroDots.innerHTML = '';
-    heroSlides.forEach((_, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'w-2.5 h-2.5 rounded-full transition-all ' + (i === 0 ? 'bg-white' : 'bg-white/40');
-      b.addEventListener('click', () => setHero(i, { userAction: true }));
-      heroDots.appendChild(b);
-    });
-  }
-
-  function renderBullets(bullets = []) {
-    if (!heroBulletsWrap) return;
-
-    heroBulletsWrap.innerHTML = '';
-    bullets.slice(0, 3).forEach(txt => {
-      const item = document.createElement('div');
-      item.className = 'flex items-center gap-2';
-      item.innerHTML = `
-        <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-            clip-rule="evenodd" />
-        </svg>
-        <span class="text-sky-100">${txt}</span>
-      `;
-      heroBulletsWrap.appendChild(item);
-    });
-  }
-
-  function setHero(index, { userAction = false } = {}) {
-    const total = heroSlides.length || 1;
-    heroIndex = (index + total) % total;
-    const s = heroSlides[heroIndex] || heroSlides[0];
-
-    if (!s) return;
-
-    if (heroLeftBg) {
-      heroLeftBg.style.opacity = '0.05';
-      setTimeout(() => {
-        heroLeftBg.style.backgroundImage = `url('${s.leftBg}')`;
-        heroLeftBg.style.opacity = '0.25';
-      }, 120);
-    }
-
-    if (heroSection) {
-      heroSection.style.setProperty('--heroFrom', s.gradFrom || '#0c4a6e');
-      heroSection.style.setProperty('--heroMid', s.gradMid || '#075985');
-      heroSection.style.setProperty('--heroTo', s.gradTo || '#0369a1');
-    }
-
-    if (heroLeftTitle) heroLeftTitle.innerHTML = s.leftTitle || defaultConfig.hero_headline;
-    if (heroLeftSub) heroLeftSub.textContent = s.leftSub || defaultConfig.hero_subtext;
-
-    renderBullets(s.bullets || []);
-
-    if (heroBannerImg) {
-      heroBannerImg.style.opacity = '0.2';
-      setTimeout(() => {
-        heroBannerImg.src = s.bannerImg || s.leftBg || '';
-        heroBannerImg.style.opacity = '1';
-      }, 120);
-    }
-
-    if (heroBadgeTitle) heroBadgeTitle.textContent = s.badgeTitle || '';
-    if (heroBadgeSub) heroBadgeSub.textContent = s.badgeSub || '';
-
-    if (heroDots) {
-      [...heroDots.querySelectorAll('button')].forEach((btn, i) => {
-        btn.classList.toggle('bg-white', i === heroIndex);
-        btn.classList.toggle('bg-white/40', i !== heroIndex);
-      });
-    }
-
-    const heroWa = document.getElementById('hero-whatsapp');
-    if (heroWa) {
-      heroWa.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(s.waText || 'Hi! I need waterproofing services')}`;
-    }
-
-    if (userAction) restartHeroAuto();
-  }
-
-  function restartHeroAuto() {
-    if (heroTimer) clearInterval(heroTimer);
-    if (!heroSlides || heroSlides.length <= 1) return;
-    heroTimer = setInterval(() => setHero(heroIndex + 1), 5000);
-  }
-
-  document.getElementById('hero-next')?.addEventListener('click', () => setHero(heroIndex + 1, { userAction: true }));
-  document.getElementById('hero-prev')?.addEventListener('click', () => setHero(heroIndex - 1, { userAction: true }));
-
-  document.querySelectorAll('.hero-trigger').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const key = btn.getAttribute('data-slide');
-      let idx = heroSlides.findIndex(s => s.key === key);
-
-// fallback: if ids don’t match, use slide order (Terrace=1, Bathroom=2, Wall=3, Heat=4)
-if (idx < 0) {
-  const order = { terrace: 1, bathroom: 2, wall: 3, heat: 4 };
-  idx = order[key] ?? 0;
+function buildHeroDots() {
+  if (!heroDots) return;
+  heroDots.innerHTML = '';
+  heroSlides.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className =
+      'w-2.5 h-2.5 rounded-full transition-all ' +
+      (i === 0 ? 'bg-white' : 'bg-white/40');
+    b.addEventListener('click', () => setHero(i, { userAction: true }));
+    heroDots.appendChild(b);
+  });
 }
 
-setHero(idx, { userAction: true });
-      const map = { terrace: 'terrace', bathroom: 'bathroom', wall: 'wall', heat: 'heat' };
-      const sel = document.getElementById('service');
-      if (sel && map[key]) sel.value = map[key];
+function renderBullets(bullets = []) {
+  if (!heroBulletsWrap) return;
+
+  heroBulletsWrap.innerHTML = '';
+  bullets.slice(0, 3).forEach((txt) => {
+    const item = document.createElement('div');
+    item.className = 'flex items-center gap-2';
+    item.innerHTML = `
+      <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+          clip-rule="evenodd" />
+      </svg>
+      <span class="text-sky-100">${txt}</span>
+    `;
+    heroBulletsWrap.appendChild(item);
+  });
+}
+
+function setHero(index, { userAction = false } = {}) {
+  const total = heroSlides.length || 1;
+  heroIndex = (index + total) % total;
+  const s = heroSlides[heroIndex] || heroSlides[0];
+
+  if (!s) return;
+
+  if (heroLeftBg) {
+    heroLeftBg.style.opacity = '0.05';
+    setTimeout(() => {
+      heroLeftBg.style.backgroundImage = `url('${s.leftBg}')`;
+      heroLeftBg.style.opacity = '0.25';
+    }, 120);
+  }
+
+  if (heroSection) {
+    heroSection.style.setProperty('--heroFrom', s.gradFrom || '#0c4a6e');
+    heroSection.style.setProperty('--heroMid', s.gradMid || '#075985');
+    heroSection.style.setProperty('--heroTo', s.gradTo || '#0369a1');
+  }
+
+  if (heroLeftTitle) heroLeftTitle.innerHTML = s.leftTitle || defaultConfig.hero_headline;
+  if (heroLeftSub) heroLeftSub.textContent = s.leftSub || defaultConfig.hero_subtext;
+
+  renderBullets(s.bullets || []);
+
+  if (heroBannerImg) {
+    heroBannerImg.style.opacity = '0.2';
+    setTimeout(() => {
+      heroBannerImg.src = s.bannerImg || s.leftBg || '';
+      heroBannerImg.style.opacity = '1';
+    }, 120);
+  }
+
+  if (heroBadgeTitle) heroBadgeTitle.textContent = s.badgeTitle || '';
+  if (heroBadgeSub) heroBadgeSub.textContent = s.badgeSub || '';
+
+  if (heroDots) {
+    [...heroDots.querySelectorAll('button')].forEach((btn, i) => {
+      btn.classList.toggle('bg-white', i === heroIndex);
+      btn.classList.toggle('bg-white/40', i !== heroIndex);
     });
+  }
+
+  // ✅ WhatsApp update
+  const heroWa = document.getElementById('hero-whatsapp');
+  if (heroWa) {
+    heroWa.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(
+      s.waText || 'Hi! I need waterproofing services'
+    )}`;
+  }
+
+  // ✅ Per-slide CTA button text (your requested improvement)
+  const ctaTextEl = document.getElementById('hero-cta-text');
+  if (ctaTextEl) ctaTextEl.textContent = s.ctaText || config.cta_button_text;
+
+  if (userAction) restartHeroAuto();
+}
+
+function restartHeroAuto() {
+  if (heroTimer) clearInterval(heroTimer);
+  if (!heroSlides || heroSlides.length <= 1) return;
+  heroTimer = setInterval(() => setHero(heroIndex + 1), 5000);
+}
+
+document.getElementById('hero-next')?.addEventListener('click', () =>
+  setHero(heroIndex + 1, { userAction: true })
+);
+document.getElementById('hero-prev')?.addEventListener('click', () =>
+  setHero(heroIndex - 1, { userAction: true })
+);
+
+document.querySelectorAll('.hero-trigger').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const key = btn.getAttribute('data-slide');
+    let idx = heroSlides.findIndex((s) => s.key === key);
+
+    // fallback: if ids don’t match, use slide order (Terrace=1, Bathroom=2, Wall=3, Heat=4)
+    if (idx < 0) {
+      const order = { terrace: 1, bathroom: 2, wall: 3, heat: 4 };
+      idx = order[key] ?? 0;
+    }
+
+    setHero(idx, { userAction: true });
+
+    const map = { terrace: 'terrace', bathroom: 'bathroom', wall: 'wall', heat: 'heat' };
+    const sel = document.getElementById('service');
+    if (sel && map[key]) sel.value = map[key];
+  });
+});
+
+buildHeroDots();
+setHero(0);
+restartHeroAuto();
+
+// ✅ Form submission (safe checks)
+const form = document.getElementById('contact-form');
+if (form) {
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('name')?.value || '';
+    const phone = document.getElementById('phone')?.value || '';
+    const service = document.getElementById('service')?.value || '';
+    const message = document.getElementById('message')?.value || '';
+
+    document.getElementById('contact-form')?.classList.add('hidden');
+    document.getElementById('success-message')?.classList.remove('hidden');
+
+    const whatsappMessage = `Hi! I'm ${name}. I need ${service} waterproofing service. ${message}. My phone: ${phone}`;
+    const whatsappUrl = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(whatsappMessage)}`;
+    const successWa = document.getElementById('success-whatsapp');
+    if (successWa) successWa.href = whatsappUrl;
+  });
+}
+
+// ✅ Update UI based on config
+function onConfigChange(cfg) {
+  config = { ...defaultConfig, ...cfg };
+
+  // Safe set helpers
+  const setText = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+
+  setText('nav-company-name', config.company_name);
+  setText('footer-company-name', config.company_name);
+  setText('copyright-company-name', config.company_name + ' Waterproofing');
+
+  setText('hero-cta-text', config.cta_button_text);
+
+  setText('nav-phone-text', config.phone_number);
+  setText('contact-phone', config.phone_number);
+  setText('footer-phone', config.phone_number);
+  setText('cta-phone-text', 'Call ' + config.phone_number);
+
+  ['whatsapp-float', 'hero-whatsapp', 'cta-whatsapp', 'success-whatsapp'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent('Hi! I need waterproofing services')}`;
   });
 
-  buildHeroDots();
-  setHero(0);
-  restartHeroAuto();
+  const navCta = document.getElementById('nav-cta');
+  if (navCta) navCta.textContent = config.cta_button_text;
 
-  // ✅ Form submission (safe checks)
-  const form = document.getElementById('contact-form');
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const name = document.getElementById('name')?.value || '';
-      const phone = document.getElementById('phone')?.value || '';
-      const service = document.getElementById('service')?.value || '';
-      const message = document.getElementById('message')?.value || '';
-
-      document.getElementById('contact-form')?.classList.add('hidden');
-      document.getElementById('success-message')?.classList.remove('hidden');
-
-      const whatsappMessage = `Hi! I'm ${name}. I need ${service} waterproofing service. ${message}. My phone: ${phone}`;
-      const whatsappUrl = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(whatsappMessage)}`;
-      const successWa = document.getElementById('success-whatsapp');
-      if (successWa) successWa.href = whatsappUrl;
-    });
-  }
-
-  // ✅ Update UI based on config
-  function onConfigChange(cfg) {
-    config = { ...defaultConfig, ...cfg };
-
-    // Safe set helpers
-    const setText = (id, val) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = val;
-    };
-
-    setText('nav-company-name', config.company_name);
-    setText('footer-company-name', config.company_name);
-    setText('copyright-company-name', config.company_name + ' Waterproofing');
-
-    setText('hero-cta-text', config.cta_button_text);
-
-    setText('nav-phone-text', config.phone_number);
-    setText('contact-phone', config.phone_number);
-    setText('footer-phone', config.phone_number);
-    setText('cta-phone-text', 'Call ' + config.phone_number);
-
-    ['whatsapp-float', 'hero-whatsapp', 'cta-whatsapp', 'success-whatsapp'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent('Hi! I need waterproofing services')}`;
-    });
-
-   const navCta = document.getElementById('nav-cta');
-if (navCta) navCta.textContent = config.cta_button_text;
-
-
-    setHero(heroIndex);
-  }
+  setHero(heroIndex);
+}
 
 async function loadRemoteConfig() {
   try {
@@ -1232,22 +1245,24 @@ async function loadRemoteConfig() {
     setText('cta-phone-text', 'Call ' + config.phone_number);
 
     // ✅ Update WhatsApp links
-    ['whatsapp-float', 'hero-whatsapp', 'cta-whatsapp', 'success-whatsapp'].forEach(id => {
+    ['whatsapp-float', 'hero-whatsapp', 'cta-whatsapp', 'success-whatsapp'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent('Hi! I need waterproofing services')}`;
     });
 
     // ✅ Override slides dynamically (use desktopBg/mobileBg)
     if (cfg?.hero?.slides && Array.isArray(cfg.hero.slides) && cfg.hero.slides.length) {
-      const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+      const isMobile =
+        window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
 
-      heroSlides = cfg.hero.slides.map(s => {
+      heroSlides = cfg.hero.slides.map((s, i) => {
         const img =
-          (isMobile && s.mobileBg) ? s.mobileBg :
-          s.desktopBg || s.mobileBg || 'assets/images/wterprofingwholehome.png';
+          isMobile && s.mobileBg
+            ? s.mobileBg
+            : s.desktopBg || s.mobileBg || 'assets/images/wterprofingwholehome.png';
 
         return {
-          key: s.id || s.key || `slide-${cfg.hero.slides.indexOf(s)}`,,
+          key: s.id || s.key || `slide-${i}`, // ✅ FIXED: removed extra comma/typo
           leftBg: img,
           gradFrom: s.gradFrom || '#0c4a6e',
           gradMid: s.gradMid || '#075985',
@@ -1260,7 +1275,7 @@ async function loadRemoteConfig() {
           badgeSub: s.badgeSub || '10-Year Warranty Included',
           waText: s.waText || 'Hi! I need waterproofing services',
           ctaText: s.ctaText || defaultConfig.cta_button_text,
-          ctaLink: s.ctaLink || '#contact'
+          ctaLink: s.ctaLink || '#contact',
         };
       });
 
@@ -1275,11 +1290,11 @@ async function loadRemoteConfig() {
         heroTimer = setInterval(() => setHero(heroIndex + 1), rotateMs);
       }
     }
-
   } catch (e) {
     console.warn('Using default config:', e);
   }
 }
+
 
 
   // Element SDK init
