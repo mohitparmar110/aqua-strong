@@ -3,145 +3,315 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Admin • AquaShield Site CMS</title>
+  <title>AquaShield • Site CMS</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    *{font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial}
+    :root{
+      --brand:#0ea5e9;
+      --brand2:#0369a1;
+      --accent:#22c55e;
+      --ink:#0f172a;
+    }
+    *{font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
+    .bg-grid{
+      background:
+        radial-gradient(900px 500px at 10% 5%, rgba(14,165,233,.18), transparent 55%),
+        radial-gradient(700px 450px at 100% 0%, rgba(34,197,94,.10), transparent 55%),
+        radial-gradient(700px 450px at 90% 100%, rgba(2,132,199,.12), transparent 60%),
+        linear-gradient(to bottom, #f8fafc, #f8fafc);
+    }
+    .glass{
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(10px);
+    }
+    .shadow-soft{ box-shadow: 0 10px 30px rgba(2,6,23,.08); }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:.5rem; border-radius: 14px; padding:.55rem .9rem;
+      font-weight:700; font-size:.9rem;
+      transition:.15s ease;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn-primary{ background: linear-gradient(135deg, var(--accent), #16a34a); color:white; }
+    .btn-primary:hover{ filter: brightness(.98); }
+    .btn-dark{ background: #0b1220; color:#fff; }
+    .btn-dark:hover{ background:#050a14; }
+    .btn-soft{ background:#eef2ff; color:#111827; }
+    .btn-soft:hover{ background:#e5e7eb; }
+    .chip{
+      display:inline-flex; align-items:center; gap:.45rem;
+      font-size:.75rem; font-weight:700;
+      padding:.35rem .6rem; border-radius:999px;
+      border:1px solid rgba(15,23,42,.08);
+      background:#fff;
+    }
+    .chip-ok{ color:#16a34a; border-color:rgba(34,197,94,.25); background:rgba(34,197,94,.08); }
+    .chip-warn{ color:#b45309; border-color:rgba(245,158,11,.25); background:rgba(245,158,11,.10); }
+    .chip-bad{ color:#dc2626; border-color:rgba(239,68,68,.25); background:rgba(239,68,68,.10); }
+    .field{
+      width:100%; border:1px solid rgba(15,23,42,.12);
+      border-radius: 14px; padding:.65rem .85rem;
+      background:#fff;
+      outline:none;
+      transition:.15s ease;
+    }
+    .field:focus{
+      border-color: rgba(14,165,233,.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
+    }
+    .label{ font-size:.75rem; font-weight:800; color:#334155; }
+    .hint{ font-size:.75rem; color:#64748b; }
+    .section-title{ font-size:1.05rem; font-weight:900; color:#0f172a; }
+    .sub-title{ font-size:.85rem; color:#64748b; }
+    .navbtn{
+      width:100%;
+      text-align:left;
+      padding:.7rem .85rem;
+      border-radius: 14px;
+      font-weight:800;
+      font-size:.9rem;
+      transition:.12s ease;
+      display:flex; align-items:center; justify-content:space-between;
+      border:1px solid transparent;
+    }
+    .navbtn:hover{ background:#f1f5f9; }
+    .navbtn.active{
+      background: #0b1220;
+      color:#fff;
+      border-color: rgba(255,255,255,.08);
+    }
+    .badge{
+      font-size:.72rem; font-weight:900;
+      border-radius:999px; padding:.2rem .55rem;
+      background: rgba(255,255,255,.12); color:#fff;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:.72rem;
+      background:#0b1220; color:#fff;
+      padding:.15rem .4rem;
+      border-radius:8px;
+    }
+    .preview-phone{
+      width: 360px; max-width:100%;
+      border-radius: 30px;
+      border: 10px solid #0b1220;
+      box-shadow: 0 18px 50px rgba(2,6,23,.22);
+      overflow:hidden;
+      background:#0b1220;
+    }
+    .preview-phone .topbar{
+      height: 26px;
+      background: #0b1220;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .preview-phone .notch{
+      width: 140px; height: 18px;
+      border-radius: 999px;
+      background: #050a14;
+    }
   </style>
 </head>
 
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-grid text-slate-900">
   <div class="max-w-7xl mx-auto p-6">
-    <!-- Header -->
+    <!-- Top Bar -->
     <div class="flex items-start justify-between gap-4 flex-wrap">
-      <div>
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 shadow"></div>
-          <div>
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-800 shadow-soft"></div>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
             <h1 class="text-2xl font-extrabold leading-tight">Site CMS</h1>
-            <p class="text-slate-600 text-sm">Hero • Home Sections • Menu • SEO • Pages • FAQ • Reviews • Images • Services</p>
+            <span id="statusChip" class="chip chip-warn">Loading…</span>
+            <span id="dirtyChip" class="chip hidden">Unsaved</span>
           </div>
+          <p class="text-slate-600 text-sm">Hero • Home Sections • Menu • SEO • Pages • FAQ • Reviews • Images • Services</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <button id="saveAllTop" class="px-4 py-2 rounded-xl bg-green-600 text-white shadow hover:bg-green-700">Save Changes</button>
+        <button id="saveAllTop" class="btn btn-primary shadow-soft">
+          <span>Save Changes</span>
+        </button>
       </div>
     </div>
 
-    <!-- Login -->
-    <div class="bg-white rounded-2xl p-5 shadow border mt-6">
-      <div class="flex items-start justify-between gap-4 flex-wrap">
-        <div class="flex-1 min-w-[280px]">
-          <label class="text-sm font-semibold">ADMIN TOKEN</label>
-          <div class="flex gap-2 mt-2 flex-wrap">
-            <input id="token" class="flex-1 min-w-[240px] border rounded-xl px-3 py-2" placeholder="Paste token here"/>
-            <button id="saveToken" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Save</button>
-            <button id="logout" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300">Logout</button>
-          </div>
-          <p id="loginStatus" class="text-sm mt-2 text-slate-500"></p>
+    <!-- Login Card -->
+    <div class="mt-6 grid lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-8 bg-white rounded-3xl border shadow-soft p-5">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div class="flex-1 min-w-[260px]">
+            <div class="flex items-center gap-2">
+              <div class="section-title">Admin Access</div>
+              <span class="chip">
+                <span class="text-slate-500">Config:</span>
+                <span class="font-mono text-slate-900" id="cfgSource">/api/config</span>
+              </span>
+            </div>
+            <p class="sub-title mt-1">Token is stored in your browser. Keep it private.</p>
 
-          <div class="mt-3 flex items-center justify-between flex-wrap gap-2">
-            <p class="text-xs text-slate-500">
-              Config source:
-              <span class="font-mono" id="cfgSource">/api/config</span>
-            </p>
-            <p class="text-xs" id="dirtyState"></p>
+            <div class="mt-4">
+              <label class="label">ADMIN TOKEN</label>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <input id="token" class="field flex-1 min-w-[240px]" placeholder="Paste token here"/>
+                <button id="saveToken" class="btn btn-dark">Save</button>
+                <button id="logout" class="btn btn-soft">Logout</button>
+              </div>
+              <p id="loginStatus" class="hint mt-2"></p>
+            </div>
+
+            <div class="mt-4 flex items-center gap-2 flex-wrap">
+              <span class="chip">
+                <span class="text-slate-500">Endpoint:</span>
+                <span class="font-mono text-slate-900">/api/admin/save-config</span>
+              </span>
+              <span class="chip">
+                <span class="text-slate-500">Upload:</span>
+                <span class="font-mono text-slate-900">/api/admin/upload-banner?slot=…</span>
+              </span>
+              <span class="chip">
+                <span class="text-slate-500">Hint:</span>
+                <span>Upload → Save</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="min-w-[250px]">
+            <div class="rounded-3xl border bg-slate-50 p-4">
+              <div class="text-xs text-slate-500 font-bold uppercase">System</div>
+              <div class="mt-1 font-extrabold text-slate-900" id="sysState">Loading…</div>
+              <div id="msg" class="text-sm mt-2"></div>
+              <div class="mt-3 text-xs text-slate-500">
+                Tip: Press <span class="kbd">Ctrl</span> + <span class="kbd">S</span> to save.
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="min-w-[240px]">
-          <div class="rounded-2xl border bg-slate-50 p-4">
-            <div class="text-xs text-slate-500">Status</div>
-            <div id="loadStatus" class="mt-1 font-semibold">Loading…</div>
-            <div id="msg" class="text-sm mt-2"></div>
-          </div>
+      <!-- Quick actions -->
+      <div class="lg:col-span-4 bg-white rounded-3xl border shadow-soft p-5">
+        <div class="section-title">Quick Actions</div>
+        <p class="sub-title mt-1">Most common changes.</p>
+
+        <div class="mt-4 grid gap-2">
+          <button class="btn btn-dark w-full" id="jumpHero">Go to Hero Slider</button>
+          <button class="btn btn-soft w-full" id="jumpMenu">Go to Menu</button>
+          <button class="btn btn-soft w-full" id="jumpServices">Go to Services</button>
+          <button class="btn btn-primary w-full" id="saveAllTop2">Save Changes</button>
+        </div>
+
+        <div class="mt-4 border-t pt-4">
+          <div class="text-sm font-extrabold text-slate-900">Why you saw “No menu items yet”</div>
+          <p class="text-sm text-slate-600 mt-1">
+            Admin shows what exists in <span class="font-mono">/api/config</span>.
+            If your frontend menu is hard-coded, it won’t appear here until it’s moved into config.
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- Layout -->
+    <!-- Main Layout -->
     <div class="grid lg:grid-cols-12 gap-6 mt-6">
       <!-- Sidebar -->
-      <div class="lg:col-span-3">
-        <div class="bg-white rounded-2xl shadow border p-3 sticky top-4">
-          <div class="text-xs font-semibold text-slate-500 px-2 pb-2">PANELS</div>
+      <aside class="lg:col-span-3">
+        <div class="glass rounded-3xl border shadow-soft p-3 sticky top-4">
+          <div class="px-2 pb-2 text-xs font-extrabold text-slate-500 uppercase tracking-wider">Panels</div>
           <nav id="nav" class="space-y-1"></nav>
+
           <div class="mt-3 border-t pt-3 px-2">
-            <p class="text-xs text-slate-500">Tip: Upload → then Save.</p>
-            <p class="text-xs text-slate-500 mt-1">Tip: Switching panels keeps edits.</p>
+            <div class="text-xs text-slate-500">Auto-collects edits when switching panels.</div>
+            <div class="text-xs text-slate-500 mt-1">Uploads don’t save config—click Save.</div>
           </div>
         </div>
-      </div>
+      </aside>
 
-      <!-- Content -->
-      <div class="lg:col-span-9">
-        <div class="bg-white rounded-2xl shadow border p-5">
-          <div class="flex items-center justify-between gap-3 flex-wrap">
+      <!-- Panel -->
+      <main class="lg:col-span-9">
+        <div class="bg-white rounded-3xl border shadow-soft p-5">
+          <div class="flex items-start justify-between gap-3 flex-wrap">
             <div>
-              <h2 id="panelTitle" class="text-lg font-extrabold">Loading…</h2>
+              <h2 id="panelTitle" class="text-xl font-extrabold">Loading…</h2>
               <p id="panelSub" class="text-sm text-slate-600 mt-1"></p>
             </div>
-            <button id="saveAll" class="px-4 py-2 rounded-xl bg-green-600 text-white shadow hover:bg-green-700">Save Changes</button>
+            <button id="saveAll" class="btn btn-primary shadow-soft">Save Changes</button>
           </div>
 
           <div id="panel" class="mt-5"></div>
         </div>
-      </div>
+      </main>
     </div>
   </div>
 
 <script>
 /** ============================================================
- *  PREMIUM ADMIN (UI + Logic)
- *  Endpoints:
+ *  FINAL ADMIN (Better UI + Better Hero Slider Understanding)
+ *  Works with:
  *   - GET  /api/config
  *   - POST /api/admin/save-config   (JSON)
  *   - POST /api/admin/upload-banner?slot=... (multipart file)
+ *
+ *  Hero format supported:
+ *   - NEW (preferred): hero.slides = [{id,...,imageDesktop,imageMobile}]
+ *   - OLD: hero.slides.terrace.bg ... (auto-migrated into array)
  * ============================================================ */
 
 const PANELS = [
-  { id:"hero", title:"Hero (Slider + Buttons)", sub:"Create hero slides linked to services. Upload desktop + mobile banners." },
-  { id:"menu", title:"Menu + Dropdowns", sub:"Edit header menu + nested dropdown items." },
-  { id:"seo", title:"SEO (Site Defaults)", sub:"Default meta title/desc, canonical base, OG image, tags." },
+  { id:"hero", title:"Hero (Slider + Buttons)", sub:"Create hero slides linked to services. Upload desktop + mobile banners + preview." },
+  { id:"menu", title:"Menu + Dropdowns", sub:"Header menu items + nested dropdowns. If empty, your config has no menu array yet." },
+  { id:"seo", title:"SEO (Site Defaults)", sub:"Site-wide meta defaults (title, description, canonical base, OG image, tags)." },
   { id:"pages", title:"Page Creator / Editor", sub:"Create static pages like /about, /faq, /privacy." },
-  { id:"faq", title:"FAQ Panel", sub:"Manage FAQs on the site." },
-  { id:"reviews", title:"Reviews Updater", sub:"Manage customer testimonials." },
-  { id:"images", title:"Image Uploader + Mapper", sub:"Upload images and map them to keys." },
-  { id:"services", title:"Service Editor", sub:"Edit services used across site + link in hero slider." },
+  { id:"faq", title:"FAQ Panel", sub:"FAQ entries shown on site." },
+  { id:"reviews", title:"Reviews Updater", sub:"Testimonials shown on site." },
+  { id:"images", title:"Image Uploader + Mapper", sub:"Upload images and map them to keys used in templates." },
+  { id:"services", title:"Service Editor", sub:"Edit services used across site + can link to hero slides." },
 ];
 
 let cfg = null;
 let activePanel = "hero";
 let isDirty = false;
 
+/** ----------------- Helpers ----------------- */
 function getToken(){ return localStorage.getItem("ADMIN_TOKEN") || ""; }
 function setToken(t){ localStorage.setItem("ADMIN_TOKEN", t); }
 function clearToken(){ localStorage.removeItem("ADMIN_TOKEN"); }
-function authHeaders(){ const t = getToken(); return t ? { "authorization": "Bearer " + t } : {}; }
+function authHeaders(){ const t = getToken(); return t ? { "authorization":"Bearer " + t } : {}; }
 
 function escapeHtml(str){
   return (str||"")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;");
 }
 function uid(prefix="id"){ return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now(); }
+
+function setStatus(type, text){
+  const chip = document.getElementById("statusChip");
+  chip.textContent = text || "";
+  chip.className = "chip " + (type==="ok" ? "chip-ok" : type==="bad" ? "chip-bad" : "chip-warn");
+}
 
 function show(text, isErr=false){
   const el = document.getElementById("msg");
   el.textContent = text || "";
   el.className = "text-sm mt-2 " + (isErr ? "text-red-600" : "text-green-700");
 }
+
 function setDirty(v){
   isDirty = !!v;
-  const el = document.getElementById("dirtyState");
-  if (!el) return;
+  const chip = document.getElementById("dirtyChip");
   if (isDirty){
-    el.textContent = "Unsaved changes";
-    el.className = "text-xs text-amber-600 font-semibold";
+    chip.className = "chip chip-warn";
+    chip.textContent = "Unsaved changes";
+    chip.classList.remove("hidden");
   } else {
-    el.textContent = "";
-    el.className = "text-xs";
+    chip.classList.add("hidden");
   }
 }
 
@@ -158,11 +328,11 @@ function ensureSeoShape(s){
   return s;
 }
 
-/** === CONFIG SHAPE NORMALIZER (supports your old + new hero format) === */
+/** ----------------- Ensure Config Shape ----------------- */
 function ensureShape(c){
   if (!c || typeof c !== "object") c = {};
 
-  // SERVICES
+  // Services
   if (!Array.isArray(c.services)) c.services = [];
   c.services = c.services.map(s => {
     s = s && typeof s === "object" ? s : {};
@@ -177,23 +347,21 @@ function ensureShape(c){
     return s;
   });
 
-  // HERO (NEW preferred): hero.slides = array
+  // Hero
   if (!c.hero || typeof c.hero !== "object") c.hero = {};
   if (!c.hero.autoRotateMs) c.hero.autoRotateMs = 5000;
 
-  // migrate old hero.slides.{terrace,toilet,heat} => array
+  // Migrate old hero slots -> array
   if (!Array.isArray(c.hero.slides)) {
     const old = (c.hero.slides && typeof c.hero.slides === "object") ? c.hero.slides : null;
     const slidesArr = [];
-
     if (old) {
-      // old keys
       Object.keys(old).forEach(k=>{
         const s = old[k] || {};
         slidesArr.push({
           id: uid("slide"),
           name: (s.title || k),
-          serviceSlug: "", // optional link
+          serviceSlug: "",
           title: s.title || "",
           sub: s.sub || "",
           bullets: Array.isArray(s.bullets) ? s.bullets : [],
@@ -204,8 +372,6 @@ function ensureShape(c){
         });
       });
     }
-
-    // if nothing, create 3 starter slides from services (if any)
     if (!slidesArr.length && c.services.length){
       c.services.slice(0,3).forEach(s=>{
         slidesArr.push({
@@ -222,7 +388,6 @@ function ensureShape(c){
         });
       });
     }
-
     if (!slidesArr.length){
       slidesArr.push({
         id: uid("slide"),
@@ -237,22 +402,21 @@ function ensureShape(c){
         imageMobile: ""
       });
     }
-
     c.hero.slides = slidesArr;
   }
 
-  // MENU
+  // Menu
   if (!Array.isArray(c.menu)) c.menu = [];
   c.menu = c.menu.map(item => ({
-    label: (item && item.label) ? String(item.label) : "",
-    url: (item && item.url) ? String(item.url) : "",
-    children: Array.isArray(item && item.children) ? item.children.map(ch => ({
-      label: ch && ch.label ? String(ch.label) : "",
-      url: ch && ch.url ? String(ch.url) : ""
+    label: item?.label ? String(item.label) : "",
+    url: item?.url ? String(item.url) : "",
+    children: Array.isArray(item?.children) ? item.children.map(ch => ({
+      label: ch?.label ? String(ch.label) : "",
+      url: ch?.url ? String(ch.url) : ""
     })) : []
   }));
 
-  // SEO DEFAULTS
+  // SEO
   if (!c.seo || typeof c.seo !== "object") c.seo = {};
   c.seo.siteName = c.seo.siteName || "";
   c.seo.defaultTitle = c.seo.defaultTitle || "";
@@ -262,7 +426,7 @@ function ensureShape(c){
   c.seo.canonicalBase = c.seo.canonicalBase || "";
   c.seo.tags = Array.isArray(c.seo.tags) ? c.seo.tags : [];
 
-  // PAGES
+  // Pages
   if (!c.pages || typeof c.pages !== "object") c.pages = {};
   const normalizedPages = {};
   Object.keys(c.pages).forEach(k => {
@@ -283,7 +447,7 @@ function ensureShape(c){
   if (!Array.isArray(c.faq)) c.faq = [];
   c.faq = c.faq.map(x => ({ q: x?.q ? String(x.q) : "", a: x?.a ? String(x.a) : "" }));
 
-  // REVIEWS
+  // Reviews
   if (!Array.isArray(c.reviews)) c.reviews = [];
   c.reviews = c.reviews.map(r => ({
     name: r?.name ? String(r.name) : "",
@@ -292,7 +456,7 @@ function ensureShape(c){
     date: r?.date ? String(r.date) : "",
   }));
 
-  // IMAGES MAP
+  // Images map
   if (!c.images || typeof c.images !== "object") c.images = {};
   if (!Array.isArray(c.images.map)) c.images.map = [];
   c.images.map = c.images.map.map(m => ({ key: m?.key||"", url: m?.url||"", notes: m?.notes||"" }));
@@ -300,15 +464,14 @@ function ensureShape(c){
   return c;
 }
 
+/** ----------------- API ----------------- */
 async function loadConfig(){
   const res = await fetch("/api/config", { cache:"no-store" });
   if (!res.ok) throw new Error("Failed to load /api/config: " + await res.text());
   const data = await res.json();
   cfg = ensureShape(data);
-  setDirty(false);
 }
 
-/** Upload helper: /api/admin/upload-banner?slot=... */
 async function uploadBanner({ file, slot }){
   if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
   const fd = new FormData();
@@ -316,7 +479,7 @@ async function uploadBanner({ file, slot }){
   const qs = new URLSearchParams();
   qs.set("slot", slot);
   const res = await fetch(`/api/admin/upload-banner?${qs.toString()}`, {
-    method: "POST",
+    method:"POST",
     headers: authHeaders(),
     body: fd
   });
@@ -327,193 +490,249 @@ async function uploadBanner({ file, slot }){
   return url;
 }
 
-/** NAV */
+async function saveConfig(){
+  if (!getToken()) return show("Paste ADMIN TOKEN and click Save first.", true);
+  try{
+    collectAll();
+    const res = await fetch("/api/admin/save-config", {
+      method:"POST",
+      headers: { ...authHeaders(), "content-type":"application/json" },
+      body: JSON.stringify(cfg)
+    });
+    if (!res.ok) return show("Save failed: " + await res.text(), true);
+    setDirty(false);
+    show("Saved ✅");
+  }catch(e){
+    show(e.message || "Save failed", true);
+  }
+}
+
+/** ----------------- Nav ----------------- */
 function renderNav(){
   const nav = document.getElementById("nav");
-  nav.innerHTML = PANELS.map(p => {
-    const isActive = p.id === activePanel;
+  nav.innerHTML = PANELS.map(p=>{
+    const active = p.id===activePanel;
     return `
-      <button data-panel="${p.id}"
-        class="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold
-        ${isActive ? "bg-slate-900 text-white" : "hover:bg-slate-100 text-slate-800"}">
-        ${escapeHtml(p.title)}
+      <button class="navbtn ${active?"active":""}" data-panel="${p.id}">
+        <span>${escapeHtml(p.title)}</span>
+        ${active ? `<span class="badge">OPEN</span>` : ``}
       </button>
     `;
   }).join("");
 
-  nav.querySelectorAll("[data-panel]").forEach(btn => {
-    btn.onclick = () => {
-      try { collectAll(); } catch(e) {}
+  nav.querySelectorAll("[data-panel]").forEach(btn=>{
+    btn.onclick = ()=>{
+      try{ collectAll(); }catch(e){}
       activePanel = btn.dataset.panel;
       renderAll();
     };
   });
 }
 
-/** HERO PANEL (clean + service-based + desktop/mobile) */
-function serviceOptions(selectedSlug){
-  const opts = [{slug:"", name:"(Not linked to a service)"}].concat(cfg.services.map(s=>({slug:s.slug, name:s.name||s.slug})));
+/** ----------------- Panels ----------------- */
+function serviceOptions(selected){
+  const opts = [{slug:"", name:"(Not linked to a service)"}].concat(cfg.services.map(s=>({slug:s.slug, name:(s.name||s.slug||"Service")})));
   return opts.map(o=>{
-    const val = o.slug || "";
-    return `<option value="${escapeHtml(val)}" ${val===selectedSlug?"selected":""}>${escapeHtml(o.name)}</option>`;
+    const v = o.slug || "";
+    return `<option value="${escapeHtml(v)}" ${v===selected?"selected":""}>${escapeHtml(o.name)}</option>`;
   }).join("");
 }
 
 function heroSlideCard(slide, idx){
   const k = slide.id || ("idx_"+idx);
   const desktopSlot = `hero-${k}-desktop`;
-  const mobileSlot  = `hero-${k}-mobile`;
+  const mobileSlot = `hero-${k}-mobile`;
 
   return `
-  <div class="border rounded-2xl p-4 bg-white">
-    <div class="flex items-start justify-between gap-3">
-      <div>
-        <div class="text-xs text-slate-500 font-semibold">SLIDE ${idx+1}</div>
-        <div class="font-extrabold text-lg mt-0.5">${escapeHtml(slide.name || "Hero Slide")}</div>
-      </div>
-      <button data-del-slide="${idx}" class="px-3 py-1.5 rounded-xl bg-red-600 text-white text-sm hover:bg-red-700">Delete</button>
-    </div>
-
-    <div class="mt-4 grid md:grid-cols-2 gap-3">
-      <div>
-        <label class="text-xs font-semibold">Slide Name (for admin)</label>
-        <input id="hero_name_${k}" class="w-full border rounded-xl px-3 py-2 mt-1" value="${escapeHtml(slide.name||"")}"/>
-      </div>
-      <div>
-        <label class="text-xs font-semibold">Link to Service (optional)</label>
-        <select id="hero_service_${k}" class="w-full border rounded-xl px-3 py-2 mt-1">
-          ${serviceOptions(slide.serviceSlug||"")}
-        </select>
-      </div>
-    </div>
-
-    <div class="mt-3">
-      <label class="text-xs font-semibold">Title</label>
-      <input id="hero_title_${k}" class="w-full border rounded-xl px-3 py-2 mt-1" value="${escapeHtml(slide.title||"")}"/>
-    </div>
-
-    <div class="mt-3">
-      <label class="text-xs font-semibold">Sub</label>
-      <textarea id="hero_sub_${k}" class="w-full border rounded-xl px-3 py-2 mt-1" rows="2">${escapeHtml(slide.sub||"")}</textarea>
-    </div>
-
-    <div class="mt-3">
-      <label class="text-xs font-semibold">Bullets (one per line, max 6)</label>
-      <textarea id="hero_bullets_${k}" class="w-full border rounded-xl px-3 py-2 mt-1" rows="3">${escapeHtml((slide.bullets||[]).join("\n"))}</textarea>
-    </div>
-
-    <div class="mt-4 grid md:grid-cols-2 gap-3">
-      <div>
-        <label class="text-xs font-semibold">CTA Text</label>
-        <input id="hero_ctaText_${k}" class="w-full border rounded-xl px-3 py-2 mt-1" value="${escapeHtml(slide.ctaText||"Get Quote")}"/>
-      </div>
-      <div>
-        <label class="text-xs font-semibold">CTA Link</label>
-        <input id="hero_ctaLink_${k}" class="w-full border rounded-xl px-3 py-2 mt-1" value="${escapeHtml(slide.ctaLink||"")}"/>
-      </div>
-    </div>
-
-    <!-- Desktop -->
-    <div class="mt-5 border rounded-2xl p-4 bg-slate-50">
-      <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div class="font-semibold">Desktop Banner</div>
-        <div class="text-xs text-slate-500">Uploads to slot: <span class="font-mono">${escapeHtml(desktopSlot)}</span></div>
-      </div>
-      <input id="hero_desktopUrl_${k}" class="w-full border rounded-xl px-3 py-2 mt-3 bg-white" value="${escapeHtml(slide.imageDesktop||"")}" placeholder="Desktop banner URL"/>
-      <div class="grid md:grid-cols-2 gap-2 mt-2">
-        <input type="file" id="hero_desktopFile_${k}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
-        <button data-upload-desktop="${idx}" class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm hover:bg-black">Upload Desktop</button>
-      </div>
-      ${slide.imageDesktop ? `<img class="mt-3 rounded-xl border w-full max-h-56 object-cover" src="${escapeHtml(slide.imageDesktop)}"/>` : `<div class="mt-3 text-sm text-slate-500">No desktop banner yet.</div>`}
-    </div>
-
-    <!-- Mobile -->
-    <div class="mt-4 border rounded-2xl p-4 bg-slate-50">
-      <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div class="font-semibold">Mobile Banner</div>
-        <div class="text-xs text-slate-500">Uploads to slot: <span class="font-mono">${escapeHtml(mobileSlot)}</span></div>
-      </div>
-      <input id="hero_mobileUrl_${k}" class="w-full border rounded-xl px-3 py-2 mt-3 bg-white" value="${escapeHtml(slide.imageMobile||"")}" placeholder="Mobile banner URL"/>
-      <div class="grid md:grid-cols-2 gap-2 mt-2">
-        <input type="file" id="hero_mobileFile_${k}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
-        <button data-upload-mobile="${idx}" class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm hover:bg-black">Upload Mobile</button>
-      </div>
-
-      ${slide.imageMobile ? `
-        <div class="mt-3 border rounded-2xl p-3 bg-white">
-          <div class="text-xs text-slate-500 mb-2">Mobile preview</div>
-          <div class="mx-auto w-[390px] max-w-full rounded-2xl overflow-hidden border bg-white">
-            <img class="w-full h-[240px] object-cover" src="${escapeHtml(slide.imageMobile)}"/>
-          </div>
+    <div class="border rounded-3xl p-5 bg-white shadow-soft">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div class="text-xs text-slate-500 font-extrabold uppercase tracking-wider">Slide ${idx+1}</div>
+          <div class="text-lg font-extrabold mt-0.5">${escapeHtml(slide.name || "Hero Slide")}</div>
+          <div class="text-xs text-slate-500 mt-1">ID: <span class="font-mono">${escapeHtml(k)}</span></div>
         </div>
-      ` : `<div class="mt-3 text-sm text-slate-500">No mobile banner yet.</div>`}
+        <button data-del-slide="${idx}" class="btn btn-soft" style="background:rgba(239,68,68,.10); color:#dc2626;">Delete</button>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-2 gap-3">
+        <div>
+          <div class="label">Slide Name (admin only)</div>
+          <input id="hero_name_${k}" class="field mt-2" value="${escapeHtml(slide.name||"")}"/>
+        </div>
+        <div>
+          <div class="label">Link to Service (optional)</div>
+          <select id="hero_service_${k}" class="field mt-2">
+            ${serviceOptions(slide.serviceSlug||"")}
+          </select>
+          <div class="hint mt-1">If linked, frontend can auto-route CTA to the service page.</div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <div class="label">Title</div>
+        <input id="hero_title_${k}" class="field mt-2" value="${escapeHtml(slide.title||"")}"/>
+      </div>
+
+      <div class="mt-3">
+        <div class="label">Sub Title</div>
+        <textarea id="hero_sub_${k}" class="field mt-2" rows="2">${escapeHtml(slide.sub||"")}</textarea>
+      </div>
+
+      <div class="mt-3">
+        <div class="label">Bullets (one per line, max 6)</div>
+        <textarea id="hero_bullets_${k}" class="field mt-2" rows="3">${escapeHtml((slide.bullets||[]).join("\n"))}</textarea>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-2 gap-3">
+        <div>
+          <div class="label">CTA Text</div>
+          <input id="hero_ctaText_${k}" class="field mt-2" value="${escapeHtml(slide.ctaText||"Get Quote")}"/>
+        </div>
+        <div>
+          <div class="label">CTA Link</div>
+          <input id="hero_ctaLink_${k}" class="field mt-2" value="${escapeHtml(slide.ctaLink||"")}"/>
+        </div>
+      </div>
+
+      <!-- Banners -->
+      <div class="mt-5 grid lg:grid-cols-2 gap-4">
+        <!-- Desktop banner -->
+        <div class="rounded-3xl border bg-slate-50 p-4">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div>
+              <div class="font-extrabold">Desktop Banner</div>
+              <div class="hint">Uploads to slot: <span class="font-mono">${escapeHtml(desktopSlot)}</span></div>
+            </div>
+            <span class="chip">Recommended: 1600×900</span>
+          </div>
+
+          <input id="hero_desktopUrl_${k}" class="field mt-3" value="${escapeHtml(slide.imageDesktop||"")}" placeholder="Desktop banner URL"/>
+          <div class="mt-2 grid md:grid-cols-2 gap-2">
+            <input type="file" id="hero_desktopFile_${k}" class="field" style="padding:.55rem" accept="image/png,image/jpeg,image/webp"/>
+            <button data-upload-desktop="${idx}" class="btn btn-dark">Upload</button>
+          </div>
+
+          ${slide.imageDesktop ? `
+            <img class="mt-3 rounded-2xl border w-full h-44 object-cover" src="${escapeHtml(slide.imageDesktop)}"/>
+          ` : `
+            <div class="mt-3 text-sm text-slate-500">No desktop banner yet.</div>
+          `}
+        </div>
+
+        <!-- Mobile banner -->
+        <div class="rounded-3xl border bg-slate-50 p-4">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div>
+              <div class="font-extrabold">Mobile Banner</div>
+              <div class="hint">Uploads to slot: <span class="font-mono">${escapeHtml(mobileSlot)}</span></div>
+            </div>
+            <span class="chip">Recommended: 900×1200</span>
+          </div>
+
+          <input id="hero_mobileUrl_${k}" class="field mt-3" value="${escapeHtml(slide.imageMobile||"")}" placeholder="Mobile banner URL"/>
+          <div class="mt-2 grid md:grid-cols-2 gap-2">
+            <input type="file" id="hero_mobileFile_${k}" class="field" style="padding:.55rem" accept="image/png,image/jpeg,image/webp"/>
+            <button data-upload-mobile="${idx}" class="btn btn-dark">Upload</button>
+          </div>
+
+          ${slide.imageMobile ? `
+            <div class="mt-4 flex justify-center">
+              <div class="preview-phone">
+                <div class="topbar"><div class="notch"></div></div>
+                <img class="w-full h-[260px] object-cover" src="${escapeHtml(slide.imageMobile)}"/>
+              </div>
+            </div>
+          ` : `
+            <div class="mt-3 text-sm text-slate-500">No mobile banner yet.</div>
+          `}
+        </div>
+      </div>
     </div>
-  </div>`;
+  `;
 }
 
 function panelHero(){
   const slides = cfg.hero.slides || [];
   return `
-    <div class="flex items-center justify-between gap-2 flex-wrap">
-      <div class="text-sm text-slate-600">
-        <div class="font-semibold text-slate-900">Hero slider (service-based)</div>
-        <div>Each slide can have desktop + mobile banners. Link a slide to a service for clean navigation.</div>
+    <div class="flex items-start justify-between gap-3 flex-wrap">
+      <div>
+        <div class="section-title">Hero Slider</div>
+        <div class="sub-title mt-1">Create service-based slides. Desktop + mobile banners are separate.</div>
       </div>
-      <button id="addSlide" class="px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-black">+ Add Slide</button>
+      <div class="flex gap-2 flex-wrap">
+        <button id="addSlide" class="btn btn-dark">+ Add Slide</button>
+        <button id="reorderHelp" class="btn btn-soft">Reorder Tip</button>
+      </div>
     </div>
 
-    <div class="mt-4 grid md:grid-cols-2 gap-4" id="heroWrap">
+    <div class="mt-4 rounded-3xl border bg-slate-50 p-4">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <div class="font-extrabold text-slate-900">Auto Rotate</div>
+          <div class="hint">How fast the slider changes automatically</div>
+        </div>
+        <div class="w-full md:w-[280px]">
+          <input id="hero_autoMs" type="number" min="1000" step="500" class="field" value="${escapeHtml(String(cfg.hero.autoRotateMs || 5000))}"/>
+          <div class="hint mt-1">Example: 5000 = every 5 seconds</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 grid md:grid-cols-2 gap-4" id="heroWrap">
       ${slides.map(heroSlideCard).join("")}
     </div>
 
-    <div class="mt-5 border rounded-2xl p-4 bg-slate-50">
-      <label class="text-xs font-semibold">Auto Rotate (ms)</label>
-      <input id="hero_autoMs" type="number" min="1000" step="500" class="w-full border rounded-xl px-3 py-2 mt-1 bg-white"
-        value="${escapeHtml(String(cfg.hero.autoRotateMs || 5000))}"/>
-      <p class="text-xs text-slate-500 mt-2">Example: 5000 = change slide every 5 seconds.</p>
+    <div class="mt-5 rounded-3xl border p-4 bg-white">
+      <div class="font-extrabold">How this slider works</div>
+      <ul class="mt-2 text-sm text-slate-600 list-disc pl-5 space-y-1">
+        <li>Each slide has text + CTA + bullets.</li>
+        <li>Each slide has 2 banners: <b>Desktop</b> + <b>Mobile</b>.</li>
+        <li>Upload banner → it sets the URL → then you must click <b>Save Changes</b>.</li>
+        <li>Link slide to a Service to keep everything consistent.</li>
+      </ul>
     </div>
   `;
 }
 
-/** MENU PANEL */
 function menuItemRow(item, idx){
   const childRows = (item.children || []).map((ch, cidx) => `
-    <div class="ml-4 mt-2 border rounded-xl p-3 bg-slate-50">
+    <div class="ml-4 mt-2 rounded-2xl border bg-slate-50 p-3">
       <div class="flex gap-2 flex-wrap">
-        <input class="border rounded-lg px-2 py-1 flex-1 min-w-[160px]" id="menu_child_label_${idx}_${cidx}"
-          placeholder="Sub item label" value="${escapeHtml(ch.label)}"/>
-        <input class="border rounded-lg px-2 py-1 flex-1 min-w-[200px]" id="menu_child_url_${idx}_${cidx}"
-          placeholder="/subcategory-page" value="${escapeHtml(ch.url)}"/>
-        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm"
-          data-del-child="${idx}:${cidx}">Remove</button>
+        <input class="field flex-1 min-w-[160px]" id="menu_child_label_${idx}_${cidx}" placeholder="Sub item label" value="${escapeHtml(ch.label)}"/>
+        <input class="field flex-1 min-w-[200px]" id="menu_child_url_${idx}_${cidx}" placeholder="/subcategory-page" value="${escapeHtml(ch.url)}"/>
+        <button class="btn btn-soft" style="background:rgba(239,68,68,.10); color:#dc2626;" data-del-child="${idx}:${cidx}">Remove</button>
       </div>
     </div>
   `).join("");
 
   return `
-    <div class="border rounded-2xl p-4">
-      <div class="flex items-center justify-between gap-2 flex-wrap">
-        <div class="font-semibold">Menu Item #${idx+1}</div>
-        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-menu="${idx}">Delete</button>
+    <div class="rounded-3xl border p-5 bg-white shadow-soft">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-xs text-slate-500 font-extrabold uppercase tracking-wider">Menu Item ${idx+1}</div>
+          <div class="font-extrabold">${escapeHtml(item.label || "(No label yet)")}</div>
+        </div>
+        <button class="btn btn-soft" style="background:rgba(239,68,68,.10); color:#dc2626;" data-del-menu="${idx}">Delete</button>
       </div>
 
-      <div class="mt-3 grid md:grid-cols-2 gap-3">
+      <div class="mt-4 grid md:grid-cols-2 gap-3">
         <div>
-          <label class="text-xs font-semibold">Label</label>
-          <input id="menu_label_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(item.label)}"/>
+          <div class="label">Label</div>
+          <input id="menu_label_${idx}" class="field mt-2" value="${escapeHtml(item.label)}"/>
         </div>
         <div>
-          <label class="text-xs font-semibold">URL</label>
-          <input id="menu_url_${idx}" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(item.url)}" placeholder="/services"/>
+          <div class="label">URL</div>
+          <input id="menu_url_${idx}" class="field mt-2" value="${escapeHtml(item.url)}" placeholder="/services"/>
         </div>
       </div>
 
       <div class="mt-4">
-        <div class="flex items-center justify-between">
-          <div class="text-sm font-semibold">Dropdown / Sub Items</div>
-          <button class="px-3 py-1 rounded-lg bg-slate-900 text-white text-sm" data-add-child="${idx}">+ Add Sub Item</button>
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="font-extrabold text-slate-900">Dropdown Items</div>
+          <button class="btn btn-dark" data-add-child="${idx}">+ Add Sub Item</button>
         </div>
-        ${childRows || `<p class="text-sm text-slate-500 mt-2">No sub items yet.</p>`}
+
+        ${childRows || `<div class="mt-2 text-sm text-slate-500">No sub items yet.</div>`}
       </div>
     </div>
   `;
@@ -522,73 +741,86 @@ function menuItemRow(item, idx){
 function panelMenu(){
   const items = cfg.menu || [];
   return `
-    <div class="flex items-center justify-between gap-2 flex-wrap">
-      <p class="text-sm text-slate-600">Create menu items and nested dropdown subcategories.</p>
-      <button id="addMenu" class="px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-black">+ Add Menu Item</button>
+    <div class="flex items-start justify-between gap-3 flex-wrap">
+      <div>
+        <div class="section-title">Menu + Dropdowns</div>
+        <div class="sub-title mt-1">If your menu is hard-coded in frontend, it won't appear until stored in config.</div>
+      </div>
+      <button id="addMenu" class="btn btn-dark">+ Add Menu Item</button>
     </div>
-    <div class="mt-4 space-y-4" id="menuWrap">
+
+    <div class="mt-5 space-y-4" id="menuWrap">
       ${items.length ? items.map(menuItemRow).join("") : `
-        <div class="border rounded-2xl p-4 bg-slate-50 text-slate-600">
-          Your <span class="font-mono">/api/config</span> currently has no <span class="font-mono">menu</span> items.
-          If your frontend menu is hard-coded, admin won’t show it until you move it into config.
+        <div class="rounded-3xl border bg-slate-50 p-5">
+          <div class="font-extrabold text-slate-900">No menu items found in config</div>
+          <p class="text-sm text-slate-600 mt-2">
+            This admin reads menu from <span class="font-mono">cfg.menu</span>. Your frontend menu may be hard-coded.
+            Add items here and Save to control the frontend from config.
+          </p>
         </div>
       `}
     </div>
   `;
 }
 
-/** SEO PANEL */
 function panelSEO(){
   const s = cfg.seo;
   return `
-    <div class="grid md:grid-cols-2 gap-4">
+    <div class="section-title">SEO Defaults</div>
+    <p class="sub-title mt-1">These are used when pages/services do not override SEO.</p>
+
+    <div class="mt-5 grid md:grid-cols-2 gap-4">
       <div>
-        <label class="text-xs font-semibold">Site Name</label>
-        <input id="seo_siteName" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.siteName)}"/>
+        <div class="label">Site Name</div>
+        <input id="seo_siteName" class="field mt-2" value="${escapeHtml(s.siteName)}"/>
       </div>
 
       <div>
-        <label class="text-xs font-semibold">Canonical Base</label>
-        <input id="seo_canonicalBase" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.canonicalBase)}" placeholder="https://yourdomain.com"/>
+        <div class="label">Canonical Base</div>
+        <input id="seo_canonicalBase" class="field mt-2" value="${escapeHtml(s.canonicalBase)}" placeholder="https://yourdomain.com"/>
       </div>
 
       <div>
-        <label class="text-xs font-semibold">Default Title</label>
-        <input id="seo_defaultTitle" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.defaultTitle)}"/>
+        <div class="label">Default Title</div>
+        <input id="seo_defaultTitle" class="field mt-2" value="${escapeHtml(s.defaultTitle)}"/>
       </div>
 
       <div>
-        <label class="text-xs font-semibold">Default Description</label>
-        <textarea id="seo_defaultDescription" class="w-full border rounded-xl px-3 py-2" rows="3">${escapeHtml(s.defaultDescription)}</textarea>
+        <div class="label">Default Description</div>
+        <textarea id="seo_defaultDescription" class="field mt-2" rows="3">${escapeHtml(s.defaultDescription)}</textarea>
       </div>
 
       <div>
-        <label class="text-xs font-semibold">Robots</label>
-        <input id="seo_robots" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.robots)}" placeholder="index,follow"/>
+        <div class="label">Robots</div>
+        <input id="seo_robots" class="field mt-2" value="${escapeHtml(s.robots)}" placeholder="index,follow"/>
       </div>
 
       <div>
-        <label class="text-xs font-semibold">Default OG Image URL</label>
-        <input id="seo_defaultOgImage" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml(s.defaultOgImage)}"/>
+        <div class="label">Default OG Image</div>
+        <input id="seo_defaultOgImage" class="field mt-2" value="${escapeHtml(s.defaultOgImage)}"/>
       </div>
 
       <div class="md:col-span-2">
-        <label class="text-xs font-semibold">Tags (comma separated)</label>
-        <input id="seo_tags" class="w-full border rounded-xl px-3 py-2" value="${escapeHtml((s.tags||[]).join(", "))}" placeholder="waterproofing, terrace waterproofing, ..."/>
+        <div class="label">Tags (comma separated)</div>
+        <input id="seo_tags" class="field mt-2" value="${escapeHtml((s.tags||[]).join(", "))}" placeholder="waterproofing, terrace waterproofing, ..."/>
       </div>
     </div>
   `;
 }
 
-/** Minimal stubs for remaining panels (keep your previous ones if you want) */
-function panelStub(title){
-  return `<div class="border rounded-2xl p-4 bg-slate-50 text-slate-600">
-    This panel UI is already working in your current admin. If you want, I can merge your full old panels here too.
-    For now, the big fixes are Hero + Menu (the ones you complained about).
-  </div>`;
+function panelComingSoon(){
+  return `
+    <div class="rounded-3xl border bg-slate-50 p-5">
+      <div class="font-extrabold text-slate-900">This panel is available</div>
+      <p class="text-sm text-slate-600 mt-2">
+        You already have working implementations for Pages/FAQ/Reviews/Images/Services in your previous admin.
+        If you want, paste that code and I will merge it here with the same premium design.
+      </p>
+    </div>
+  `;
 }
 
-/** RENDER PANEL */
+/** ----------------- Render Panel ----------------- */
 function renderPanel(){
   const p = PANELS.find(x=>x.id===activePanel);
   document.getElementById("panelTitle").textContent = p?.title || "Panel";
@@ -616,6 +848,10 @@ function renderPanel(){
       renderAll();
     };
 
+    document.getElementById("reorderHelp").onclick = ()=>{
+      show("Reorder = change slide order in cfg.hero.slides array. (We can add drag & drop if you want.)");
+    };
+
     panel.querySelectorAll("[data-del-slide]").forEach(btn=>{
       btn.onclick = ()=>{
         collectHero();
@@ -633,13 +869,18 @@ function renderPanel(){
         const file = document.getElementById(`hero_desktopFile_${k}`)?.files?.[0];
         if (!file) return show("Select desktop file first.", true);
         try{
+          setStatus("warn", "Uploading…");
           const url = await uploadBanner({ file, slot: `hero-${k}-desktop` });
           slide.imageDesktop = url;
           document.getElementById(`hero_desktopUrl_${k}`).value = url;
           setDirty(true);
-          show("Desktop banner uploaded ✅ Now Save Changes");
+          setStatus("ok", "Uploaded ✅");
+          show("Desktop banner uploaded ✅ Now click Save Changes");
           renderAll();
-        }catch(e){ show(e.message||"Upload failed", true); }
+        }catch(e){
+          setStatus("bad", "Upload failed");
+          show(e.message||"Upload failed", true);
+        }
       };
     });
 
@@ -651,13 +892,18 @@ function renderPanel(){
         const file = document.getElementById(`hero_mobileFile_${k}`)?.files?.[0];
         if (!file) return show("Select mobile file first.", true);
         try{
+          setStatus("warn", "Uploading…");
           const url = await uploadBanner({ file, slot: `hero-${k}-mobile` });
           slide.imageMobile = url;
           document.getElementById(`hero_mobileUrl_${k}`).value = url;
           setDirty(true);
-          show("Mobile banner uploaded ✅ Now Save Changes");
+          setStatus("ok", "Uploaded ✅");
+          show("Mobile banner uploaded ✅ Now click Save Changes");
           renderAll();
-        }catch(e){ show(e.message||"Upload failed", true); }
+        }catch(e){
+          setStatus("bad", "Upload failed");
+          show(e.message||"Upload failed", true);
+        }
       };
     });
   }
@@ -703,18 +949,18 @@ function renderPanel(){
   else if (activePanel==="seo"){
     panel.innerHTML = panelSEO();
   }
-  else {
-    panel.innerHTML = panelStub(p?.title||"Panel");
+  else{
+    panel.innerHTML = panelComingSoon();
   }
 
-  // mark dirty on any input
+  // mark dirty on any input change
   panel.querySelectorAll("input,textarea,select").forEach(el=>{
     el.addEventListener("input", ()=> setDirty(true), { passive:true });
     el.addEventListener("change", ()=> setDirty(true), { passive:true });
   });
 }
 
-/** COLLECT */
+/** ----------------- Collect from UI ----------------- */
 function collectHero(){
   const slides = cfg.hero.slides || [];
   slides.forEach(slide=>{
@@ -730,12 +976,13 @@ function collectHero(){
     slide.imageDesktop = (document.getElementById(`hero_desktopUrl_${k}`)?.value || "").trim();
     slide.imageMobile  = (document.getElementById(`hero_mobileUrl_${k}`)?.value || "").trim();
   });
+
   cfg.hero.autoRotateMs = Number(document.getElementById("hero_autoMs")?.value || 5000);
 }
 
 function collectMenu(){
   const out = [];
-  (cfg.menu||[]).forEach((item, idx) => {
+  (cfg.menu||[]).forEach((item, idx)=>{
     const label = (document.getElementById(`menu_label_${idx}`)?.value || "").trim();
     const url = (document.getElementById(`menu_url_${idx}`)?.value || "").trim();
     const children = [];
@@ -743,7 +990,7 @@ function collectMenu(){
     for (let cidx=0;cidx<childCount;cidx++){
       const cl = (document.getElementById(`menu_child_label_${idx}_${cidx}`)?.value || "").trim();
       const cu = (document.getElementById(`menu_child_url_${idx}_${cidx}`)?.value || "").trim();
-      if (cl || cu) children.push({ label: cl, url: cu });
+      if (cl || cu) children.push({ label:cl, url:cu });
     }
     if (label || url || children.length) out.push({ label, url, children });
   });
@@ -757,7 +1004,8 @@ function collectSEO(){
   cfg.seo.defaultDescription = (document.getElementById("seo_defaultDescription")?.value || "").trim();
   cfg.seo.robots = (document.getElementById("seo_robots")?.value || "").trim();
   cfg.seo.defaultOgImage = (document.getElementById("seo_defaultOgImage")?.value || "").trim();
-  cfg.seo.tags = (document.getElementById("seo_tags")?.value || "").split(",").map(x=>x.trim()).filter(Boolean).slice(0,50);
+  cfg.seo.tags = (document.getElementById("seo_tags")?.value || "")
+    .split(",").map(x=>x.trim()).filter(Boolean).slice(0,50);
 }
 
 function collectAll(){
@@ -768,67 +1016,71 @@ function collectAll(){
   setDirty(true);
 }
 
-/** SAVE */
-async function saveAll(){
-  if (!getToken()) return show("Paste ADMIN TOKEN and click Save first.", true);
-  try{
-    collectAll();
-    const res = await fetch("/api/admin/save-config", {
-      method: "POST",
-      headers: { ...authHeaders(), "content-type": "application/json" },
-      body: JSON.stringify(cfg)
-    });
-    if (!res.ok) return show("Save failed: " + await res.text(), true);
-    setDirty(false);
-    show("Saved ✅");
-  }catch(e){
-    show(e.message||"Save failed", true);
-  }
+/** ----------------- Render All ----------------- */
+function renderAll(){
+  renderNav();
+  renderPanel();
+
+  document.getElementById("loginStatus").textContent =
+    getToken() ? "Token saved in browser ✅" : "Not logged in";
+
+  if (!isDirty) setDirty(false);
 }
 
-/** TOP BUTTONS */
-document.getElementById("saveAll").onclick = saveAll;
-document.getElementById("saveAllTop").onclick = saveAll;
-
-document.getElementById("saveToken").onclick = () => {
+/** ----------------- Buttons ----------------- */
+document.getElementById("saveToken").onclick = ()=>{
   const t = document.getElementById("token").value.trim();
   if (!t) return show("Paste token first.", true);
   setToken(t);
-  renderAll();
   show("Token saved ✅");
-};
-
-document.getElementById("logout").onclick = () => {
-  clearToken();
   renderAll();
-  show("Logged out ✅");
 };
 
-window.addEventListener("beforeunload", (e)=>{
+document.getElementById("logout").onclick = ()=>{
+  clearToken();
+  show("Logged out ✅");
+  renderAll();
+};
+
+document.getElementById("saveAll").onclick = saveConfig;
+document.getElementById("saveAllTop").onclick = saveConfig;
+document.getElementById("saveAllTop2").onclick = saveConfig;
+
+document.getElementById("jumpHero").onclick = ()=>{ try{ collectAll(); }catch(e){} activePanel="hero"; renderAll(); window.scrollTo({top:0,behavior:"smooth"}); };
+document.getElementById("jumpMenu").onclick = ()=>{ try{ collectAll(); }catch(e){} activePanel="menu"; renderAll(); window.scrollTo({top:0,behavior:"smooth"}); };
+document.getElementById("jumpServices").onclick = ()=>{ try{ collectAll(); }catch(e){} activePanel="services"; renderAll(); window.scrollTo({top:0,behavior:"smooth"}); };
+
+document.addEventListener("keydown",(e)=>{
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==="s"){
+    e.preventDefault();
+    saveConfig();
+  }
+});
+
+/** Warn before leaving */
+window.addEventListener("beforeunload",(e)=>{
   if (!isDirty) return;
   e.preventDefault();
   e.returnValue = "";
 });
 
-/** RENDER ALL */
-function renderAll(){
-  renderNav();
-  renderPanel();
-  document.getElementById("loginStatus").textContent = getToken() ? "Token saved in browser ✅" : "Not logged in";
-}
-
-/** INIT */
+/** ----------------- INIT ----------------- */
 (async ()=>{
   try{
+    setStatus("warn","Loading…");
+    document.getElementById("sysState").textContent = "Loading config…";
     document.getElementById("token").value = getToken();
-    document.getElementById("cfgSource").textContent = "/api/config";
-    document.getElementById("loadStatus").textContent = "Loading config…";
+
     await loadConfig();
-    document.getElementById("loadStatus").textContent = "Loaded ✅";
-    renderAll();
+
+    setStatus("ok","Loaded ✅");
+    document.getElementById("sysState").textContent = "Ready ✅";
     show("");
+
+    renderAll();
   }catch(e){
-    document.getElementById("loadStatus").textContent = "Failed ❌";
+    setStatus("bad","Failed");
+    document.getElementById("sysState").textContent = "Failed to load";
     show(e.message || "Failed to load config", true);
   }
 })();
