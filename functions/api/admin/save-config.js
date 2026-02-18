@@ -5,7 +5,7 @@ export async function onRequestPost({ request, env }) {
     const cfg = await request.json();
     if (!cfg || typeof cfg !== "object") return json({ error: "Invalid JSON body" }, 400);
 
-    await env.SITE_KV.put("site_config", JSON.stringify(cfg));
+    await env.KV.put("site_config", JSON.stringify(cfg));
     return json({ ok: true }, 200);
   } catch (e) {
     const msg = String(e?.message || e);
