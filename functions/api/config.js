@@ -1,52 +1,50 @@
 export async function onRequestGet({ env }) {
-  const KV = env.KV || env.kv; // supports both binding names
   try {
-    const raw = KV ? await KV.get("site_config") : null;
-    const cfg = raw ? JSON.parse(raw) : defaultConfig();
-    return new Response(JSON.stringify(cfg), {
-      headers: {
-        "content-type": "application/json",
-        "cache-control": "no-store",
-      },
-    });
+    const raw = await env.SITE_KV.get("site_config");
+    const data = raw ? JSON.parse(raw) : defaultConfig(env);
+
+    return json(data, 200);
   } catch (e) {
-    return new Response(
-      JSON.stringify({ error: "config_error", message: e.message, fallback: defaultConfig() }),
-      { status: 500, headers: { "content-type": "application/json", "cache-control": "no-store" } }
-    );
+    return json({ error: "Failed to load config", details: String(e) }, 500);
   }
 }
 
-function defaultConfig() {
+function defaultConfig(env) {
+  // Minimal safe default (matches your admin shape expectations)
   return {
     hero: {
-      active: "terrace",
       slides: {
-        terrace: {
-          bg: "assets/images/hero/terrace.jpg",
-          title: "Terrace Waterproofing",
-          sub: "Leak protection + crack repair for roof slabs.",
-          bullets: ["Crack filling included", "Long life coating system", "Monsoon-ready protection"],
-          ctaText: "Get Quote",
-          ctaLink: "https://wa.me/919765931112?text=Hi!%20I%20need%20terrace%20waterproofing",
-        },
-        toilet: {
-          bg: "assets/images/hero/toilet.jpg",
-          title: "Toilet Waterproofing",
-          sub: "Stop bathroom leakage without major demolition.",
-          bullets: ["Tile joint sealing", "Pipe area treatment", "Fast turnaround"],
-          ctaText: "Get Quote",
-          ctaLink: "https://wa.me/919765931112?text=Hi!%20I%20need%20toilet%20waterproofing",
-        },
-        heat: {
-          bg: "assets/images/hero/heat.jpg",
-          title: "Heat Reflection Coating",
-          sub: "Reduce roof heat and keep rooms cooler.",
-          bullets: ["Heat-reflective coating", "Lower indoor temperature", "UV protection layer"],
-          ctaText: "Get Quote",
-          ctaLink: "https://wa.me/919765931112?text=Hi!%20I%20need%20heat%20reflection%20coating",
-        },
-      },
+        terrace: { bg: "", title: "", sub: "", bullets: [], ctaText: "", ctaLink: "" },
+        toilet: { bg: "", title: "", sub: "", bullets: [], ctaText: "", ctaLink: "" },
+        heat: { bg: "", title: "", sub: "", bullets: [], ctaText: "", ctaLink: "" }
+      }
     },
+    menu: [],
+    seo: {
+      siteName: "",
+      defaultTitle: "",
+      defaultDescription: "",
+      defaultOgImage: "",
+      robots: "index,follow",
+      canonicalBase: "",
+      tags: [],
+      h1Defaults: "",
+      h2Defaults: ""
+    },
+    pages: {},
+    faq: [],
+    reviews: [],
+    images: { map: [] },
+    services: []
   };
+}
+
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store"
+    }
+  });
 }
