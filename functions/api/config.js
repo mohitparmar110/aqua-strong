@@ -1,6 +1,6 @@
 export async function onRequestGet({ env }) {
   try {
-    const raw = await env.KV.get("site_config");
+    const raw = await env.KV.get("config");
     return json(raw ? JSON.parse(raw) : {}, 200);
   } catch (e) {
     return json({ error: String(e?.message || e) }, 500);
