@@ -26,6 +26,15 @@
         <button id="logout" class="px-4 py-2 rounded-xl bg-slate-200">Logout</button>
       </div>
       <p id="loginStatus" class="text-sm mt-2 text-slate-500"></p>
+
+      <!-- tiny status -->
+      <div class="mt-3 flex items-center justify-between flex-wrap gap-2">
+        <p class="text-xs text-slate-500">
+          Config source:
+          <span class="font-mono" id="cfgSource">/api/config</span>
+        </p>
+        <p class="text-xs" id="dirtyState"></p>
+      </div>
     </div>
 
     <!-- Layout -->
@@ -37,6 +46,7 @@
           <nav id="nav" class="space-y-1"></nav>
           <div class="mt-3 border-t pt-3 px-2">
             <p class="text-xs text-slate-500">Tip: Save often after uploads.</p>
+            <p class="text-xs text-slate-500 mt-1">Tip: Switching panels auto-collects current edits.</p>
           </div>
         </div>
       </div>
@@ -57,6 +67,17 @@
   </div>
 
 <script>
+/** ============================================================
+ *  UPDATED + FIXED ADMIN
+ *  ✅ Works with your existing endpoints:
+ *    - GET  /api/config
+ *    - POST /api/admin/save-config      (expects JSON body)
+ *    - POST /api/admin/upload-banner    (expects ?slot=terrace|toilet|heat and multipart "file")
+ *  ✅ Keeps "upload-image" ONLY for images map + service/page head images.
+ *  ✅ Fixes: slug rename issues, panel switching data loss, wrong svc upload ID,
+ *            and ensures collectAll is safe.
+ * ============================================================ */
+
 /** -----------------------------
  *  CONFIG + AUTH
  *  ----------------------------- */
@@ -74,6 +95,7 @@ const PANELS = [
 
 let cfg = null;
 let activePanel = "hero";
+let isDirty = false;
 
 function getToken(){ return localStorage.getItem("ADMIN_TOKEN") || ""; }
 function setToken(t){ localStorage.setItem("ADMIN_TOKEN", t); }
@@ -109,6 +131,19 @@ function show(text, isErr=false){
   const el = document.getElementById("msg");
   el.textContent = text;
   el.className = "text-sm mt-4 " + (isErr ? "text-red-600" : "text-green-700");
+}
+
+function setDirty(v){
+  isDirty = !!v;
+  const el = document.getElementById("dirtyState");
+  if (!el) return;
+  if (isDirty){
+    el.textContent = "Unsaved changes";
+    el.className = "text-xs text-amber-600 font-semibold";
+  } else {
+    el.textContent = "";
+    el.className = "text-xs";
+  }
 }
 
 /** -----------------------------
@@ -232,14 +267,40 @@ async function loadConfig(){
   if (!res.ok) throw new Error("Failed to load /api/config: " + await res.text());
   const data = await res.json();
   cfg = ensureShape(data);
+  setDirty(false);
 }
 
 /** -----------------------------
- *  GENERIC UPLOAD
- *  Expected response: { publicUrl: "https://..." }
+ *  UPLOAD HELPERS
  *  ----------------------------- */
-async function uploadFile({ file, purpose, key }){
+
+/** For hero banners ONLY -> /api/admin/upload-banner?slot=... */
+async function uploadHeroBanner({ file, slot }){
   if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
+
+  const fd = new FormData();
+  fd.append("file", file);
+
+  const qs = new URLSearchParams();
+  qs.set("slot", slot);
+
+  const res = await fetch(`/api/admin/upload-banner?${qs.toString()}`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: fd
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  const out = await res.json();
+  const url = out.publicUrl || out.url || "";
+  if (!url) throw new Error("Upload response missing publicUrl");
+  return url;
+}
+
+/** For images/pages/services (your existing endpoint) -> /api/admin/upload-image?purpose=...&key=... */
+async function uploadImageGeneric({ file, purpose, key }){
+  if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
+
   const fd = new FormData();
   fd.append("file", file);
 
@@ -279,7 +340,6 @@ function renderNav(){
 
   nav.querySelectorAll("[data-panel]").forEach(btn => {
     btn.onclick = () => {
-      // IMPORTANT: save current panel edits into cfg before switching
       try { collectAll(); } catch(e) {}
       activePanel = btn.dataset.panel;
       renderAll();
@@ -341,10 +401,11 @@ async function uploadHero(slot){
   if (!file) return show(`Select a file for ${slot} first`, true);
 
   try{
-    const url = await uploadFile({ file, purpose:"hero", key: slot });
+    const url = await uploadHeroBanner({ file, slot });
     cfg.hero.slides[slot].bg = url;
     document.getElementById(`bg_${slot}`).textContent = url;
     fileInput.value = "";
+    setDirty(true);
     show(`Uploaded ${slot} banner ✅ Now click Save Changes`);
   } catch(e){
     show("Upload failed: " + (e.message || e), true);
@@ -352,7 +413,7 @@ async function uploadHero(slot){
 }
 
 /** -----------------------------
- *  MENU PANEL (nested dropdowns)
+ *  MENU PANEL
  *  ----------------------------- */
 function menuItemRow(item, idx){
   const childRows = (item.children || []).map((ch, cidx) => `
@@ -410,7 +471,7 @@ function panelMenu(){
 }
 
 /** -----------------------------
- *  SEO PANEL (site-wide defaults)
+ *  SEO PANEL
  *  ----------------------------- */
 function panelSEO(){
   const s = cfg.seo;
@@ -470,8 +531,8 @@ function panelSEO(){
 }
 
 /** -----------------------------
- *  PAGE CREATOR / EDITOR
- *  Fix: stable DOM ids using page._id (NOT slug), so slug rename never breaks.
+ *  PAGES PANEL
+ *  - stable DOM ids using page._id (NOT slug)
  *  ----------------------------- */
 function pageEditorCard(p){
   const domKey = domSafeKey(p._id);
@@ -655,7 +716,7 @@ function panelReviews(){
 }
 
 /** -----------------------------
- *  IMAGES PANEL (upload + map)
+ *  IMAGES PANEL
  *  ----------------------------- */
 function imageMapRow(m, idx){
   return `
@@ -707,9 +768,10 @@ async function uploadImgMap(idx){
 
   const key = (document.getElementById(`img_key_${idx}`)?.value || "").trim() || ("img_"+idx);
   try{
-    const url = await uploadFile({ file, purpose:"map", key });
+    const url = await uploadImageGeneric({ file, purpose:"map", key });
     document.getElementById(`img_url_${idx}`).value = url;
     fi.value = "";
+    setDirty(true);
     show("Uploaded ✅ Now click Save Changes");
   } catch(e){
     show("Upload failed: " + (e.message || e), true);
@@ -718,7 +780,6 @@ async function uploadImgMap(idx){
 
 /** -----------------------------
  *  SERVICES PANEL
- *  - Fix: Upload uses correct IDs consistently
  *  ----------------------------- */
 function serviceCard(s, idx){
   const k = String(idx);
@@ -832,11 +893,11 @@ async function uploadServiceHero(idx){
   if (!file) return show("Select an image first.", true);
 
   const slug = (document.getElementById(`svc_slug_${idx}`)?.value || "").trim().replace(/^\/+/,"") || ("service_"+idx);
-
   try{
-    const url = await uploadFile({ file, purpose:"serviceHero", key: slug });
+    const url = await uploadImageGeneric({ file, purpose:"serviceHero", key: slug });
     document.getElementById(`svc_hero_${idx}`).value = url;
     fi.value = "";
+    setDirty(true);
     show("Uploaded ✅ Now click Save Changes");
   } catch(e){
     show("Upload failed: " + (e.message || e), true);
@@ -845,7 +906,6 @@ async function uploadServiceHero(idx){
 
 /** -----------------------------
  *  COLLECT CHANGES (read UI -> cfg)
- *  - Fix: collect based on DOM presence reliably.
  *  ----------------------------- */
 function collectHero(){
   HERO_SLOTS.forEach(slot=>{
@@ -890,7 +950,6 @@ function collectSEO(){
 }
 
 function collectPages(){
-  // Rebuild pages object keyed by new slug, using stable _id from DOM cards
   const cards = Array.from(document.querySelectorAll("[data-page-id]"));
   const next = {};
   const idToOld = {};
@@ -898,7 +957,6 @@ function collectPages(){
 
   cards.forEach(card => {
     const pid = card.getAttribute("data-page-id");
-    const old = idToOld[pid] || {};
     const domKey = domSafeKey(pid);
 
     const slug = (document.getElementById(`page_slug_${domKey}`)?.value || "").trim().replace(/^\/+/,"");
@@ -997,7 +1055,7 @@ function collectServices(){
 }
 
 function collectAll(){
-  // Only collect from panels that exist in DOM now (prevents “undefined” crashes).
+  // Only collect from panels that exist in DOM now
   if (document.getElementById("cards")) collectHero();
   if (document.getElementById("menuWrap")) collectMenu();
   if (document.getElementById("seo_siteName")) collectSEO();
@@ -1008,6 +1066,7 @@ function collectAll(){
   if (document.getElementById("servicesWrap")) collectServices();
 
   cfg = ensureShape(cfg);
+  setDirty(true);
 }
 
 /** -----------------------------
@@ -1024,6 +1083,7 @@ async function saveAll(){
       body: JSON.stringify(cfg)
     });
     if (!res.ok) return show("Save failed: " + await res.text(), true);
+    setDirty(false);
     show("Saved ✅");
   } catch(e){
     show(e.message || "Save failed", true);
@@ -1050,6 +1110,7 @@ function renderPanel(){
 
     document.getElementById("addMenu").onclick = ()=>{
       cfg.menu.push({ label:"", url:"", children:[] });
+      setDirty(true);
       renderAll();
     };
 
@@ -1057,6 +1118,7 @@ function renderPanel(){
       btn.onclick = ()=>{
         collectMenu();
         cfg.menu.splice(Number(btn.dataset.delMenu), 1);
+        setDirty(true);
         renderAll();
       };
     });
@@ -1067,6 +1129,7 @@ function renderPanel(){
         const idx = Number(btn.dataset.addChild);
         cfg.menu[idx].children = cfg.menu[idx].children || [];
         cfg.menu[idx].children.push({ label:"", url:"" });
+        setDirty(true);
         renderAll();
       };
     });
@@ -1076,6 +1139,7 @@ function renderPanel(){
         collectMenu();
         const [i,c] = btn.dataset.delChild.split(":").map(Number);
         cfg.menu[i].children.splice(c,1);
+        setDirty(true);
         renderAll();
       };
     });
@@ -1098,18 +1162,19 @@ function renderPanel(){
         h2: "",
         seo: ensureSeoShape({})
       };
+      setDirty(true);
       renderAll();
     };
 
     document.querySelectorAll("[data-del-page-id]").forEach(btn=>{
       btn.onclick = ()=>{
-        // delete by page _id
         const pid = btn.dataset.delPageId;
         const next = {};
         Object.values(cfg.pages||{}).forEach(p=>{
           if (p._id !== pid) next[p.slug] = p;
         });
         cfg.pages = next;
+        setDirty(true);
         renderAll();
       };
     });
@@ -1127,9 +1192,10 @@ function renderPanel(){
 
         try{
           const slug = (document.getElementById(`page_slug_${domKey}`)?.value || page.slug || "page").trim().replace(/^\/+/,"");
-          const url = await uploadFile({ file, purpose:"pageHead", key: slug });
+          const url = await uploadImageGeneric({ file, purpose:"pageHead", key: slug });
           document.getElementById(`page_head_${domKey}`).value = url;
           fi.value = "";
+          setDirty(true);
           show("Uploaded ✅ Now click Save Changes");
         } catch(e){
           show("Upload failed: " + (e.message || e), true);
@@ -1142,6 +1208,7 @@ function renderPanel(){
 
     document.getElementById("addFaq").onclick = ()=>{
       cfg.faq.push({ q:"", a:"" });
+      setDirty(true);
       renderAll();
     };
 
@@ -1149,6 +1216,7 @@ function renderPanel(){
       btn.onclick = ()=>{
         collectFAQ();
         cfg.faq.splice(Number(btn.dataset.delFaq), 1);
+        setDirty(true);
         renderAll();
       };
     });
@@ -1158,6 +1226,7 @@ function renderPanel(){
 
     document.getElementById("addReview").onclick = ()=>{
       cfg.reviews.push({ name:"", rating:5, text:"", date:"" });
+      setDirty(true);
       renderAll();
     };
 
@@ -1165,6 +1234,7 @@ function renderPanel(){
       btn.onclick = ()=>{
         collectReviews();
         cfg.reviews.splice(Number(btn.dataset.delReview), 1);
+        setDirty(true);
         renderAll();
       };
     });
@@ -1174,6 +1244,7 @@ function renderPanel(){
 
     document.getElementById("addImgMap").onclick = ()=>{
       cfg.images.map.push({ key:"", url:"", notes:"" });
+      setDirty(true);
       renderAll();
     };
 
@@ -1181,6 +1252,7 @@ function renderPanel(){
       btn.onclick = ()=>{
         collectImages();
         cfg.images.map.splice(Number(btn.dataset.delImgmap), 1);
+        setDirty(true);
         renderAll();
       };
     });
@@ -1203,6 +1275,7 @@ function renderPanel(){
         h2:"",
         seo: ensureSeoShape({})
       });
+      setDirty(true);
       renderAll();
     };
 
@@ -1210,6 +1283,7 @@ function renderPanel(){
       btn.onclick = ()=>{
         collectServices();
         cfg.services.splice(Number(btn.dataset.delService), 1);
+        setDirty(true);
         renderAll();
       };
     });
@@ -1221,6 +1295,12 @@ function renderPanel(){
   else {
     panel.innerHTML = `<p class="text-sm text-slate-500">Panel not found.</p>`;
   }
+
+  // global: mark dirty on any input change within panel (simple + effective)
+  panel.querySelectorAll("input,textarea,select").forEach(el=>{
+    el.addEventListener("input", ()=> setDirty(true), { passive:true });
+    el.addEventListener("change", ()=> setDirty(true), { passive:true });
+  });
 }
 
 function renderAll(){
@@ -1228,6 +1308,8 @@ function renderAll(){
   renderPanel();
   document.getElementById("loginStatus").textContent =
     getToken() ? "Token saved in browser ✅" : "Not logged in";
+
+  if (!isDirty) setDirty(false);
 }
 
 /** -----------------------------
@@ -1250,12 +1332,20 @@ document.getElementById("logout").onclick = () => {
 document.getElementById("saveAll").onclick = saveAll;
 document.getElementById("saveAllTop").onclick = saveAll;
 
+/** Warn before leaving with unsaved changes */
+window.addEventListener("beforeunload", (e)=>{
+  if (!isDirty) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
+
 /** -----------------------------
  *  INIT
  *  ----------------------------- */
 (async ()=>{
   try{
     document.getElementById("token").value = getToken();
+    document.getElementById("cfgSource").textContent = "/api/config";
     await loadConfig();
     renderAll();
     show("Loaded ✅");
