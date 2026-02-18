@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
     const data = await request.json();
 
     // ---- SAVE TO KV ----
-    await env.SITE_CONFIG.put("config", JSON.stringify(data));
+    await env.KV.put("config", JSON.stringify(data));
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { "Content-Type": "application/json" }
