@@ -911,8 +911,6 @@ document.addEventListener('DOMContentLoaded', () => {
     text_color: '#1e293b',
     primary_action_color: '#22c55e',
     secondary_action_color: '#0ea5e9',
-
-    // ✅ OPTIONAL (admin-ready): you can later send JSON string from admin
     // hero_slides_json: '[]'
   };
 
@@ -963,7 +961,6 @@ document.addEventListener('DOMContentLoaded', () => {
       leftTitle: 'Stop Water Damage Before It Starts',
       leftSub: 'Professional waterproofing solutions with 10-year warranty. Protect your home from leaks, seepage & dampness forever.',
       bullets: ['10 Year Warranty', 'Free Inspection', '24/7 Support'],
-
       bannerImg: 'assets/images/wterprofingwholehome.png',
       badgeTitle: '✓ Complete Home Protection',
       badgeSub: '10-Year Warranty Included',
@@ -976,7 +973,6 @@ document.addEventListener('DOMContentLoaded', () => {
       leftTitle: 'Terrace Waterproofing',
       leftSub: 'Heat reflective coating + crack repair for long-lasting monsoon protection.',
       bullets: ['Heat reflective', 'Crack repair', 'UV protection'],
-
       bannerImg: 'assets/images/terrace-2.jpg',
       badgeTitle: '✓ Terrace Coating',
       badgeSub: 'Heat reflective • Crack repair',
@@ -989,7 +985,6 @@ document.addEventListener('DOMContentLoaded', () => {
       leftTitle: 'Bathroom Waterproofing',
       leftSub: 'Leak fix without tile removal — quick sealing + membrane application.',
       bullets: ['No tile removal', 'Same day fix', 'Odour + damp control'],
-
       bannerImg: 'assets/images/bathroom-1.jpg',
       badgeTitle: '✓ Bathroom Fix',
       badgeSub: 'No tile removal • Same day',
@@ -1002,7 +997,6 @@ document.addEventListener('DOMContentLoaded', () => {
       leftTitle: 'Wall Waterproofing',
       leftSub: 'Stop dampness, mold, and peeling paint with advanced wall treatment.',
       bullets: ['Interior & exterior', 'Anti-fungal', 'Long-lasting finish'],
-
       bannerImg: 'assets/images/crack-filling-services-on-external-building-surface-500x500.jpg',
       badgeTitle: '✓ Wall Sealing',
       badgeSub: 'Anti-fungal • Damp control',
@@ -1015,7 +1009,6 @@ document.addEventListener('DOMContentLoaded', () => {
       leftTitle: 'Heat Reflection Coating',
       leftSub: 'Cool roof solution that reduces heat absorption and protects from UV.',
       bullets: ['Cool roof', 'UV protection', 'Energy saving'],
-
       bannerImg: 'assets/images/heat-reflection.jpg',
       badgeTitle: '✓ Heat Reflection',
       badgeSub: 'Cool roof • UV protection',
@@ -1052,7 +1045,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderBullets(bullets = []) {
     if (!heroBulletsWrap) return;
 
-    // keep the layout same, rebuild items
     heroBulletsWrap.innerHTML = '';
     bullets.slice(0, 3).forEach(txt => {
       const item = document.createElement('div');
@@ -1070,11 +1062,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setHero(index, { userAction = false } = {}) {
-    const total = heroSlides.length;
+    const total = heroSlides.length || 1;
     heroIndex = (index + total) % total;
-    const s = heroSlides[heroIndex];
+    const s = heroSlides[heroIndex] || heroSlides[0];
 
-    // smooth swaps
+    if (!s) return;
+
     if (heroLeftBg) {
       heroLeftBg.style.opacity = '0.05';
       setTimeout(() => {
@@ -1089,18 +1082,15 @@ document.addEventListener('DOMContentLoaded', () => {
       heroSection.style.setProperty('--heroTo', s.gradTo || '#0369a1');
     }
 
-    if (heroLeftTitle) {
-      heroLeftTitle.innerHTML = s.leftTitle || defaultConfig.hero_headline;
-    }
-    if (heroLeftSub) {
-      heroLeftSub.textContent = s.leftSub || defaultConfig.hero_subtext;
-    }
+    if (heroLeftTitle) heroLeftTitle.innerHTML = s.leftTitle || defaultConfig.hero_headline;
+    if (heroLeftSub) heroLeftSub.textContent = s.leftSub || defaultConfig.hero_subtext;
+
     renderBullets(s.bullets || []);
 
     if (heroBannerImg) {
       heroBannerImg.style.opacity = '0.2';
       setTimeout(() => {
-        heroBannerImg.src = s.bannerImg;
+        heroBannerImg.src = s.bannerImg || s.leftBg || '';
         heroBannerImg.style.opacity = '1';
       }, 120);
     }
@@ -1108,7 +1098,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (heroBadgeTitle) heroBadgeTitle.textContent = s.badgeTitle || '';
     if (heroBadgeSub) heroBadgeSub.textContent = s.badgeSub || '';
 
-    // dots
     if (heroDots) {
       [...heroDots.querySelectorAll('button')].forEach((btn, i) => {
         btn.classList.toggle('bg-white', i === heroIndex);
@@ -1116,40 +1105,35 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // WhatsApp CTA per slide
     const heroWa = document.getElementById('hero-whatsapp');
     if (heroWa) {
       heroWa.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(s.waText || 'Hi! I need waterproofing services')}`;
     }
 
-    // reset timer on user action
     if (userAction) restartHeroAuto();
   }
 
   function restartHeroAuto() {
     if (heroTimer) clearInterval(heroTimer);
+    if (!heroSlides || heroSlides.length <= 1) return;
     heroTimer = setInterval(() => setHero(heroIndex + 1), 5000);
   }
 
-  // prev/next
   document.getElementById('hero-next')?.addEventListener('click', () => setHero(heroIndex + 1, { userAction: true }));
   document.getElementById('hero-prev')?.addEventListener('click', () => setHero(heroIndex - 1, { userAction: true }));
 
-  // triggers
   document.querySelectorAll('.hero-trigger').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.getAttribute('data-slide');
       const idx = heroSlides.findIndex(s => s.key === key);
       if (idx >= 0) setHero(idx, { userAction: true });
 
-      // preselect contact form
       const map = { terrace: 'terrace', bathroom: 'bathroom', wall: 'wall', heat: 'terrace' };
       const sel = document.getElementById('service');
       if (sel && map[key]) sel.value = map[key];
     });
   });
 
-  // init hero
   buildHeroDots();
   setHero(0);
   restartHeroAuto();
@@ -1179,34 +1163,98 @@ document.addEventListener('DOMContentLoaded', () => {
   function onConfigChange(cfg) {
     config = { ...defaultConfig, ...cfg };
 
-    // Optional: allow admin to override heroSlides via JSON string later
-    // if (config.hero_slides_json) {
-    //   try {
-    //     const parsed = JSON.parse(config.hero_slides_json);
-    //     if (Array.isArray(parsed) && parsed.length) heroSlides = parsed;
-    //   } catch(e) {}
-    // }
+    // Safe set helpers
+    const setText = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
 
-    document.getElementById('nav-company-name').textContent = config.company_name;
-    document.getElementById('footer-company-name').textContent = config.company_name;
-    document.getElementById('copyright-company-name').textContent = config.company_name + ' Waterproofing';
+    setText('nav-company-name', config.company_name);
+    setText('footer-company-name', config.company_name);
+    setText('copyright-company-name', config.company_name + ' Waterproofing');
 
-    document.getElementById('hero-cta-text').textContent = config.cta_button_text;
+    setText('hero-cta-text', config.cta_button_text);
 
-    document.getElementById('nav-phone-text').textContent = config.phone_number;
-    document.getElementById('contact-phone').textContent = config.phone_number;
-    document.getElementById('footer-phone').textContent = config.phone_number;
-    document.getElementById('cta-phone-text').textContent = 'Call ' + config.phone_number;
+    setText('nav-phone-text', config.phone_number);
+    setText('contact-phone', config.phone_number);
+    setText('footer-phone', config.phone_number);
+    setText('cta-phone-text', 'Call ' + config.phone_number);
 
     ['whatsapp-float', 'hero-whatsapp', 'cta-whatsapp', 'success-whatsapp'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent('Hi! I need waterproofing services')}`;
     });
 
-    document.getElementById('nav-cta').textContent = config.cta_button_text;
+    setText('nav-cta', config.cta_button_text);
 
-    // refresh hero once after config (keeps whatsapp_number correct)
     setHero(heroIndex);
+  }
+
+  // ✅ Remote config loader (KV/Sheet → /api/config)
+  async function loadRemoteConfig() {
+    try {
+      const res = await fetch('/api/config', { cache: 'no-store' });
+      if (!res.ok) throw new Error('Config fetch failed');
+      const cfg = await res.json();
+
+      // merge company/whatsapp into your existing config shape
+      if (cfg?.company?.whatsapp) {
+        config.whatsapp_number = cfg.company.whatsapp;
+        config.phone_number = cfg.company.phone || config.phone_number;
+        config.company_name = cfg.company.name || config.company_name;
+      }
+
+      // ✅ override slides dynamically
+      if (cfg?.hero?.slides && Array.isArray(cfg.hero.slides) && cfg.hero.slides.length) {
+        heroSlides = cfg.hero.slides.map(s => ({
+          key: s.id || s.key || String(Math.random()),
+          leftBg: s.bg || 'assets/images/wterprofingwholehome.png',
+          gradFrom: s.gradFrom || '#0c4a6e',
+          gradMid: s.gradMid || '#075985',
+          gradTo: s.gradTo || '#0369a1',
+          leftTitle: s.title || defaultConfig.hero_headline,
+          leftSub: s.sub || defaultConfig.hero_subtext,
+          bullets: Array.isArray(s.bullets) ? s.bullets : [],
+          bannerImg: s.banner || s.bg || 'assets/images/wterprofingwholehome.png',
+          badgeTitle: s.badgeTitle || '✓ AquaShield',
+          badgeSub: s.badgeSub || '10-Year Warranty Included',
+          waText: s.waText || 'Hi! I need waterproofing services',
+          ctaText: s.ctaText || defaultConfig.cta_button_text,
+          ctaLink: s.ctaLink || '#contact'
+        }));
+
+        // ✅ refresh hero UI after replacing slides
+        buildHeroDots();
+        setHero(0, { userAction: true });
+        restartHeroAuto();
+      }
+
+      // update UI text from cfg (company)
+      if (cfg?.company?.name) {
+        const name = cfg.company.name;
+        const setText = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = val;
+        };
+        setText('nav-company-name', name);
+        setText('footer-company-name', name);
+        setText('copyright-company-name', name + ' Waterproofing');
+      }
+      if (cfg?.company?.phone) {
+        const phone = cfg.company.phone;
+        const setText = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = val;
+        };
+        setText('nav-phone-text', phone);
+        setText('contact-phone', phone);
+        setText('footer-phone', phone);
+        setText('cta-phone-text', 'Call ' + phone);
+      }
+
+    } catch (e) {
+      console.warn('Using default config:', e);
+    }
   }
 
   // Element SDK init
@@ -1237,7 +1285,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ✅ init defaults then load remote
   onConfigChange(defaultConfig);
+  loadRemoteConfig();
+
 });
 </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6b6d5c431e8513',t:'MTc2OTg4NTc2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
