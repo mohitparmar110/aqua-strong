@@ -192,13 +192,13 @@
   </button>
 
   <div id="mobile-services-menu" class="hidden mt-2 ml-2 border-l border-slate-200 pl-3">
-    <a href="/basement-waterproofing" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Basement Waterproofing</a>
-    <a href="/basement-waterproofing" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Terrace Waterproofing</a>
-    <a href="/wall-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Wall Waterproofing</a>
-    <a href="/swimming-pool-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Swimming Pool Waterproofing</a>
-    <a href="/bathroom-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Bathroom Waterproofing</a>
-    <a href="/water-tank-aterproofing/" class="block px-5 py-3 hover:bg-sky-50">Tank Waterproofing</a>
-  </div>
+  <a href="/basement-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Basement Waterproofing</a>
+  <a href="/terrace-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Terrace Waterproofing</a>
+  <a href="/wall-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Wall Waterproofing</a>
+  <a href="/swimming-pool-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Swimming Pool Waterproofing</a>
+  <a href="/bathroom-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Bathroom Waterproofing</a>
+  <a href="/water-tank-waterproofing/" class="block px-4 py-2 rounded-lg hover:bg-sky-50">Tank Waterproofing</a>
+</div>
 </div>
  <a href="#why-us" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Why Us</a> <a href="#testimonials" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Reviews</a><a href="/blog/" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Blog</a>
  <a href="/clients.html" class="nav-link text-slate-700 font-medium hover:text-sky-600 transition-colors">Clients</a><a href="#contact" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Contact</a>
@@ -824,7 +824,15 @@
         </div>
         <div><label for="phone" class="block text-sm font-medium text-slate-700 mb-2">Phone Number *</label> <input type="tel" id="phone" name="phone" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors" placeholder="+91 97695 31112">
         </div>
-        <div><label for="service" class="block text-sm font-medium text-slate-700 mb-2">Service Required *</label> <select id="service" name="service" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"> <option value="">Select a service</option> <option value="basement">Basement Waterproofing</option> <option value="terrace">Terrace W</option> <option value="wall">Wall W</option> <option value="pool">Swimming Pool W</option> <option value="bathroom">Bathroom W</option> <option value="tank">Tank W</option> <option value="other">Other</option> </select>
+        <div><label for="service" class="block text-sm font-medium text-slate-700 mb-2">Service Required *</label> <select id="service" name="service" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"> <option value="">Select a service</option>
+<option value="basement">Basement Waterproofing</option>
+<option value="terrace">Terrace Waterproofing</option>
+<option value="wall">Wall Waterproofing</option>
+<option value="pool">Swimming Pool Waterproofing</option>
+<option value="bathroom">Bathroom Waterproofing</option>
+<option value="tank">Tank Waterproofing</option>
+<option value="other">Other</option>
+ </select>
         </div>
         <div><label for="message" class="block text-sm font-medium text-slate-700 mb-2">Describe Your Issue</label> <textarea id="message" name="message" rows="3" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors resize-none" placeholder="Tell us about the w problem..."></textarea>
         </div><button type="submit" id="submit-btn" class="w-full cta-gradient text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"> Get Free Quote → </button>
@@ -1123,9 +1131,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.hero-trigger').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.getAttribute('data-slide');
-      const idx = heroSlides.findIndex(s => s.key === key);
-      if (idx >= 0) setHero(idx, { userAction: true });
+      let idx = heroSlides.findIndex(s => s.key === key);
 
+// fallback: if ids don’t match, use slide order (Terrace=1, Bathroom=2, Wall=3, Heat=4)
+if (idx < 0) {
+  const order = { terrace: 1, bathroom: 2, wall: 3, heat: 4 };
+  idx = order[key] ?? 0;
+}
+
+setHero(idx, { userAction: true });
       const map = { terrace: 'terrace', bathroom: 'bathroom', wall: 'wall', heat: 'heat' };
       const sel = document.getElementById('service');
       if (sel && map[key]) sel.value = map[key];
@@ -1233,7 +1247,7 @@ async function loadRemoteConfig() {
           s.desktopBg || s.mobileBg || 'assets/images/wterprofingwholehome.png';
 
         return {
-          key: s.id || s.key || String(Math.random()),
+          key: s.id || s.key || `slide-${cfg.hero.slides.indexOf(s)}`,,
           leftBg: img,
           gradFrom: s.gradFrom || '#0c4a6e',
           gradMid: s.gradMid || '#075985',
