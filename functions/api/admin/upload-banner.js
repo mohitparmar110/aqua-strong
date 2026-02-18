@@ -14,38 +14,40 @@ export async function onRequestPost({ request, env }) {
     const file = form.get("file");
     if (!file) return json({ error: "Missing file field" }, 400);
 
-    // file can be a File (browser) — Cloudflare supports this
     const contentType = file.type || "application/octet-stream";
     const ext = pickExt(contentType) || guessExt(file.name) || "webp";
 
     const objectKey = `hero/${slot}.${ext}`;
     const bytes = await file.arrayBuffer();
 
-    // Upload to R2
-    await env.SITE_R2.put(objectKey, bytes, {
+    // ✅ Use your actual R2 binding name: env.R2
+    await env.R2.put(objectKey, bytes, {
       httpMetadata: { contentType }
     });
 
-    // Build public URL (YOU MUST SET env.PUBLIC_R2_BASE)
-    const base = (env.PUBLIC_R2_BASE || "").replace(/\/+$/, "");
+    // ✅ Use your actual Pages variable name: env.R2_PUBLIC_BASE
+    const base = (env.R2_PUBLIC_BASE || "").replace(/\/+$/, "");
     if (!base) {
-      return json({
-        error: "PUBLIC_R2_BASE is not set. Set it to your R2 public base URL.",
-        objectKey
-      }, 500);
+      return json(
+        {
+          error: "R2_PUBLIC_BASE is not set. Set it to your R2 public base URL.",
+          objectKey
+        },
+        500
+      );
     }
 
-    // Cache busting to avoid old banner stuck in CDN/browser
+    // Cache busting so old banner doesn’t stick
     const publicUrl = `${base}/${objectKey}?v=${Date.now()}`;
 
-    // Update KV config so hero uses new URL
+    // ✅ Use your actual KV binding name: env.KV
     const cfg = await getConfig(env);
     if (!cfg.hero) cfg.hero = {};
     if (!cfg.hero.slides) cfg.hero.slides = {};
     if (!cfg.hero.slides[slot]) cfg.hero.slides[slot] = {};
     cfg.hero.slides[slot].bg = publicUrl;
 
-    await env.SITE_KV.put("site_config", JSON.stringify(cfg));
+    await env.KV.put("site_config", JSON.stringify(cfg));
 
     return json({ ok: true, publicUrl, objectKey }, 200);
   } catch (e) {
@@ -57,7 +59,7 @@ export async function onRequestPost({ request, env }) {
 
 async function getConfig(env) {
   try {
-    const raw = await env.SITE_KV.get("site_config");
+    const raw = await env.KV.get("site_config");
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};
@@ -85,7 +87,7 @@ function guessExt(name) {
   const m = n.match(/\.([a-z0-9]+)$/);
   if (!m) return "";
   const ext = m[1];
-  if (["png","jpg","jpeg","webp"].includes(ext)) return ext === "jpeg" ? "jpg" : ext;
+  if (["png", "jpg", "jpeg", "webp"].includes(ext)) return ext === "jpeg" ? "jpg" : ext;
   return "";
 }
 
