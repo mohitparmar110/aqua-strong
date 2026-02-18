@@ -119,36 +119,44 @@
         </div>
     </aside>
 
-    <!-- --- PREVIEW AREA --- -->
-    <main class="flex-1 flex flex-col">
-        <div class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
-            <div class="flex items-center gap-4">
-                <div class="flex bg-slate-100 p-1 rounded-xl">
-                    <button id="view-desktop" class="p-2 rounded-lg bg-white shadow-sm text-sky-600"><i data-lucide="monitor" class="w-4 h-4"></i></button>
-                    <button id="view-mobile" class="p-2 rounded-lg text-slate-400 hover:text-slate-600"><i data-lucide="smartphone" class="w-4 h-4"></i></button>
-                </div>
-                <div class="text-sm font-bold uppercase tracking-tight text-[11px] text-slate-400">Preview Target: <span id="preview-label" class="text-slate-800 font-black">/index.html</span></div>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <select id="preview-target-select" class="text-[11px] font-black uppercase bg-slate-50 border border-slate-200 rounded-xl p-2 focus:ring-2 focus:ring-sky-500">
-                    <option value="home">Homepage (index.html)</option>
-                </select>
-                <div class="h-6 w-px bg-slate-200"></div>
-                <button id="manual-refresh" class="flex items-center gap-2 text-[10px] font-black text-sky-600 uppercase hover:bg-sky-50 px-3 py-2 rounded-lg transition-all">
-                    <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-                    <span>Reload Preview</span>
+   <!-- --- PREVIEW AREA --- -->
+<main class="flex-1 flex flex-col">
+
+    <div class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
+        <div class="flex items-center gap-4">
+            <div class="flex bg-slate-100 p-1 rounded-xl">
+                <button id="view-desktop" class="p-2 rounded-lg bg-white shadow-sm text-sky-600">
+                    <i data-lucide="monitor" class="w-4 h-4"></i>
                 </button>
+                <button id="view-mobile" class="p-2 rounded-lg text-slate-400 hover:text-slate-600">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div class="text-sm font-bold uppercase tracking-tight text-[11px] text-slate-400">
+                Preview Target:
+                <span id="preview-label" class="text-slate-800 font-black">/index.html</span>
             </div>
         </div>
 
-        <div class="flex-1 p-8 overflow-y-auto flex justify-center bg-slate-100/50 scrollbar-hide">
-           <iframe 
-    id="preview-iframe"
-    src="/"
-    class="desktop-view shadow-2xl bg-white"
-    style="border:0;">
-</iframe>
+        <div class="flex items-center gap-4">
+            <select id="preview-target-select" class="text-[11px] font-black uppercase bg-slate-50 border border-slate-200 rounded-xl p-2">
+                <option value="home">Homepage (index.html)</option>
+            </select>
+            <div class="h-6 w-px bg-slate-200"></div>
+            <button id="manual-refresh" class="flex items-center gap-2 text-[10px] font-black text-sky-600 uppercase hover:bg-sky-50 px-3 py-2 rounded-lg">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                <span>Reload Preview</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- IFRAME WRAPPER -->
+    <div class="flex-1 p-8 overflow-y-auto flex justify-center bg-slate-100/50 scrollbar-hide">
+        <iframe id="preview-iframe" src="/" class="desktop-view shadow-2xl bg-white" style="border:0;"></iframe>
+    </div>
+
+</main>
 
 
     <!-- Token Modal -->
