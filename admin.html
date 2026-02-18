@@ -3,243 +3,128 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>AquaShield • Site CMS</title>
+  <title>AquaShield • Site CMS (Admin)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <style>
-    :root{
-      --brand:#0ea5e9;
-      --brand2:#0369a1;
-      --accent:#22c55e;
-      --ink:#0f172a;
-    }
-    *{font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
-    .bg-grid{
-      background:
-        radial-gradient(900px 500px at 10% 5%, rgba(14,165,233,.18), transparent 55%),
-        radial-gradient(700px 450px at 100% 0%, rgba(34,197,94,.10), transparent 55%),
-        radial-gradient(700px 450px at 90% 100%, rgba(2,132,199,.12), transparent 60%),
-        linear-gradient(to bottom, #f8fafc, #f8fafc);
-    }
-    .glass{
-      background: rgba(255,255,255,.75);
-      backdrop-filter: blur(10px);
-    }
-    .shadow-soft{ box-shadow: 0 10px 30px rgba(2,6,23,.08); }
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      gap:.5rem; border-radius: 14px; padding:.55rem .9rem;
-      font-weight:700; font-size:.9rem;
-      transition:.15s ease;
-      user-select:none;
-    }
-    .btn:active{ transform: translateY(1px); }
-    .btn-primary{ background: linear-gradient(135deg, var(--accent), #16a34a); color:white; }
-    .btn-primary:hover{ filter: brightness(.98); }
-    .btn-dark{ background: #0b1220; color:#fff; }
-    .btn-dark:hover{ background:#050a14; }
-    .btn-soft{ background:#eef2ff; color:#111827; }
-    .btn-soft:hover{ background:#e5e7eb; }
-    .chip{
-      display:inline-flex; align-items:center; gap:.45rem;
-      font-size:.75rem; font-weight:700;
-      padding:.35rem .6rem; border-radius:999px;
-      border:1px solid rgba(15,23,42,.08);
-      background:#fff;
-    }
-    .chip-ok{ color:#16a34a; border-color:rgba(34,197,94,.25); background:rgba(34,197,94,.08); }
-    .chip-warn{ color:#b45309; border-color:rgba(245,158,11,.25); background:rgba(245,158,11,.10); }
-    .chip-bad{ color:#dc2626; border-color:rgba(239,68,68,.25); background:rgba(239,68,68,.10); }
-    .field{
-      width:100%; border:1px solid rgba(15,23,42,.12);
-      border-radius: 14px; padding:.65rem .85rem;
-      background:#fff;
-      outline:none;
-      transition:.15s ease;
-    }
-    .field:focus{
-      border-color: rgba(14,165,233,.55);
-      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
-    }
-    .label{ font-size:.75rem; font-weight:800; color:#334155; }
-    .hint{ font-size:.75rem; color:#64748b; }
-    .section-title{ font-size:1.05rem; font-weight:900; color:#0f172a; }
-    .sub-title{ font-size:.85rem; color:#64748b; }
-    .navbtn{
-      width:100%;
-      text-align:left;
-      padding:.7rem .85rem;
-      border-radius: 14px;
-      font-weight:800;
-      font-size:.9rem;
-      transition:.12s ease;
-      display:flex; align-items:center; justify-content:space-between;
-      border:1px solid transparent;
-    }
-    .navbtn:hover{ background:#f1f5f9; }
-    .navbtn.active{
-      background: #0b1220;
-      color:#fff;
-      border-color: rgba(255,255,255,.08);
-    }
-    .badge{
-      font-size:.72rem; font-weight:900;
-      border-radius:999px; padding:.2rem .55rem;
-      background: rgba(255,255,255,.12); color:#fff;
-    }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:.72rem;
-      background:#0b1220; color:#fff;
-      padding:.15rem .4rem;
-      border-radius:8px;
-    }
-    .preview-phone{
-      width: 360px; max-width:100%;
-      border-radius: 30px;
-      border: 10px solid #0b1220;
-      box-shadow: 0 18px 50px rgba(2,6,23,.22);
-      overflow:hidden;
-      background:#0b1220;
-    }
-    .preview-phone .topbar{
-      height: 26px;
-      background: #0b1220;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .preview-phone .notch{
-      width: 140px; height: 18px;
-      border-radius: 999px;
-      background: #050a14;
-    }
+    * { font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .glass { background: rgba(255,255,255,.78); backdrop-filter: blur(10px); }
+    .soft-shadow { box-shadow: 0 20px 60px rgba(2, 6, 23, .10); }
+    .ring-soft { box-shadow: 0 0 0 1px rgba(15, 23, 42, .08) inset; }
+    .scrollbar::-webkit-scrollbar { width: 10px; height: 10px; }
+    .scrollbar::-webkit-scrollbar-thumb { background: rgba(15,23,42,.16); border-radius: 999px; }
+    .scrollbar::-webkit-scrollbar-track { background: rgba(15,23,42,.04); border-radius: 999px; }
   </style>
 </head>
 
-<body class="bg-grid text-slate-900">
-  <div class="max-w-7xl mx-auto p-6">
-    <!-- Top Bar -->
-    <div class="flex items-start justify-between gap-4 flex-wrap">
+<body class="bg-slate-50 text-slate-900">
+  <!-- Top bar -->
+  <div class="sticky top-0 z-40 border-b bg-white/80 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-800 shadow-soft"></div>
+        <div class="h-10 w-10 rounded-2xl bg-slate-900 text-white grid place-items-center font-extrabold">AS</div>
         <div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <h1 class="text-2xl font-extrabold leading-tight">Site CMS</h1>
-            <span id="statusChip" class="chip chip-warn">Loading…</span>
-            <span id="dirtyChip" class="chip hidden">Unsaved</span>
-          </div>
-          <p class="text-slate-600 text-sm">Hero • Home Sections • Menu • SEO • Pages • FAQ • Reviews • Images • Services</p>
+          <div class="text-sm font-extrabold leading-4">AquaShield • Site CMS</div>
+          <div class="text-xs text-slate-500">Hero • Menu • SEO • Pages • FAQ • Reviews • Images • Services</div>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <button id="saveAllTop" class="btn btn-primary shadow-soft">
-          <span>Save Changes</span>
+        <button id="btnPreview" class="hidden sm:inline-flex px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold">
+          Preview
+        </button>
+        <button id="saveAllTop" class="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold soft-shadow">
+          Save Changes
         </button>
       </div>
     </div>
+  </div>
 
-    <!-- Login Card -->
-    <div class="mt-6 grid lg:grid-cols-12 gap-6">
-      <div class="lg:col-span-8 bg-white rounded-3xl border shadow-soft p-5">
-        <div class="flex items-start justify-between gap-4 flex-wrap">
-          <div class="flex-1 min-w-[260px]">
-            <div class="flex items-center gap-2">
-              <div class="section-title">Admin Access</div>
-              <span class="chip">
-                <span class="text-slate-500">Config:</span>
-                <span class="font-mono text-slate-900" id="cfgSource">/api/config</span>
-              </span>
-            </div>
-            <p class="sub-title mt-1">Token is stored in your browser. Keep it private.</p>
-
-            <div class="mt-4">
-              <label class="label">ADMIN TOKEN</label>
-              <div class="flex gap-2 mt-2 flex-wrap">
-                <input id="token" class="field flex-1 min-w-[240px]" placeholder="Paste token here"/>
-                <button id="saveToken" class="btn btn-dark">Save</button>
-                <button id="logout" class="btn btn-soft">Logout</button>
-              </div>
-              <p id="loginStatus" class="hint mt-2"></p>
-            </div>
-
-            <div class="mt-4 flex items-center gap-2 flex-wrap">
-              <span class="chip">
-                <span class="text-slate-500">Endpoint:</span>
-                <span class="font-mono text-slate-900">/api/admin/save-config</span>
-              </span>
-              <span class="chip">
-                <span class="text-slate-500">Upload:</span>
-                <span class="font-mono text-slate-900">/api/admin/upload-banner?slot=…</span>
-              </span>
-              <span class="chip">
-                <span class="text-slate-500">Hint:</span>
-                <span>Upload → Save</span>
-              </span>
-            </div>
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Alerts -->
+    <div id="toast" class="fixed right-4 top-20 z-50 hidden max-w-[360px]">
+      <div id="toastBox" class="rounded-2xl border bg-white soft-shadow p-4">
+        <div class="flex items-start gap-3">
+          <div id="toastDot" class="mt-1 h-2.5 w-2.5 rounded-full bg-green-600"></div>
+          <div class="min-w-0">
+            <div id="toastTitle" class="text-sm font-bold">Done</div>
+            <div id="toastMsg" class="text-sm text-slate-600 mt-1 break-words">...</div>
           </div>
-
-          <div class="min-w-[250px]">
-            <div class="rounded-3xl border bg-slate-50 p-4">
-              <div class="text-xs text-slate-500 font-bold uppercase">System</div>
-              <div class="mt-1 font-extrabold text-slate-900" id="sysState">Loading…</div>
-              <div id="msg" class="text-sm mt-2"></div>
-              <div class="mt-3 text-xs text-slate-500">
-                Tip: Press <span class="kbd">Ctrl</span> + <span class="kbd">S</span> to save.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick actions -->
-      <div class="lg:col-span-4 bg-white rounded-3xl border shadow-soft p-5">
-        <div class="section-title">Quick Actions</div>
-        <p class="sub-title mt-1">Most common changes.</p>
-
-        <div class="mt-4 grid gap-2">
-          <button class="btn btn-dark w-full" id="jumpHero">Go to Hero Slider</button>
-          <button class="btn btn-soft w-full" id="jumpMenu">Go to Menu</button>
-          <button class="btn btn-soft w-full" id="jumpServices">Go to Services</button>
-          <button class="btn btn-primary w-full" id="saveAllTop2">Save Changes</button>
-        </div>
-
-        <div class="mt-4 border-t pt-4">
-          <div class="text-sm font-extrabold text-slate-900">Why you saw “No menu items yet”</div>
-          <p class="text-sm text-slate-600 mt-1">
-            Admin shows what exists in <span class="font-mono">/api/config</span>.
-            If your frontend menu is hard-coded, it won’t appear here until it’s moved into config.
-          </p>
+          <button id="toastClose" class="ml-auto text-slate-400 hover:text-slate-700">✕</button>
         </div>
       </div>
     </div>
 
-    <!-- Main Layout -->
+    <!-- Login / token -->
+    <div class="rounded-3xl border bg-white soft-shadow p-5">
+      <div class="flex items-start justify-between gap-4 flex-wrap">
+        <div class="min-w-[260px]">
+          <div class="text-xs font-bold text-slate-500">ADMIN TOKEN</div>
+          <div class="mt-2 flex gap-2 flex-wrap">
+            <input id="token" class="flex-1 min-w-[240px] border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   placeholder="Paste token here (example: admin123)"/>
+            <button id="saveToken" class="px-4 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold">
+              Save
+            </button>
+            <button id="logout" class="px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold">
+              Logout
+            </button>
+          </div>
+          <div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
+            <span id="loginStatus" class="inline-flex items-center gap-2">Not logged in</span>
+            <span class="text-slate-300">•</span>
+            <span>Config source: <span class="font-mono" id="cfgSource">/api/config</span></span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div id="dirtyPill" class="hidden px-3 py-2 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold">
+            Unsaved changes
+          </div>
+          <button id="saveAll" class="px-4 py-3 rounded-2xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold soft-shadow">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout -->
     <div class="grid lg:grid-cols-12 gap-6 mt-6">
       <!-- Sidebar -->
       <aside class="lg:col-span-3">
-        <div class="glass rounded-3xl border shadow-soft p-3 sticky top-4">
-          <div class="px-2 pb-2 text-xs font-extrabold text-slate-500 uppercase tracking-wider">Panels</div>
-          <nav id="nav" class="space-y-1"></nav>
+        <div class="rounded-3xl border bg-white soft-shadow p-4 sticky top-20">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-extrabold text-slate-500">PANELS</div>
+            <button id="openDrawer" class="lg:hidden px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold">Menu</button>
+          </div>
+          <nav id="nav" class="mt-3 space-y-1"></nav>
 
-          <div class="mt-3 border-t pt-3 px-2">
-            <div class="text-xs text-slate-500">Auto-collects edits when switching panels.</div>
-            <div class="text-xs text-slate-500 mt-1">Uploads don’t save config—click Save.</div>
+          <div class="mt-4 rounded-2xl bg-slate-50 border p-3">
+            <div class="text-xs font-bold">Quick tips</div>
+            <ul class="text-xs text-slate-600 mt-2 space-y-1">
+              <li>• Upload → then click <b>Save Changes</b>.</li>
+              <li>• Switching panels auto-collects edits.</li>
+              <li>• If a section shows empty, it means that section is empty in <span class="font-mono">/api/config</span>.</li>
+            </ul>
           </div>
         </div>
       </aside>
 
-      <!-- Panel -->
+      <!-- Content -->
       <main class="lg:col-span-9">
-        <div class="bg-white rounded-3xl border shadow-soft p-5">
+        <div class="rounded-3xl border bg-white soft-shadow p-5">
           <div class="flex items-start justify-between gap-3 flex-wrap">
             <div>
-              <h2 id="panelTitle" class="text-xl font-extrabold">Loading…</h2>
-              <p id="panelSub" class="text-sm text-slate-600 mt-1"></p>
+              <div id="panelTitle" class="text-lg font-extrabold">Loading…</div>
+              <div id="panelSub" class="text-sm text-slate-500 mt-1">Please wait…</div>
             </div>
-            <button id="saveAll" class="btn btn-primary shadow-soft">Save Changes</button>
+            <div class="flex items-center gap-2">
+              <button id="panelSaveBtn" class="px-4 py-2 rounded-2xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold">
+                Save Changes
+              </button>
+            </div>
           </div>
 
           <div id="panel" class="mt-5"></div>
@@ -248,40 +133,105 @@
     </div>
   </div>
 
+  <!-- Preview modal -->
+  <div id="previewModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-slate-900/50"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="w-full max-w-5xl rounded-3xl bg-white border soft-shadow overflow-hidden">
+        <div class="px-5 py-4 border-b flex items-center justify-between">
+          <div>
+            <div class="text-sm font-extrabold">Hero Preview</div>
+            <div class="text-xs text-slate-500">Desktop + Mobile preview from your current config (not saved yet)</div>
+          </div>
+          <button id="closePreview" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-bold">Close</button>
+        </div>
+
+        <div class="p-5 grid md:grid-cols-2 gap-5">
+          <div>
+            <div class="text-xs font-extrabold text-slate-500">DESKTOP (hero card)</div>
+            <div class="mt-2 rounded-3xl border overflow-hidden">
+              <div id="prevDesktop" class="aspect-[16/9] bg-slate-100 relative">
+                <!-- injected -->
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-extrabold text-slate-500">MOBILE (banner slider)</div>
+            <div class="mt-2 rounded-3xl border overflow-hidden">
+              <div class="mx-auto w-[330px] bg-slate-50">
+                <div id="prevMobile" class="aspect-[9/16] bg-slate-100 relative">
+                  <!-- injected -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-5 pb-5">
+          <div class="text-xs text-slate-500">
+            Tip: if you don’t see images here, upload the banner URLs in the Hero panel (Desktop + Mobile).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
-/** ============================================================
- *  FINAL ADMIN (Better UI + Better Hero Slider Understanding)
- *  Works with:
- *   - GET  /api/config
- *   - POST /api/admin/save-config   (JSON)
- *   - POST /api/admin/upload-banner?slot=... (multipart file)
- *
- *  Hero format supported:
- *   - NEW (preferred): hero.slides = [{id,...,imageDesktop,imageMobile}]
- *   - OLD: hero.slides.terrace.bg ... (auto-migrated into array)
- * ============================================================ */
+/* ============================================================
+  AquaShield Admin (Improved UI + Understandable Hero Slider)
+
+  ✅ Uses your existing endpoints:
+    - GET  /api/config
+    - POST /api/admin/save-config    (JSON body)
+    - POST /api/admin/upload-banner  (multipart file)
+      Supports:
+        /api/admin/upload-banner?slot=<something>
+        /api/admin/upload-banner?slot=<something>&variant=desktop|mobile
+      If your backend ignores variant, it still works.
+
+  ✅ Hero is now "Slides" (dynamic) instead of terrace/toilet/heat:
+    cfg.hero.slides = [ { id, label, desktopBg, mobileBg, title, sub, bullets[], ctaText, ctaLink, tag, linkedServiceSlug } ]
+
+  ✅ Mobile banner slider style:
+    - Each slide has Mobile Banner image upload + preview
+    - Built-in preview modal (Desktop + Mobile)
+
+  ✅ All other panels kept (Menu/SEO/Pages/FAQ/Reviews/Images/Services)
+============================================================ */
 
 const PANELS = [
-  { id:"hero", title:"Hero (Slider + Buttons)", sub:"Create hero slides linked to services. Upload desktop + mobile banners + preview." },
-  { id:"menu", title:"Menu + Dropdowns", sub:"Header menu items + nested dropdowns. If empty, your config has no menu array yet." },
-  { id:"seo", title:"SEO (Site Defaults)", sub:"Site-wide meta defaults (title, description, canonical base, OG image, tags)." },
-  { id:"pages", title:"Page Creator / Editor", sub:"Create static pages like /about, /faq, /privacy." },
-  { id:"faq", title:"FAQ Panel", sub:"FAQ entries shown on site." },
-  { id:"reviews", title:"Reviews Updater", sub:"Testimonials shown on site." },
-  { id:"images", title:"Image Uploader + Mapper", sub:"Upload images and map them to keys used in templates." },
-  { id:"services", title:"Service Editor", sub:"Edit services used across site + can link to hero slides." },
+  { id:"hero",    title:"Hero (Slider + Buttons)", sub:"Create slides for your homepage hero. Desktop + Mobile banner images." },
+  { id:"menu",    title:"Menu + Dropdowns",        sub:"Top navigation links + dropdown items." },
+  { id:"seo",     title:"SEO (Site Defaults)",     sub:"Default title/description/canonical + tags used across site." },
+  { id:"pages",   title:"Page Creator / Editor",   sub:"Create static pages like /about, /privacy, /faq." },
+  { id:"faq",     title:"FAQ Panel",               sub:"FAQ entries shown on site." },
+  { id:"reviews", title:"Reviews Updater",         sub:"Testimonials shown on site." },
+  { id:"images",  title:"Image Uploader + Mapper", sub:"Upload images and map to keys used across site." },
+  { id:"services",title:"Service Editor",          sub:"Create/edit services (and optionally link hero slides to a service)." },
 ];
 
 let cfg = null;
 let activePanel = "hero";
 let isDirty = false;
 
-/** ----------------- Helpers ----------------- */
+/* -----------------------------
+  Auth
+----------------------------- */
 function getToken(){ return localStorage.getItem("ADMIN_TOKEN") || ""; }
 function setToken(t){ localStorage.setItem("ADMIN_TOKEN", t); }
 function clearToken(){ localStorage.removeItem("ADMIN_TOKEN"); }
-function authHeaders(){ const t = getToken(); return t ? { "authorization":"Bearer " + t } : {}; }
+function authHeaders(){
+  const t = getToken();
+  return t ? { "authorization": "Bearer " + t } : {};
+}
 
+/* -----------------------------
+  Helpers
+----------------------------- */
+function uid(prefix="id"){
+  return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now();
+}
 function escapeHtml(str){
   return (str||"")
     .replaceAll("&","&amp;")
@@ -289,32 +239,43 @@ function escapeHtml(str){
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;");
 }
-function uid(prefix="id"){ return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now(); }
-
-function setStatus(type, text){
-  const chip = document.getElementById("statusChip");
-  chip.textContent = text || "";
-  chip.className = "chip " + (type==="ok" ? "chip-ok" : type==="bad" ? "chip-bad" : "chip-warn");
+function domSafeKey(str){
+  return String(str || "")
+    .trim()
+    .replace(/^\/+/,"")
+    .replace(/[^a-zA-Z0-9_-]/g, "_")
+    .slice(0, 64) || ("k_" + Math.random().toString(16).slice(2));
 }
+function toast(msg, type="ok", title="Done"){
+  const wrap = document.getElementById("toast");
+  const dot = document.getElementById("toastDot");
+  const tTitle = document.getElementById("toastTitle");
+  const tMsg = document.getElementById("toastMsg");
 
-function show(text, isErr=false){
-  const el = document.getElementById("msg");
-  el.textContent = text || "";
-  el.className = "text-sm mt-2 " + (isErr ? "text-red-600" : "text-green-700");
+  tTitle.textContent = title;
+  tMsg.textContent = msg;
+
+  dot.className = "mt-1 h-2.5 w-2.5 rounded-full " + (
+    type === "err" ? "bg-red-600" :
+    type === "warn" ? "bg-amber-600" : "bg-green-600"
+  );
+
+  wrap.classList.remove("hidden");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>wrap.classList.add("hidden"), 2800);
 }
+document.getElementById("toastClose").onclick = ()=>document.getElementById("toast").classList.add("hidden");
 
 function setDirty(v){
   isDirty = !!v;
-  const chip = document.getElementById("dirtyChip");
-  if (isDirty){
-    chip.className = "chip chip-warn";
-    chip.textContent = "Unsaved changes";
-    chip.classList.remove("hidden");
-  } else {
-    chip.classList.add("hidden");
-  }
+  const pill = document.getElementById("dirtyPill");
+  if (isDirty) pill.classList.remove("hidden");
+  else pill.classList.add("hidden");
 }
 
+/* -----------------------------
+  Ensure Config Shape
+----------------------------- */
 function ensureSeoShape(s){
   if (!s || typeof s !== "object") s = {};
   s.title = s.title || "";
@@ -328,84 +289,75 @@ function ensureSeoShape(s){
   return s;
 }
 
-/** ----------------- Ensure Config Shape ----------------- */
+function ensureHeroSlides(hero){
+  if (!hero || typeof hero !== "object") hero = {};
+  // Support both old object-shape and new array-shape
+  // If old shape exists hero.slides as object, convert to array once.
+  if (!hero.slides) hero.slides = [];
+
+  if (Array.isArray(hero.slides)) {
+    hero.slides = hero.slides.map(s => ({
+      id: s.id || uid("slide"),
+      label: s.label || s.tag || "Slide",
+      tag: s.tag || "",
+      linkedServiceSlug: (s.linkedServiceSlug || "").replace(/^\/+/,""),
+      desktopBg: s.desktopBg || s.bg || "",
+      mobileBg: s.mobileBg || "",
+      title: s.title || "",
+      sub: s.sub || "",
+      bullets: Array.isArray(s.bullets) ? s.bullets : [],
+      ctaText: s.ctaText || "Get Quote",
+      ctaLink: s.ctaLink || "/#contact"
+    }));
+  } else if (typeof hero.slides === "object") {
+    // convert old slots object -> slides array
+    const out = [];
+    Object.keys(hero.slides).forEach(k=>{
+      const s = hero.slides[k] || {};
+      out.push({
+        id: k || uid("slide"),
+        label: (s.title || k || "Slide"),
+        tag: "",
+        linkedServiceSlug: "",
+        desktopBg: s.bg || "",
+        mobileBg: "",
+        title: s.title || "",
+        sub: s.sub || "",
+        bullets: Array.isArray(s.bullets) ? s.bullets : [],
+        ctaText: s.ctaText || "Get Quote",
+        ctaLink: s.ctaLink || "/#contact"
+      });
+    });
+    hero.slides = out;
+  }
+
+  // Always at least 1 slide for clarity
+  if (!hero.slides.length) {
+    hero.slides.push({
+      id: uid("slide"),
+      label: "Terrace Waterproofing",
+      tag: "Popular",
+      linkedServiceSlug: "terrace-waterproofing",
+      desktopBg: "",
+      mobileBg: "",
+      title: "Stop Water Damage Before It Starts",
+      sub: "Leak protection, crack repair and long-life coating systems.",
+      bullets: ["Inspection + Quote", "Premium materials", "Fast turnaround"],
+      ctaText: "Get Free Inspection",
+      ctaLink: "/#contact"
+    });
+  }
+
+  return hero;
+}
+
 function ensureShape(c){
   if (!c || typeof c !== "object") c = {};
 
-  // Services
-  if (!Array.isArray(c.services)) c.services = [];
-  c.services = c.services.map(s => {
-    s = s && typeof s === "object" ? s : {};
-    s.slug = (s.slug || "").replace(/^\/+/,"");
-    s.name = s.name || "";
-    s.short = s.short || "";
-    s.heroImage = s.heroImage || "";
-    s.contentHtml = s.contentHtml || "";
-    s.h1 = s.h1 || "";
-    s.h2 = s.h2 || "";
-    s.seo = ensureSeoShape(s.seo);
-    return s;
-  });
+  // HERO
+  c.hero = ensureHeroSlides(c.hero);
 
-  // Hero
-  if (!c.hero || typeof c.hero !== "object") c.hero = {};
-  if (!c.hero.autoRotateMs) c.hero.autoRotateMs = 5000;
-
-  // Migrate old hero slots -> array
-  if (!Array.isArray(c.hero.slides)) {
-    const old = (c.hero.slides && typeof c.hero.slides === "object") ? c.hero.slides : null;
-    const slidesArr = [];
-    if (old) {
-      Object.keys(old).forEach(k=>{
-        const s = old[k] || {};
-        slidesArr.push({
-          id: uid("slide"),
-          name: (s.title || k),
-          serviceSlug: "",
-          title: s.title || "",
-          sub: s.sub || "",
-          bullets: Array.isArray(s.bullets) ? s.bullets : [],
-          ctaText: s.ctaText || "Get Quote",
-          ctaLink: s.ctaLink || "",
-          imageDesktop: s.bg || s.imageDesktop || "",
-          imageMobile: s.imageMobile || "",
-        });
-      });
-    }
-    if (!slidesArr.length && c.services.length){
-      c.services.slice(0,3).forEach(s=>{
-        slidesArr.push({
-          id: uid("slide"),
-          name: s.name || "Service Slide",
-          serviceSlug: s.slug || "",
-          title: s.name || "",
-          sub: s.short || "",
-          bullets: [],
-          ctaText: "Get Quote",
-          ctaLink: "",
-          imageDesktop: s.heroImage || "",
-          imageMobile: "",
-        });
-      });
-    }
-    if (!slidesArr.length){
-      slidesArr.push({
-        id: uid("slide"),
-        name: "Basement Waterproofing",
-        serviceSlug: "",
-        title: "Basement Waterproofing",
-        sub: "Stop dampness and seepage before it spreads.",
-        bullets: ["Leak inspection", "Injection treatment", "10-year warranty"],
-        ctaText: "Get Quote",
-        ctaLink: "",
-        imageDesktop: "",
-        imageMobile: ""
-      });
-    }
-    c.hero.slides = slidesArr;
-  }
-
-  // Menu
+  // MENU
   if (!Array.isArray(c.menu)) c.menu = [];
   c.menu = c.menu.map(item => ({
     label: item?.label ? String(item.label) : "",
@@ -425,8 +377,10 @@ function ensureShape(c){
   c.seo.robots = c.seo.robots || "index,follow";
   c.seo.canonicalBase = c.seo.canonicalBase || "";
   c.seo.tags = Array.isArray(c.seo.tags) ? c.seo.tags : [];
+  c.seo.h1Defaults = c.seo.h1Defaults || "";
+  c.seo.h2Defaults = c.seo.h2Defaults || "";
 
-  // Pages
+  // PAGES (object keyed by slug)
   if (!c.pages || typeof c.pages !== "object") c.pages = {};
   const normalizedPages = {};
   Object.keys(c.pages).forEach(k => {
@@ -447,38 +401,103 @@ function ensureShape(c){
   if (!Array.isArray(c.faq)) c.faq = [];
   c.faq = c.faq.map(x => ({ q: x?.q ? String(x.q) : "", a: x?.a ? String(x.a) : "" }));
 
-  // Reviews
+  // REVIEWS
   if (!Array.isArray(c.reviews)) c.reviews = [];
   c.reviews = c.reviews.map(r => ({
     name: r?.name ? String(r.name) : "",
-    rating: Math.min(5, Math.max(1, Number(r?.rating ?? 5))),
+    rating: Number(r?.rating ? r.rating : 5),
     text: r?.text ? String(r.text) : "",
-    date: r?.date ? String(r.date) : "",
+    date: r?.date ? String(r.date) : ""
   }));
 
-  // Images map
+  // IMAGES MAP
   if (!c.images || typeof c.images !== "object") c.images = {};
   if (!Array.isArray(c.images.map)) c.images.map = [];
-  c.images.map = c.images.map.map(m => ({ key: m?.key||"", url: m?.url||"", notes: m?.notes||"" }));
+  c.images.map = c.images.map.map(m => ({
+    key: m?.key ? String(m.key) : "",
+    url: m?.url ? String(m.url) : "",
+    notes: m?.notes ? String(m.notes) : ""
+  }));
+
+  // SERVICES
+  if (!Array.isArray(c.services)) c.services = [];
+  c.services = c.services.map(s => {
+    const out = (s && typeof s === "object") ? s : {};
+    out.slug = (out.slug || "").replace(/^\/+/,"");
+    out.name = out.name || "";
+    out.short = out.short || "";
+    out.heroImage = out.heroImage || "";
+    out.contentHtml = out.contentHtml || "";
+    out.h1 = out.h1 || "";
+    out.h2 = out.h2 || "";
+    out.seo = ensureSeoShape(out.seo);
+    return out;
+  });
 
   return c;
 }
 
-/** ----------------- API ----------------- */
+/* -----------------------------
+  API
+----------------------------- */
 async function loadConfig(){
   const res = await fetch("/api/config", { cache:"no-store" });
   if (!res.ok) throw new Error("Failed to load /api/config: " + await res.text());
   const data = await res.json();
   cfg = ensureShape(data);
+  setDirty(false);
 }
 
-async function uploadBanner({ file, slot }){
+async function saveConfig(){
+  if (!getToken()) { toast("Paste ADMIN TOKEN and click Save.", "err", "Missing token"); return; }
+  try {
+    collectAll();
+    const res = await fetch("/api/admin/save-config", {
+      method: "POST",
+      headers: { ...authHeaders(), "content-type":"application/json" },
+      body: JSON.stringify(cfg)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    setDirty(false);
+    toast("Saved successfully.", "ok", "Saved");
+  } catch(e){
+    toast(String(e.message || e), "err", "Save failed");
+  }
+}
+
+/* Upload banner (hero only) */
+async function uploadBanner({ file, slot, variant }){
   if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
   const fd = new FormData();
   fd.append("file", file);
+
   const qs = new URLSearchParams();
   qs.set("slot", slot);
+  if (variant) qs.set("variant", variant);
+
   const res = await fetch(`/api/admin/upload-banner?${qs.toString()}`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: fd
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const out = await res.json();
+  const url = out.publicUrl || out.url || "";
+  if (!url) throw new Error("Upload response missing publicUrl");
+  return url;
+}
+
+/* Upload generic image (images/pages/services). If your backend doesn't have this endpoint, you can remove it. */
+async function uploadImageGeneric({ file, purpose, key }){
+  if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
+  const fd = new FormData();
+  fd.append("file", file);
+
+  const qs = new URLSearchParams();
+  if (purpose) qs.set("purpose", purpose);
+  if (key) qs.set("key", key);
+
+  const res = await fetch(`/api/admin/upload-image?${qs.toString()}`, {
     method:"POST",
     headers: authHeaders(),
     body: fd
@@ -490,161 +509,199 @@ async function uploadBanner({ file, slot }){
   return url;
 }
 
-async function saveConfig(){
-  if (!getToken()) return show("Paste ADMIN TOKEN and click Save first.", true);
-  try{
-    collectAll();
-    const res = await fetch("/api/admin/save-config", {
-      method:"POST",
-      headers: { ...authHeaders(), "content-type":"application/json" },
-      body: JSON.stringify(cfg)
-    });
-    if (!res.ok) return show("Save failed: " + await res.text(), true);
-    setDirty(false);
-    show("Saved ✅");
-  }catch(e){
-    show(e.message || "Save failed", true);
-  }
-}
-
-/** ----------------- Nav ----------------- */
+/* -----------------------------
+  NAV
+----------------------------- */
 function renderNav(){
   const nav = document.getElementById("nav");
   nav.innerHTML = PANELS.map(p=>{
-    const active = p.id===activePanel;
+    const active = p.id === activePanel;
     return `
-      <button class="navbtn ${active?"active":""}" data-panel="${p.id}">
-        <span>${escapeHtml(p.title)}</span>
-        ${active ? `<span class="badge">OPEN</span>` : ``}
+      <button data-panel="${p.id}"
+        class="w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition
+        ${active ? "bg-slate-900 text-white" : "hover:bg-slate-100 text-slate-800"}">
+        ${escapeHtml(p.title)}
+        <div class="${active ? "text-white/70" : "text-slate-500"} text-xs font-semibold mt-1">
+          ${escapeHtml(p.sub)}
+        </div>
       </button>
     `;
   }).join("");
 
   nav.querySelectorAll("[data-panel]").forEach(btn=>{
     btn.onclick = ()=>{
-      try{ collectAll(); }catch(e){}
+      try { collectAll(); } catch(e){}
       activePanel = btn.dataset.panel;
       renderAll();
     };
   });
 }
 
-/** ----------------- Panels ----------------- */
-function serviceOptions(selected){
-  const opts = [{slug:"", name:"(Not linked to a service)"}].concat(cfg.services.map(s=>({slug:s.slug, name:(s.name||s.slug||"Service")})));
-  return opts.map(o=>{
-    const v = o.slug || "";
-    return `<option value="${escapeHtml(v)}" ${v===selected?"selected":""}>${escapeHtml(o.name)}</option>`;
+/* -----------------------------
+  HERO PANEL (Dynamic slider)
+----------------------------- */
+function heroSlideCard(s, idx){
+  const k = domSafeKey(s.id);
+  const serviceOptions = (cfg.services || []).map(ss => {
+    const val = ss.slug || "";
+    const label = ss.name ? `${ss.name}  (/${ss.slug})` : `/${ss.slug}`;
+    return `<option value="${escapeHtml(val)}" ${val===s.linkedServiceSlug ? "selected":""}>${escapeHtml(label)}</option>`;
   }).join("");
-}
 
-function heroSlideCard(slide, idx){
-  const k = slide.id || ("idx_"+idx);
-  const desktopSlot = `hero-${k}-desktop`;
-  const mobileSlot = `hero-${k}-mobile`;
+  const bullets = (s.bullets || []).join("\n");
 
   return `
-    <div class="border rounded-3xl p-5 bg-white shadow-soft">
+    <div class="rounded-3xl border p-4 bg-white">
       <div class="flex items-start justify-between gap-3">
-        <div>
-          <div class="text-xs text-slate-500 font-extrabold uppercase tracking-wider">Slide ${idx+1}</div>
-          <div class="text-lg font-extrabold mt-0.5">${escapeHtml(slide.name || "Hero Slide")}</div>
-          <div class="text-xs text-slate-500 mt-1">ID: <span class="font-mono">${escapeHtml(k)}</span></div>
+        <div class="min-w-0">
+          <div class="text-sm font-extrabold flex items-center gap-2">
+            <span class="inline-flex items-center justify-center h-7 px-3 rounded-2xl bg-slate-900 text-white text-xs font-extrabold">Slide ${idx+1}</span>
+            <span class="truncate">${escapeHtml(s.label || "Slide")}</span>
+          </div>
+          <div class="text-xs text-slate-500 mt-1">ID: <span class="font-mono">${escapeHtml(s.id)}</span></div>
         </div>
-        <button data-del-slide="${idx}" class="btn btn-soft" style="background:rgba(239,68,68,.10); color:#dc2626;">Delete</button>
+        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold"
+                data-del-slide="${idx}">
+          Delete
+        </button>
       </div>
 
       <div class="mt-4 grid md:grid-cols-2 gap-3">
         <div>
-          <div class="label">Slide Name (admin only)</div>
-          <input id="hero_name_${k}" class="field mt-2" value="${escapeHtml(slide.name||"")}"/>
+          <label class="text-xs font-extrabold text-slate-600">Slide Label (for admin)</label>
+          <input id="hs_label_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.label)}" placeholder="Terrace Waterproofing / Basement / Bathroom ..."/>
         </div>
         <div>
-          <div class="label">Link to Service (optional)</div>
-          <select id="hero_service_${k}" class="field mt-2">
-            ${serviceOptions(slide.serviceSlug||"")}
-          </select>
-          <div class="hint mt-1">If linked, frontend can auto-route CTA to the service page.</div>
+          <label class="text-xs font-extrabold text-slate-600">Badge / Tag (optional)</label>
+          <input id="hs_tag_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.tag)}" placeholder="Popular / New / Monsoon Ready"/>
         </div>
       </div>
 
       <div class="mt-3">
-        <div class="label">Title</div>
-        <input id="hero_title_${k}" class="field mt-2" value="${escapeHtml(slide.title||"")}"/>
-      </div>
-
-      <div class="mt-3">
-        <div class="label">Sub Title</div>
-        <textarea id="hero_sub_${k}" class="field mt-2" rows="2">${escapeHtml(slide.sub||"")}</textarea>
-      </div>
-
-      <div class="mt-3">
-        <div class="label">Bullets (one per line, max 6)</div>
-        <textarea id="hero_bullets_${k}" class="field mt-2" rows="3">${escapeHtml((slide.bullets||[]).join("\n"))}</textarea>
-      </div>
-
-      <div class="mt-4 grid md:grid-cols-2 gap-3">
-        <div>
-          <div class="label">CTA Text</div>
-          <input id="hero_ctaText_${k}" class="field mt-2" value="${escapeHtml(slide.ctaText||"Get Quote")}"/>
-        </div>
-        <div>
-          <div class="label">CTA Link</div>
-          <input id="hero_ctaLink_${k}" class="field mt-2" value="${escapeHtml(slide.ctaLink||"")}"/>
+        <label class="text-xs font-extrabold text-slate-600">Link this slide to a Service (optional)</label>
+        <select id="hs_service_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm bg-white ring-soft focus:outline-none focus:ring-2 focus:ring-green-500">
+          <option value="">— Not linked —</option>
+          ${serviceOptions}
+        </select>
+        <div class="text-xs text-slate-500 mt-1">
+          If linked, you can set CTA Link to that service page like <span class="font-mono">/${escapeHtml(s.linkedServiceSlug||"service-slug")}</span>.
         </div>
       </div>
 
-      <!-- Banners -->
-      <div class="mt-5 grid lg:grid-cols-2 gap-4">
+      <div class="mt-4 grid lg:grid-cols-2 gap-4">
         <!-- Desktop banner -->
-        <div class="rounded-3xl border bg-slate-50 p-4">
-          <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div class="rounded-3xl border p-4 bg-slate-50">
+          <div class="flex items-center justify-between gap-2">
             <div>
-              <div class="font-extrabold">Desktop Banner</div>
-              <div class="hint">Uploads to slot: <span class="font-mono">${escapeHtml(desktopSlot)}</span></div>
+              <div class="text-xs font-extrabold">Desktop Banner (16:9)</div>
+              <div class="text-xs text-slate-500 mt-1">Recommended: 1600×900 / 1920×1080</div>
             </div>
-            <span class="chip">Recommended: 1600×900</span>
+            <button class="px-3 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold"
+                    data-upload-desktop="${idx}">
+              Upload
+            </button>
+          </div>
+          <input type="file" id="hs_file_desktop_${k}" class="mt-3 block w-full text-sm"
+                 accept="image/png,image/jpeg,image/webp"/>
+          <div class="mt-3 text-xs text-slate-600 break-words">
+            URL:
+            <input id="hs_desktop_${k}" class="mt-1 w-full border rounded-2xl px-3 py-2 text-xs font-mono bg-white"
+                   value="${escapeHtml(s.desktopBg)}" placeholder="https://..."/>
           </div>
 
-          <input id="hero_desktopUrl_${k}" class="field mt-3" value="${escapeHtml(slide.imageDesktop||"")}" placeholder="Desktop banner URL"/>
-          <div class="mt-2 grid md:grid-cols-2 gap-2">
-            <input type="file" id="hero_desktopFile_${k}" class="field" style="padding:.55rem" accept="image/png,image/jpeg,image/webp"/>
-            <button data-upload-desktop="${idx}" class="btn btn-dark">Upload</button>
+          <div class="mt-3 rounded-2xl overflow-hidden border bg-white">
+            <div class="aspect-[16/9] bg-slate-200 relative">
+              ${s.desktopBg ? `<img src="${escapeHtml(s.desktopBg)}" class="absolute inset-0 w-full h-full object-cover" alt="desktop"/>` : `
+                <div class="absolute inset-0 grid place-items-center text-xs text-slate-500 font-semibold">No desktop banner yet</div>
+              `}
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/45 via-transparent to-transparent"></div>
+              <div class="absolute bottom-3 left-3 right-3 text-white">
+                <div class="text-xs font-extrabold">${escapeHtml(s.tag||"")}</div>
+                <div class="text-sm font-extrabold leading-tight">${escapeHtml(s.title||"Hero Title")}</div>
+              </div>
+            </div>
           </div>
-
-          ${slide.imageDesktop ? `
-            <img class="mt-3 rounded-2xl border w-full h-44 object-cover" src="${escapeHtml(slide.imageDesktop)}"/>
-          ` : `
-            <div class="mt-3 text-sm text-slate-500">No desktop banner yet.</div>
-          `}
         </div>
 
         <!-- Mobile banner -->
-        <div class="rounded-3xl border bg-slate-50 p-4">
-          <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div class="rounded-3xl border p-4 bg-slate-50">
+          <div class="flex items-center justify-between gap-2">
             <div>
-              <div class="font-extrabold">Mobile Banner</div>
-              <div class="hint">Uploads to slot: <span class="font-mono">${escapeHtml(mobileSlot)}</span></div>
+              <div class="text-xs font-extrabold">Mobile Banner (9:16)</div>
+              <div class="text-xs text-slate-500 mt-1">Recommended: 1080×1920</div>
             </div>
-            <span class="chip">Recommended: 900×1200</span>
+            <button class="px-3 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold"
+                    data-upload-mobile="${idx}">
+              Upload
+            </button>
+          </div>
+          <input type="file" id="hs_file_mobile_${k}" class="mt-3 block w-full text-sm"
+                 accept="image/png,image/jpeg,image/webp"/>
+          <div class="mt-3 text-xs text-slate-600 break-words">
+            URL:
+            <input id="hs_mobile_${k}" class="mt-1 w-full border rounded-2xl px-3 py-2 text-xs font-mono bg-white"
+                   value="${escapeHtml(s.mobileBg)}" placeholder="https://..."/>
           </div>
 
-          <input id="hero_mobileUrl_${k}" class="field mt-3" value="${escapeHtml(slide.imageMobile||"")}" placeholder="Mobile banner URL"/>
-          <div class="mt-2 grid md:grid-cols-2 gap-2">
-            <input type="file" id="hero_mobileFile_${k}" class="field" style="padding:.55rem" accept="image/png,image/jpeg,image/webp"/>
-            <button data-upload-mobile="${idx}" class="btn btn-dark">Upload</button>
-          </div>
-
-          ${slide.imageMobile ? `
-            <div class="mt-4 flex justify-center">
-              <div class="preview-phone">
-                <div class="topbar"><div class="notch"></div></div>
-                <img class="w-full h-[260px] object-cover" src="${escapeHtml(slide.imageMobile)}"/>
+          <div class="mt-3 rounded-2xl overflow-hidden border bg-white">
+            <div class="aspect-[9/16] bg-slate-200 relative">
+              ${s.mobileBg ? `<img src="${escapeHtml(s.mobileBg)}" class="absolute inset-0 w-full h-full object-cover" alt="mobile"/>` : `
+                <div class="absolute inset-0 grid place-items-center text-xs text-slate-500 font-semibold">No mobile banner yet</div>
+              `}
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-transparent"></div>
+              <div class="absolute bottom-3 left-3 right-3 text-white">
+                <div class="text-xs font-extrabold">${escapeHtml(s.tag||"")}</div>
+                <div class="text-sm font-extrabold leading-tight">${escapeHtml(s.title||"Hero Title")}</div>
               </div>
             </div>
-          ` : `
-            <div class="mt-3 text-sm text-slate-500">No mobile banner yet.</div>
-          `}
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Title (shown on hero)</label>
+          <input id="hs_title_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.title)}" placeholder="Stop Water Damage Before It Starts"/>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">CTA Text</label>
+          <input id="hs_ctaText_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.ctaText)}" placeholder="Get Free Inspection"/>
+        </div>
+      </div>
+
+      <div class="mt-3 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Sub text (short description)</label>
+          <textarea id="hs_sub_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                    rows="3" placeholder="Professional waterproofing solutions with 10-year warranty.">${escapeHtml(s.sub)}</textarea>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">CTA Link</label>
+          <input id="hs_ctaLink_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.ctaLink)}" placeholder="/#contact or /terrace-waterproofing"/>
+          <div class="text-xs text-slate-500 mt-2">
+            Tip: Use <span class="font-mono">/#contact</span> or a service page like <span class="font-mono">/bathroom-waterproofing</span>.
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Bullets (one per line, max 6)</label>
+        <textarea id="hs_bullets_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                  rows="4" placeholder="Inspection + Quote&#10;Premium materials&#10;Fast turnaround">${escapeHtml(bullets)}</textarea>
+      </div>
+
+      <div class="mt-4 flex items-center justify-between gap-2 flex-wrap">
+        <div class="text-xs text-slate-500">
+          Reorder slides with ↑ ↓ (this controls your hero slider order).
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-xs font-extrabold" data-move-up="${idx}">↑ Up</button>
+          <button class="px-3 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-xs font-extrabold" data-move-down="${idx}">↓ Down</button>
         </div>
       </div>
     </div>
@@ -654,263 +711,1000 @@ function heroSlideCard(slide, idx){
 function panelHero(){
   const slides = cfg.hero.slides || [];
   return `
-    <div class="flex items-start justify-between gap-3 flex-wrap">
-      <div>
-        <div class="section-title">Hero Slider</div>
-        <div class="sub-title mt-1">Create service-based slides. Desktop + mobile banners are separate.</div>
-      </div>
-      <div class="flex gap-2 flex-wrap">
-        <button id="addSlide" class="btn btn-dark">+ Add Slide</button>
-        <button id="reorderHelp" class="btn btn-soft">Reorder Tip</button>
-      </div>
-    </div>
-
-    <div class="mt-4 rounded-3xl border bg-slate-50 p-4">
-      <div class="flex items-center justify-between gap-3 flex-wrap">
+    <div class="rounded-3xl border bg-slate-50 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
         <div>
-          <div class="font-extrabold text-slate-900">Auto Rotate</div>
-          <div class="hint">How fast the slider changes automatically</div>
+          <div class="text-sm font-extrabold">Hero Slider</div>
+          <div class="text-sm text-slate-600 mt-1">
+            Think of this as a <b>carousel</b>. Each slide can be for any service (Terrace, Basement, Bathroom, etc).
+            Upload both <b>Desktop</b> + <b>Mobile</b> banners for best look.
+          </div>
         </div>
-        <div class="w-full md:w-[280px]">
-          <input id="hero_autoMs" type="number" min="1000" step="500" class="field" value="${escapeHtml(String(cfg.hero.autoRotateMs || 5000))}"/>
-          <div class="hint mt-1">Example: 5000 = every 5 seconds</div>
+        <div class="flex items-center gap-2">
+          <button id="heroAdd" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
+            + Add Slide
+          </button>
+          <button id="heroPreview" class="px-4 py-2 rounded-2xl bg-white hover:bg-slate-100 border text-sm font-extrabold">
+            Preview
+          </button>
         </div>
       </div>
-    </div>
 
-    <div class="mt-5 grid md:grid-cols-2 gap-4" id="heroWrap">
-      ${slides.map(heroSlideCard).join("")}
-    </div>
-
-    <div class="mt-5 rounded-3xl border p-4 bg-white">
-      <div class="font-extrabold">How this slider works</div>
-      <ul class="mt-2 text-sm text-slate-600 list-disc pl-5 space-y-1">
-        <li>Each slide has text + CTA + bullets.</li>
-        <li>Each slide has 2 banners: <b>Desktop</b> + <b>Mobile</b>.</li>
-        <li>Upload banner → it sets the URL → then you must click <b>Save Changes</b>.</li>
-        <li>Link slide to a Service to keep everything consistent.</li>
-      </ul>
+      <div class="mt-4 grid gap-4" id="heroWrap">
+        ${slides.map(heroSlideCard).join("")}
+      </div>
     </div>
   `;
 }
 
+async function doUploadHero(idx, variant){
+  const s = cfg.hero.slides[idx];
+  const k = domSafeKey(s.id);
+  const inputId = variant === "mobile" ? `hs_file_mobile_${k}` : `hs_file_desktop_${k}`;
+  const file = document.getElementById(inputId)?.files?.[0];
+  if (!file) { toast("Select an image first.", "warn", "No file"); return; }
+
+  try{
+    // slot strategy:
+    // - Use slide.id so you can have unlimited slides.
+    // - Keep variant so backend can store desktop/mobile separately if supported.
+    const slot = s.id;
+    const url = await uploadBanner({ file, slot, variant });
+
+    if (variant === "mobile") {
+      s.mobileBg = url;
+      document.getElementById(`hs_mobile_${k}`).value = url;
+      document.getElementById(inputId).value = "";
+      setDirty(true);
+      toast("Mobile banner uploaded. Now click Save Changes.", "ok", "Uploaded");
+    } else {
+      s.desktopBg = url;
+      document.getElementById(`hs_desktop_${k}`).value = url;
+      document.getElementById(inputId).value = "";
+      setDirty(true);
+      toast("Desktop banner uploaded. Now click Save Changes.", "ok", "Uploaded");
+    }
+
+    renderAll(); // refresh preview tiles inside card
+  } catch(e){
+    toast(String(e.message || e), "err", "Upload failed");
+  }
+}
+
+/* Preview modal (desktop + mobile) */
+function openPreview(){
+  try { collectAll(); } catch(e){}
+  const s = (cfg.hero.slides && cfg.hero.slides[0]) ? cfg.hero.slides[0] : null;
+  const d = document.getElementById("prevDesktop");
+  const m = document.getElementById("prevMobile");
+
+  if (!s){
+    d.innerHTML = `<div class="absolute inset-0 grid place-items-center text-sm text-slate-600 font-semibold">No slides</div>`;
+    m.innerHTML = `<div class="absolute inset-0 grid place-items-center text-sm text-slate-600 font-semibold">No slides</div>`;
+  } else {
+    d.innerHTML = `
+      ${s.desktopBg ? `<img src="${escapeHtml(s.desktopBg)}" class="absolute inset-0 w-full h-full object-cover" alt="desktop"/>` : ""}
+      <div class="absolute inset-0 ${s.desktopBg ? "bg-gradient-to-r from-slate-900/60 via-slate-900/25 to-transparent" : "bg-slate-200"}"></div>
+      <div class="absolute left-6 bottom-6 right-6 text-white">
+        <div class="inline-flex items-center gap-2">
+          ${s.tag ? `<span class="px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-extrabold">${escapeHtml(s.tag)}</span>` : ""}
+          <span class="text-xs font-bold text-white/80">${escapeHtml(s.label||"")}</span>
+        </div>
+        <div class="text-2xl font-extrabold mt-2 leading-tight">${escapeHtml(s.title||"")}</div>
+        <div class="text-sm text-white/85 mt-2 max-w-[520px]">${escapeHtml(s.sub||"")}</div>
+        <div class="mt-3 flex gap-2 flex-wrap">
+          ${(s.bullets||[]).slice(0,3).map(b=>`<span class="text-xs px-3 py-1 rounded-full bg-white/12 border border-white/15">${escapeHtml(b)}</span>`).join("")}
+        </div>
+        <div class="mt-4 inline-flex px-4 py-2 rounded-2xl bg-green-600 text-white text-sm font-extrabold">${escapeHtml(s.ctaText||"Get Quote")}</div>
+      </div>
+    `;
+
+    m.innerHTML = `
+      ${s.mobileBg ? `<img src="${escapeHtml(s.mobileBg)}" class="absolute inset-0 w-full h-full object-cover" alt="mobile"/>`
+                  : (s.desktopBg ? `<img src="${escapeHtml(s.desktopBg)}" class="absolute inset-0 w-full h-full object-cover" alt="mobilefallback"/>` : "")}
+      <div class="absolute inset-0 ${ (s.mobileBg||s.desktopBg) ? "bg-gradient-to-t from-slate-900/65 via-slate-900/20 to-transparent" : "bg-slate-200"}"></div>
+      <div class="absolute left-4 right-4 bottom-5 text-white">
+        ${s.tag ? `<div class="inline-flex px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-extrabold">${escapeHtml(s.tag)}</div>` : ""}
+        <div class="text-xl font-extrabold mt-2 leading-tight">${escapeHtml(s.title||"")}</div>
+        <div class="text-sm text-white/85 mt-2">${escapeHtml(s.sub||"")}</div>
+        <div class="mt-3 grid gap-2">
+          ${(s.bullets||[]).slice(0,3).map(b=>`
+            <div class="text-xs px-3 py-2 rounded-2xl bg-white/10 border border-white/15">${escapeHtml(b)}</div>
+          `).join("")}
+        </div>
+        <div class="mt-4 w-full text-center px-4 py-3 rounded-2xl bg-green-600 text-white text-sm font-extrabold">${escapeHtml(s.ctaText||"Get Quote")}</div>
+      </div>
+    `;
+  }
+
+  document.getElementById("previewModal").classList.remove("hidden");
+}
+function closePreview(){
+  document.getElementById("previewModal").classList.add("hidden");
+}
+
+/* -----------------------------
+  MENU PANEL
+----------------------------- */
 function menuItemRow(item, idx){
-  const childRows = (item.children || []).map((ch, cidx) => `
-    <div class="ml-4 mt-2 rounded-2xl border bg-slate-50 p-3">
-      <div class="flex gap-2 flex-wrap">
-        <input class="field flex-1 min-w-[160px]" id="menu_child_label_${idx}_${cidx}" placeholder="Sub item label" value="${escapeHtml(ch.label)}"/>
-        <input class="field flex-1 min-w-[200px]" id="menu_child_url_${idx}_${cidx}" placeholder="/subcategory-page" value="${escapeHtml(ch.url)}"/>
-        <button class="btn btn-soft" style="background:rgba(239,68,68,.10); color:#dc2626;" data-del-child="${idx}:${cidx}">Remove</button>
+  const childRows = (item.children||[]).map((ch,cidx)=>`
+    <div class="mt-2 rounded-2xl border bg-slate-50 p-3">
+      <div class="grid md:grid-cols-2 gap-2">
+        <input class="border rounded-2xl px-3 py-2 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+               id="menu_child_label_${idx}_${cidx}" placeholder="Sub item label" value="${escapeHtml(ch.label)}"/>
+        <div class="flex gap-2">
+          <input class="flex-1 border rounded-2xl px-3 py-2 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 id="menu_child_url_${idx}_${cidx}" placeholder="/terrace-waterproofing" value="${escapeHtml(ch.url)}"/>
+          <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold"
+                  data-del-child="${idx}:${cidx}">Remove</button>
+        </div>
       </div>
     </div>
   `).join("");
 
   return `
-    <div class="rounded-3xl border p-5 bg-white shadow-soft">
+    <div class="rounded-3xl border p-4 bg-white">
       <div class="flex items-start justify-between gap-3 flex-wrap">
         <div>
-          <div class="text-xs text-slate-500 font-extrabold uppercase tracking-wider">Menu Item ${idx+1}</div>
-          <div class="font-extrabold">${escapeHtml(item.label || "(No label yet)")}</div>
+          <div class="text-sm font-extrabold">Menu item ${idx+1}</div>
+          <div class="text-xs text-slate-500 mt-1">Use absolute paths like <span class="font-mono">/services</span> or anchor <span class="font-mono">/#contact</span></div>
         </div>
-        <button class="btn btn-soft" style="background:rgba(239,68,68,.10); color:#dc2626;" data-del-menu="${idx}">Delete</button>
+        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-menu="${idx}">
+          Delete
+        </button>
       </div>
 
       <div class="mt-4 grid md:grid-cols-2 gap-3">
         <div>
-          <div class="label">Label</div>
-          <input id="menu_label_${idx}" class="field mt-2" value="${escapeHtml(item.label)}"/>
+          <label class="text-xs font-extrabold text-slate-600">Label</label>
+          <input id="menu_label_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(item.label)}" placeholder="Services"/>
         </div>
         <div>
-          <div class="label">URL</div>
-          <input id="menu_url_${idx}" class="field mt-2" value="${escapeHtml(item.url)}" placeholder="/services"/>
+          <label class="text-xs font-extrabold text-slate-600">URL</label>
+          <input id="menu_url_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(item.url)}" placeholder="/services"/>
         </div>
       </div>
 
-      <div class="mt-4">
+      <div class="mt-4 rounded-3xl border bg-slate-50 p-4">
         <div class="flex items-center justify-between gap-2 flex-wrap">
-          <div class="font-extrabold text-slate-900">Dropdown Items</div>
-          <button class="btn btn-dark" data-add-child="${idx}">+ Add Sub Item</button>
+          <div>
+            <div class="text-sm font-extrabold">Dropdown items</div>
+            <div class="text-xs text-slate-500 mt-1">Optional: add sub items for dropdown</div>
+          </div>
+          <button class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold"
+                  data-add-child="${idx}">
+            + Add Sub Item
+          </button>
         </div>
-
-        ${childRows || `<div class="mt-2 text-sm text-slate-500">No sub items yet.</div>`}
+        <div class="mt-3">
+          ${childRows || `<div class="text-sm text-slate-500">No sub items yet.</div>`}
+        </div>
       </div>
     </div>
   `;
 }
-
 function panelMenu(){
-  const items = cfg.menu || [];
   return `
-    <div class="flex items-start justify-between gap-3 flex-wrap">
-      <div>
-        <div class="section-title">Menu + Dropdowns</div>
-        <div class="sub-title mt-1">If your menu is hard-coded in frontend, it won't appear until stored in config.</div>
-      </div>
-      <button id="addMenu" class="btn btn-dark">+ Add Menu Item</button>
-    </div>
-
-    <div class="mt-5 space-y-4" id="menuWrap">
-      ${items.length ? items.map(menuItemRow).join("") : `
-        <div class="rounded-3xl border bg-slate-50 p-5">
-          <div class="font-extrabold text-slate-900">No menu items found in config</div>
-          <p class="text-sm text-slate-600 mt-2">
-            This admin reads menu from <span class="font-mono">cfg.menu</span>. Your frontend menu may be hard-coded.
-            Add items here and Save to control the frontend from config.
-          </p>
+    <div class="rounded-3xl border bg-slate-50 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-sm font-extrabold">Menu + Dropdowns</div>
+          <div class="text-sm text-slate-600 mt-1">
+            If you see empty here, it means <span class="font-mono">cfg.menu</span> is empty in <span class="font-mono">/api/config</span>.
+            Add items below and Save.
+          </div>
         </div>
-      `}
+        <button id="addMenu" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
+          + Add Menu Item
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4" id="menuWrap">
+        ${(cfg.menu||[]).map(menuItemRow).join("") || `
+          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">
+            No menu items yet. Click <b>+ Add Menu Item</b>.
+          </div>
+        `}
+      </div>
     </div>
   `;
 }
 
+/* -----------------------------
+  SEO PANEL
+----------------------------- */
 function panelSEO(){
   const s = cfg.seo;
   return `
-    <div class="section-title">SEO Defaults</div>
-    <p class="sub-title mt-1">These are used when pages/services do not override SEO.</p>
+    <div class="rounded-3xl border bg-slate-50 p-4">
+      <div class="text-sm font-extrabold">SEO (Site Defaults)</div>
+      <div class="text-sm text-slate-600 mt-1">These are defaults. Pages/services can override.</div>
 
-    <div class="mt-5 grid md:grid-cols-2 gap-4">
-      <div>
-        <div class="label">Site Name</div>
-        <input id="seo_siteName" class="field mt-2" value="${escapeHtml(s.siteName)}"/>
-      </div>
+      <div class="mt-4 grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Site Name</label>
+          <input id="seo_siteName" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.siteName)}"/>
+        </div>
 
-      <div>
-        <div class="label">Canonical Base</div>
-        <input id="seo_canonicalBase" class="field mt-2" value="${escapeHtml(s.canonicalBase)}" placeholder="https://yourdomain.com"/>
-      </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Canonical Base (example: https://aquastrong.com)</label>
+          <input id="seo_canonicalBase" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.canonicalBase)}"/>
+        </div>
 
-      <div>
-        <div class="label">Default Title</div>
-        <input id="seo_defaultTitle" class="field mt-2" value="${escapeHtml(s.defaultTitle)}"/>
-      </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Default Title</label>
+          <input id="seo_defaultTitle" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.defaultTitle)}"/>
+        </div>
 
-      <div>
-        <div class="label">Default Description</div>
-        <textarea id="seo_defaultDescription" class="field mt-2" rows="3">${escapeHtml(s.defaultDescription)}</textarea>
-      </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Default OG Image</label>
+          <input id="seo_defaultOgImage" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.defaultOgImage)}"/>
+        </div>
 
-      <div>
-        <div class="label">Robots</div>
-        <input id="seo_robots" class="field mt-2" value="${escapeHtml(s.robots)}" placeholder="index,follow"/>
-      </div>
+        <div class="md:col-span-2">
+          <label class="text-xs font-extrabold text-slate-600">Default Description</label>
+          <textarea id="seo_defaultDescription" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                    rows="3">${escapeHtml(s.defaultDescription)}</textarea>
+        </div>
 
-      <div>
-        <div class="label">Default OG Image</div>
-        <input id="seo_defaultOgImage" class="field mt-2" value="${escapeHtml(s.defaultOgImage)}"/>
-      </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Robots</label>
+          <input id="seo_robots" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.robots)}" placeholder="index,follow"/>
+        </div>
 
-      <div class="md:col-span-2">
-        <div class="label">Tags (comma separated)</div>
-        <input id="seo_tags" class="field mt-2" value="${escapeHtml((s.tags||[]).join(", "))}" placeholder="waterproofing, terrace waterproofing, ..."/>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Tags (comma separated)</label>
+          <input id="seo_tags" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml((s.tags||[]).join(", "))}"/>
+        </div>
+
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">H1 Defaults (optional)</label>
+          <input id="seo_h1Defaults" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.h1Defaults)}"/>
+        </div>
+
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">H2 Defaults (optional)</label>
+          <input id="seo_h2Defaults" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.h2Defaults)}"/>
+        </div>
       </div>
     </div>
   `;
 }
 
-function panelComingSoon(){
+/* -----------------------------
+  PAGES PANEL
+----------------------------- */
+function pageEditorCard(p){
+  const domKey = domSafeKey(p._id);
+  const urlPreview = (cfg.seo.canonicalBase ? cfg.seo.canonicalBase.replace(/\/$/,"") : "") + "/" + (p.slug || "");
   return `
-    <div class="rounded-3xl border bg-slate-50 p-5">
-      <div class="font-extrabold text-slate-900">This panel is available</div>
-      <p class="text-sm text-slate-600 mt-2">
-        You already have working implementations for Pages/FAQ/Reviews/Images/Services in your previous admin.
-        If you want, paste that code and I will merge it here with the same premium design.
-      </p>
+    <div class="rounded-3xl border p-4 bg-white" data-page-id="${escapeHtml(p._id)}">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div class="min-w-0">
+          <div class="text-sm font-extrabold truncate">${escapeHtml(p.title || "(Untitled Page)")}</div>
+          <div class="text-xs text-slate-500 mt-1 break-words">Slug: <span class="font-mono">/${escapeHtml(p.slug || "")}</span></div>
+          ${p.slug ? `<div class="text-xs text-slate-500 mt-1 break-words">Link: <span class="font-mono">${escapeHtml(urlPreview)}</span></div>` : ``}
+        </div>
+        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-page-id="${escapeHtml(p._id)}">
+          Delete
+        </button>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Title</label>
+          <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 id="page_title_${domKey}" value="${escapeHtml(p.title)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Slug (example: about)</label>
+          <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 id="page_slug_${domKey}" value="${escapeHtml(p.slug)}"/>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Head Image URL</label>
+        <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+               id="page_head_${domKey}" value="${escapeHtml(p.headImage)}" placeholder="https://..."/>
+        <div class="mt-2 grid md:grid-cols-2 gap-2">
+          <input type="file" id="page_file_${domKey}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
+          <button class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold"
+                  data-upload-page-head="${escapeHtml(p._id)}">Upload Head Image</button>
+        </div>
+      </div>
+
+      <div class="mt-3 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">H1</label>
+          <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 id="page_h1_${domKey}" value="${escapeHtml(p.h1)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">H2</label>
+          <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 id="page_h2_${domKey}" value="${escapeHtml(p.h2)}"/>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Content HTML</label>
+        <textarea class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                  rows="8" id="page_html_${domKey}">${escapeHtml(p.contentHtml)}</textarea>
+      </div>
+
+      <div class="mt-4 rounded-3xl border bg-slate-50 p-4">
+        <div class="text-sm font-extrabold">SEO Overrides (optional)</div>
+        <div class="mt-3 grid md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">Meta Title</label>
+            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   id="page_seo_title_${domKey}" value="${escapeHtml(p.seo.title)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">Meta Description</label>
+            <textarea class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                      rows="3" id="page_seo_desc_${domKey}">${escapeHtml(p.seo.description)}</textarea>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">Canonical</label>
+            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   id="page_seo_can_${domKey}" value="${escapeHtml(p.seo.canonical)}" placeholder="/about or full url"/>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">Robots</label>
+            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   id="page_seo_robots_${domKey}" value="${escapeHtml(p.seo.robots)}" placeholder="index,follow"/>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">OG Title</label>
+            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   id="page_seo_ogt_${domKey}" value="${escapeHtml(p.seo.ogTitle)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">OG Description</label>
+            <textarea class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                      rows="3" id="page_seo_ogd_${domKey}">${escapeHtml(p.seo.ogDesc)}</textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs font-extrabold text-slate-600">OG Image</label>
+            <input class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   id="page_seo_ogi_${domKey}" value="${escapeHtml(p.seo.ogImage)}"/>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs font-extrabold text-slate-600">Schema JSON-LD</label>
+            <textarea class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                      rows="6" id="page_seo_schema_${domKey}">${escapeHtml(p.seo.schemaJsonLd)}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function panelPages(){
+  const pagesArr = Object.values(cfg.pages||{}).sort((a,b)=> (a.slug||"").localeCompare(b.slug||""));
+  return `
+    <div class="rounded-3xl border bg-slate-50 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-sm font-extrabold">Pages</div>
+          <div class="text-sm text-slate-600 mt-1">Create pages like <span class="font-mono">/about</span>, <span class="font-mono">/privacy</span>.</div>
+        </div>
+        <button id="addPage" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
+          + New Page
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4" id="pagesWrap">
+        ${pagesArr.map(pageEditorCard).join("") || `
+          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No pages yet. Click <b>+ New Page</b>.</div>
+        `}
+      </div>
     </div>
   `;
 }
 
-/** ----------------- Render Panel ----------------- */
+/* -----------------------------
+  FAQ PANEL
+----------------------------- */
+function faqRow(x, idx){
+  return `
+    <div class="rounded-3xl border p-4 bg-white">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div class="text-sm font-extrabold">FAQ ${idx+1}</div>
+          <div class="text-xs text-slate-500 mt-1">Question + Answer</div>
+        </div>
+        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-faq="${idx}">
+          Remove
+        </button>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Question</label>
+        <input id="faq_q_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+               value="${escapeHtml(x.q)}"/>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Answer</label>
+        <textarea id="faq_a_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                  rows="4">${escapeHtml(x.a)}</textarea>
+      </div>
+    </div>
+  `;
+}
+function panelFAQ(){
+  return `
+    <div class="rounded-3xl border bg-slate-50 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-sm font-extrabold">FAQ Panel</div>
+          <div class="text-sm text-slate-600 mt-1">Manage FAQs shown on the website.</div>
+        </div>
+        <button id="addFaq" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
+          + Add FAQ
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4" id="faqWrap">
+        ${(cfg.faq||[]).map(faqRow).join("") || `
+          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No FAQs yet. Click <b>+ Add FAQ</b>.</div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+/* -----------------------------
+  REVIEWS PANEL
+----------------------------- */
+function reviewRow(r, idx){
+  const safeRating = Math.min(5, Math.max(1, Number(r.rating||5)));
+  return `
+    <div class="rounded-3xl border p-4 bg-white">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-sm font-extrabold">Review ${idx+1}</div>
+          <div class="text-xs text-slate-500 mt-1">Customer testimonial</div>
+        </div>
+        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-review="${idx}">
+          Remove
+        </button>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-3 gap-3">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Name</label>
+          <input id="rev_name_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(r.name)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Rating (1-5)</label>
+          <input id="rev_rating_${idx}" type="number" min="1" max="5"
+                 class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(String(safeRating))}"/>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Date (YYYY-MM-DD)</label>
+          <input id="rev_date_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(r.date)}"/>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Text</label>
+        <textarea id="rev_text_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                  rows="4">${escapeHtml(r.text)}</textarea>
+      </div>
+    </div>
+  `;
+}
+function panelReviews(){
+  return `
+    <div class="rounded-3xl border bg-slate-50 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-sm font-extrabold">Reviews</div>
+          <div class="text-sm text-slate-600 mt-1">Update testimonials shown on site.</div>
+        </div>
+        <button id="addReview" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
+          + Add Review
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4" id="reviewsWrap">
+        ${(cfg.reviews||[]).map(reviewRow).join("") || `
+          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No reviews yet. Click <b>+ Add Review</b>.</div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+/* -----------------------------
+  IMAGES PANEL
+----------------------------- */
+function imageMapRow(m, idx){
+  return `
+    <div class="rounded-3xl border p-4 bg-white">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div class="text-sm font-extrabold">Image Map ${idx+1}</div>
+          <div class="text-xs text-slate-500 mt-1">Key → URL mapping</div>
+        </div>
+        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-imgmap="${idx}">
+          Remove
+        </button>
+      </div>
+
+      <div class="mt-3 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Key</label>
+          <input id="img_key_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(m.key)}" placeholder="hero_main"/>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">URL</label>
+          <input id="img_url_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(m.url)}" placeholder="https://..."/>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Notes</label>
+        <input id="img_notes_${idx}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+               value="${escapeHtml(m.notes)}" placeholder="Used in about page banner"/>
+      </div>
+
+      <div class="mt-3 grid md:grid-cols-2 gap-2">
+        <input type="file" id="img_file_${idx}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
+        <button class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold" data-upload-imgmap="${idx}">
+          Upload & Set URL
+        </button>
+      </div>
+    </div>
+  `;
+}
+function panelImages(){
+  return `
+    <div class="rounded-3xl border bg-slate-50 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-sm font-extrabold">Image Mapper</div>
+          <div class="text-sm text-slate-600 mt-1">Upload images and map them to keys for use anywhere.</div>
+        </div>
+        <button id="addImgMap" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
+          + Add Map Row
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4" id="imagesWrap">
+        ${(cfg.images.map||[]).map(imageMapRow).join("") || `
+          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No mapped images yet. Click <b>+ Add Map Row</b>.</div>
+        `}
+      </div>
+    </div>
+  `;
+}
+async function uploadImgMap(idx){
+  const fi = document.getElementById(`img_file_${idx}`);
+  const file = fi?.files?.[0];
+  if (!file) { toast("Select an image first.", "warn", "No file"); return; }
+
+  const key = (document.getElementById(`img_key_${idx}`)?.value || "").trim() || ("img_"+idx);
+  try{
+    const url = await uploadImageGeneric({ file, purpose:"map", key });
+    document.getElementById(`img_url_${idx}`).value = url;
+    fi.value = "";
+    setDirty(true);
+    toast("Image uploaded. Now click Save Changes.", "ok", "Uploaded");
+  } catch(e){
+    toast(String(e.message || e), "err", "Upload failed");
+  }
+}
+
+/* -----------------------------
+  SERVICES PANEL
+----------------------------- */
+function serviceCard(s, idx){
+  const k = String(idx);
+  const link = s.slug ? ((cfg.seo.canonicalBase||"").replace(/\/$/,"") + "/" + escapeHtml(s.slug)) : "";
+  return `
+    <div class="rounded-3xl border p-4 bg-white">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div class="min-w-0">
+          <div class="text-sm font-extrabold truncate">${escapeHtml(s.name || "(Unnamed Service)")}</div>
+          <div class="text-xs text-slate-500 mt-1">Slug: <span class="font-mono">/${escapeHtml(s.slug||"")}</span></div>
+          ${s.slug ? `<div class="text-xs text-slate-500 mt-1 break-words">Link: <span class="font-mono">${escapeHtml(link)}</span></div>` : ``}
+        </div>
+        <button class="px-3 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold" data-del-service="${idx}">
+          Delete
+        </button>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Service Name</label>
+          <input id="svc_name_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.name)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">Slug (example: terrace-waterproofing)</label>
+          <input id="svc_slug_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.slug)}"/>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Short Description</label>
+        <input id="svc_short_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+               value="${escapeHtml(s.short)}"/>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Hero Image URL</label>
+        <input id="svc_hero_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+               value="${escapeHtml(s.heroImage)}"/>
+        <div class="mt-2 grid md:grid-cols-2 gap-2">
+          <input type="file" id="svc_file_${k}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
+          <button class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold"
+                  data-upload-svc-hero="${idx}">Upload Hero Image</button>
+        </div>
+      </div>
+
+      <div class="mt-3 grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">H1</label>
+          <input id="svc_h1_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.h1)}"/>
+        </div>
+        <div>
+          <label class="text-xs font-extrabold text-slate-600">H2</label>
+          <input id="svc_h2_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                 value="${escapeHtml(s.h2)}"/>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-xs font-extrabold text-slate-600">Content HTML</label>
+        <textarea id="svc_html_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                  rows="8">${escapeHtml(s.contentHtml)}</textarea>
+      </div>
+
+      <div class="mt-4 rounded-3xl border bg-slate-50 p-4">
+        <div class="text-sm font-extrabold">SEO Overrides</div>
+        <div class="mt-3 grid md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">Meta Title</label>
+            <input id="svc_seo_title_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   value="${escapeHtml(s.seo.title)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">Meta Description</label>
+            <textarea id="svc_seo_desc_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                      rows="3">${escapeHtml(s.seo.description)}</textarea>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">Canonical</label>
+            <input id="svc_seo_can_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   value="${escapeHtml(s.seo.canonical)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">Robots</label>
+            <input id="svc_seo_robots_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   value="${escapeHtml(s.seo.robots)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">OG Title</label>
+            <input id="svc_seo_ogt_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   value="${escapeHtml(s.seo.ogTitle)}"/>
+          </div>
+          <div>
+            <label class="text-xs font-extrabold text-slate-600">OG Description</label>
+            <textarea id="svc_seo_ogd_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                      rows="3">${escapeHtml(s.seo.ogDesc)}</textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs font-extrabold text-slate-600">OG Image</label>
+            <input id="svc_seo_ogi_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500"
+                   value="${escapeHtml(s.seo.ogImage)}"/>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs font-extrabold text-slate-600">Schema JSON-LD</label>
+            <textarea id="svc_seo_schema_${k}" class="mt-1 w-full border rounded-2xl px-4 py-3 text-sm font-mono ring-soft focus:outline-none focus:ring-2 focus:ring-green-500 scrollbar"
+                      rows="6">${escapeHtml(s.seo.schemaJsonLd)}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function panelServices(){
+  return `
+    <div class="rounded-3xl border bg-slate-50 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-sm font-extrabold">Services</div>
+          <div class="text-sm text-slate-600 mt-1">Create/edit services (used across homepage + service pages).</div>
+        </div>
+        <button id="addService" class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-extrabold">
+          + Add Service
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4" id="servicesWrap">
+        ${(cfg.services||[]).map(serviceCard).join("") || `
+          <div class="rounded-3xl border bg-white p-6 text-sm text-slate-600">No services yet. Click <b>+ Add Service</b>.</div>
+        `}
+      </div>
+    </div>
+  `;
+}
+async function uploadServiceHero(idx){
+  const fi = document.getElementById(`svc_file_${idx}`);
+  const file = fi?.files?.[0];
+  if (!file) { toast("Select an image first.", "warn", "No file"); return; }
+
+  const slug = (document.getElementById(`svc_slug_${idx}`)?.value || "").trim().replace(/^\/+/,"") || ("service_"+idx);
+  try{
+    const url = await uploadImageGeneric({ file, purpose:"serviceHero", key: slug });
+    document.getElementById(`svc_hero_${idx}`).value = url;
+    fi.value = "";
+    setDirty(true);
+    toast("Service hero uploaded. Now Save Changes.", "ok", "Uploaded");
+  } catch(e){
+    toast(String(e.message || e), "err", "Upload failed");
+  }
+}
+
+/* -----------------------------
+  Collect (UI -> cfg)
+----------------------------- */
+function collectHero(){
+  const slides = cfg.hero.slides || [];
+  slides.forEach(s=>{
+    const k = domSafeKey(s.id);
+    s.label = (document.getElementById(`hs_label_${k}`)?.value || "").trim();
+    s.tag = (document.getElementById(`hs_tag_${k}`)?.value || "").trim();
+    s.linkedServiceSlug = (document.getElementById(`hs_service_${k}`)?.value || "").trim().replace(/^\/+/,"");
+
+    s.desktopBg = (document.getElementById(`hs_desktop_${k}`)?.value || "").trim();
+    s.mobileBg  = (document.getElementById(`hs_mobile_${k}`)?.value || "").trim();
+
+    s.title = (document.getElementById(`hs_title_${k}`)?.value || "").trim();
+    s.sub = (document.getElementById(`hs_sub_${k}`)?.value || "").trim();
+    s.bullets = (document.getElementById(`hs_bullets_${k}`)?.value || "")
+      .split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6);
+    s.ctaText = (document.getElementById(`hs_ctaText_${k}`)?.value || "").trim();
+    s.ctaLink = (document.getElementById(`hs_ctaLink_${k}`)?.value || "").trim();
+  });
+  cfg.hero = ensureHeroSlides(cfg.hero);
+}
+
+function collectMenu(){
+  const out = [];
+  (cfg.menu||[]).forEach((item, idx)=>{
+    const label = (document.getElementById(`menu_label_${idx}`)?.value || "").trim();
+    const url   = (document.getElementById(`menu_url_${idx}`)?.value || "").trim();
+    const children = [];
+    const childCount = (item.children||[]).length;
+    for (let cidx=0;cidx<childCount;cidx++){
+      const cl = (document.getElementById(`menu_child_label_${idx}_${cidx}`)?.value || "").trim();
+      const cu = (document.getElementById(`menu_child_url_${idx}_${cidx}`)?.value || "").trim();
+      if (cl || cu) children.push({ label:cl, url:cu });
+    }
+    if (label || url || children.length) out.push({ label, url, children });
+  });
+  cfg.menu = out;
+}
+function collectSEO(){
+  cfg.seo.siteName = (document.getElementById("seo_siteName")?.value || "").trim();
+  cfg.seo.canonicalBase = (document.getElementById("seo_canonicalBase")?.value || "").trim();
+  cfg.seo.defaultTitle = (document.getElementById("seo_defaultTitle")?.value || "").trim();
+  cfg.seo.defaultDescription = (document.getElementById("seo_defaultDescription")?.value || "").trim();
+  cfg.seo.robots = (document.getElementById("seo_robots")?.value || "").trim();
+  cfg.seo.defaultOgImage = (document.getElementById("seo_defaultOgImage")?.value || "").trim();
+  cfg.seo.tags = (document.getElementById("seo_tags")?.value || "").split(",").map(x=>x.trim()).filter(Boolean).slice(0,50);
+  cfg.seo.h1Defaults = (document.getElementById("seo_h1Defaults")?.value || "").trim();
+  cfg.seo.h2Defaults = (document.getElementById("seo_h2Defaults")?.value || "").trim();
+}
+function collectPages(){
+  const cards = Array.from(document.querySelectorAll("[data-page-id]"));
+  const next = {};
+  cards.forEach(card=>{
+    const pid = card.getAttribute("data-page-id");
+    const domKey = domSafeKey(pid);
+
+    const slug = (document.getElementById(`page_slug_${domKey}`)?.value || "").trim().replace(/^\/+/,"");
+    if (!slug) return;
+
+    const title = (document.getElementById(`page_title_${domKey}`)?.value || "").trim();
+    const headImage = (document.getElementById(`page_head_${domKey}`)?.value || "").trim();
+    const h1 = (document.getElementById(`page_h1_${domKey}`)?.value || "").trim();
+    const h2 = (document.getElementById(`page_h2_${domKey}`)?.value || "").trim();
+    const contentHtml = (document.getElementById(`page_html_${domKey}`)?.value || "");
+
+    const seo = ensureSeoShape({
+      title: (document.getElementById(`page_seo_title_${domKey}`)?.value || "").trim(),
+      description: (document.getElementById(`page_seo_desc_${domKey}`)?.value || "").trim(),
+      canonical: (document.getElementById(`page_seo_can_${domKey}`)?.value || "").trim(),
+      robots: (document.getElementById(`page_seo_robots_${domKey}`)?.value || "").trim(),
+      ogTitle: (document.getElementById(`page_seo_ogt_${domKey}`)?.value || "").trim(),
+      ogDesc: (document.getElementById(`page_seo_ogd_${domKey}`)?.value || "").trim(),
+      ogImage: (document.getElementById(`page_seo_ogi_${domKey}`)?.value || "").trim(),
+      schemaJsonLd: (document.getElementById(`page_seo_schema_${domKey}`)?.value || "").trim()
+    });
+
+    next[slug] = { _id: pid, slug, title, headImage, contentHtml, h1, h2, seo };
+  });
+  cfg.pages = next;
+}
+function collectFAQ(){
+  const out = [];
+  (cfg.faq||[]).forEach((x,idx)=>{
+    const q = (document.getElementById(`faq_q_${idx}`)?.value || "").trim();
+    const a = (document.getElementById(`faq_a_${idx}`)?.value || "").trim();
+    if (q || a) out.push({ q, a });
+  });
+  cfg.faq = out;
+}
+function collectReviews(){
+  const out = [];
+  (cfg.reviews||[]).forEach((r,idx)=>{
+    const name = (document.getElementById(`rev_name_${idx}`)?.value || "").trim();
+    const rating = Number(document.getElementById(`rev_rating_${idx}`)?.value || 5);
+    const date = (document.getElementById(`rev_date_${idx}`)?.value || "").trim();
+    const text = (document.getElementById(`rev_text_${idx}`)?.value || "").trim();
+    if (name || text) out.push({ name, rating: Math.min(5, Math.max(1, rating||5)), date, text });
+  });
+  cfg.reviews = out;
+}
+function collectImages(){
+  const out = [];
+  (cfg.images.map||[]).forEach((m,idx)=>{
+    const key = (document.getElementById(`img_key_${idx}`)?.value || "").trim();
+    const url = (document.getElementById(`img_url_${idx}`)?.value || "").trim();
+    const notes = (document.getElementById(`img_notes_${idx}`)?.value || "").trim();
+    if (key || url || notes) out.push({ key, url, notes });
+  });
+  cfg.images.map = out;
+}
+function collectServices(){
+  const out = [];
+  (cfg.services||[]).forEach((s,idx)=>{
+    const name = (document.getElementById(`svc_name_${idx}`)?.value || "").trim();
+    const slug = (document.getElementById(`svc_slug_${idx}`)?.value || "").trim().replace(/^\/+/,"");
+    const short = (document.getElementById(`svc_short_${idx}`)?.value || "").trim();
+    const heroImage = (document.getElementById(`svc_hero_${idx}`)?.value || "").trim();
+    const h1 = (document.getElementById(`svc_h1_${idx}`)?.value || "").trim();
+    const h2 = (document.getElementById(`svc_h2_${idx}`)?.value || "").trim();
+    const contentHtml = (document.getElementById(`svc_html_${idx}`)?.value || "");
+
+    const seo = ensureSeoShape({
+      title: (document.getElementById(`svc_seo_title_${idx}`)?.value || "").trim(),
+      description: (document.getElementById(`svc_seo_desc_${idx}`)?.value || "").trim(),
+      canonical: (document.getElementById(`svc_seo_can_${idx}`)?.value || "").trim(),
+      robots: (document.getElementById(`svc_seo_robots_${idx}`)?.value || "").trim(),
+      ogTitle: (document.getElementById(`svc_seo_ogt_${idx}`)?.value || "").trim(),
+      ogDesc: (document.getElementById(`svc_seo_ogd_${idx}`)?.value || "").trim(),
+      ogImage: (document.getElementById(`svc_seo_ogi_${idx}`)?.value || "").trim(),
+      schemaJsonLd: (document.getElementById(`svc_seo_schema_${idx}`)?.value || "").trim()
+    });
+
+    if (name || slug) out.push({ name, slug, short, heroImage, contentHtml, h1, h2, seo });
+  });
+  cfg.services = out;
+}
+
+function collectAll(){
+  // collect only panels present in DOM
+  if (document.getElementById("heroWrap")) collectHero();
+  if (document.getElementById("menuWrap")) collectMenu();
+  if (document.getElementById("seo_siteName")) collectSEO();
+  if (document.getElementById("pagesWrap")) collectPages();
+  if (document.getElementById("faqWrap")) collectFAQ();
+  if (document.getElementById("reviewsWrap")) collectReviews();
+  if (document.getElementById("imagesWrap")) collectImages();
+  if (document.getElementById("servicesWrap")) collectServices();
+
+  cfg = ensureShape(cfg);
+  setDirty(true);
+}
+
+/* -----------------------------
+  Render
+----------------------------- */
 function renderPanel(){
-  const p = PANELS.find(x=>x.id===activePanel);
-  document.getElementById("panelTitle").textContent = p?.title || "Panel";
-  document.getElementById("panelSub").textContent = p?.sub || "";
+  const meta = PANELS.find(p=>p.id===activePanel) || PANELS[0];
+  document.getElementById("panelTitle").textContent = meta.title;
+  document.getElementById("panelSub").textContent = meta.sub;
 
   const panel = document.getElementById("panel");
 
-  if (activePanel==="hero"){
+  if (activePanel === "hero") {
     panel.innerHTML = panelHero();
 
-    document.getElementById("addSlide").onclick = ()=>{
+    document.getElementById("heroAdd").onclick = ()=>{
+      collectHero();
       cfg.hero.slides.push({
         id: uid("slide"),
-        name: "New Service Slide",
-        serviceSlug: "",
-        title: "New Slide",
-        sub: "",
-        bullets: [],
+        label: "New Slide",
+        tag: "",
+        linkedServiceSlug: "",
+        desktopBg: "",
+        mobileBg: "",
+        title: "New Hero Title",
+        sub: "Add a short line here…",
+        bullets: ["Bullet 1","Bullet 2","Bullet 3"],
         ctaText: "Get Quote",
-        ctaLink: "",
-        imageDesktop: "",
-        imageMobile: ""
+        ctaLink: "/#contact"
       });
       setDirty(true);
       renderAll();
+      toast("Slide added.", "ok", "Hero");
     };
 
-    document.getElementById("reorderHelp").onclick = ()=>{
-      show("Reorder = change slide order in cfg.hero.slides array. (We can add drag & drop if you want.)");
-    };
+    document.getElementById("heroPreview").onclick = openPreview;
 
     panel.querySelectorAll("[data-del-slide]").forEach(btn=>{
       btn.onclick = ()=>{
         collectHero();
-        cfg.hero.slides.splice(Number(btn.dataset.delSlide), 1);
+        const i = Number(btn.dataset.delSlide);
+        cfg.hero.slides.splice(i,1);
+        setDirty(true);
+        renderAll();
+      };
+    });
+
+    panel.querySelectorAll("[data-move-up]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectHero();
+        const i = Number(btn.dataset.moveUp);
+        if (i<=0) return;
+        const tmp = cfg.hero.slides[i-1];
+        cfg.hero.slides[i-1] = cfg.hero.slides[i];
+        cfg.hero.slides[i] = tmp;
+        setDirty(true);
+        renderAll();
+      };
+    });
+    panel.querySelectorAll("[data-move-down]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectHero();
+        const i = Number(btn.dataset.moveDown);
+        if (i>=cfg.hero.slides.length-1) return;
+        const tmp = cfg.hero.slides[i+1];
+        cfg.hero.slides[i+1] = cfg.hero.slides[i];
+        cfg.hero.slides[i] = tmp;
         setDirty(true);
         renderAll();
       };
     });
 
     panel.querySelectorAll("[data-upload-desktop]").forEach(btn=>{
-      btn.onclick = async ()=>{
-        const idx = Number(btn.dataset.uploadDesktop);
-        const slide = cfg.hero.slides[idx];
-        const k = slide.id;
-        const file = document.getElementById(`hero_desktopFile_${k}`)?.files?.[0];
-        if (!file) return show("Select desktop file first.", true);
-        try{
-          setStatus("warn", "Uploading…");
-          const url = await uploadBanner({ file, slot: `hero-${k}-desktop` });
-          slide.imageDesktop = url;
-          document.getElementById(`hero_desktopUrl_${k}`).value = url;
-          setDirty(true);
-          setStatus("ok", "Uploaded ✅");
-          show("Desktop banner uploaded ✅ Now click Save Changes");
-          renderAll();
-        }catch(e){
-          setStatus("bad", "Upload failed");
-          show(e.message||"Upload failed", true);
-        }
-      };
+      btn.onclick = ()=> doUploadHero(Number(btn.dataset.uploadDesktop), "desktop");
     });
-
     panel.querySelectorAll("[data-upload-mobile]").forEach(btn=>{
-      btn.onclick = async ()=>{
-        const idx = Number(btn.dataset.uploadMobile);
-        const slide = cfg.hero.slides[idx];
-        const k = slide.id;
-        const file = document.getElementById(`hero_mobileFile_${k}`)?.files?.[0];
-        if (!file) return show("Select mobile file first.", true);
-        try{
-          setStatus("warn", "Uploading…");
-          const url = await uploadBanner({ file, slot: `hero-${k}-mobile` });
-          slide.imageMobile = url;
-          document.getElementById(`hero_mobileUrl_${k}`).value = url;
-          setDirty(true);
-          setStatus("ok", "Uploaded ✅");
-          show("Mobile banner uploaded ✅ Now click Save Changes");
-          renderAll();
-        }catch(e){
-          setStatus("bad", "Upload failed");
-          show(e.message||"Upload failed", true);
-        }
-      };
+      btn.onclick = ()=> doUploadHero(Number(btn.dataset.uploadMobile), "mobile");
     });
   }
-  else if (activePanel==="menu"){
+
+  else if (activePanel === "menu") {
     panel.innerHTML = panelMenu();
 
     document.getElementById("addMenu").onclick = ()=>{
+      collectMenu();
       cfg.menu.push({ label:"", url:"", children:[] });
       setDirty(true);
       renderAll();
@@ -946,144 +1740,262 @@ function renderPanel(){
       };
     });
   }
-  else if (activePanel==="seo"){
+
+  else if (activePanel === "seo") {
     panel.innerHTML = panelSEO();
   }
-  else{
-    panel.innerHTML = panelComingSoon();
+
+  else if (activePanel === "pages") {
+    panel.innerHTML = panelPages();
+
+    document.getElementById("addPage").onclick = ()=>{
+      const tmpSlug = uid("page").slice(0,10);
+      cfg.pages[tmpSlug] = {
+        _id: uid("page"),
+        slug: tmpSlug,
+        title: "New Page",
+        headImage: "",
+        contentHtml: "<p>Paste your content here…</p>",
+        h1: "",
+        h2: "",
+        seo: ensureSeoShape({})
+      };
+      setDirty(true);
+      renderAll();
+      toast("Page added.", "ok", "Pages");
+    };
+
+    panel.querySelectorAll("[data-del-page-id]").forEach(btn=>{
+      btn.onclick = ()=>{
+        const pid = btn.dataset.delPageId;
+        const next = {};
+        Object.values(cfg.pages||{}).forEach(p=>{
+          if (p._id !== pid) next[p.slug] = p;
+        });
+        cfg.pages = next;
+        setDirty(true);
+        renderAll();
+      };
+    });
+
+    panel.querySelectorAll("[data-upload-page-head]").forEach(btn=>{
+      btn.onclick = async ()=>{
+        const pid = btn.dataset.uploadPageHead;
+        const page = Object.values(cfg.pages||{}).find(p => p._id === pid);
+        if (!page) return toast("Page not found.", "err", "Upload failed");
+
+        const domKey = domSafeKey(pid);
+        const fi = document.getElementById(`page_file_${domKey}`);
+        const file = fi?.files?.[0];
+        if (!file) return toast("Select an image first.", "warn", "No file");
+
+        try{
+          const slug = (document.getElementById(`page_slug_${domKey}`)?.value || page.slug || "page").trim().replace(/^\/+/,"");
+          const url = await uploadImageGeneric({ file, purpose:"pageHead", key: slug });
+          document.getElementById(`page_head_${domKey}`).value = url;
+          fi.value = "";
+          setDirty(true);
+          toast("Page head uploaded. Now Save Changes.", "ok", "Uploaded");
+        } catch(e){          toast(String(e.message || e), "err", "Upload failed");
+        }
+      };
+    });
   }
 
-  // mark dirty on any input change
-  panel.querySelectorAll("input,textarea,select").forEach(el=>{
+  else if (activePanel === "faq") {
+    panel.innerHTML = panelFAQ();
+
+    document.getElementById("addFaq").onclick = ()=>{
+      collectFAQ();
+      cfg.faq.push({ q:"", a:"" });
+      setDirty(true);
+      renderAll();
+    };
+
+    panel.querySelectorAll("[data-del-faq]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectFAQ();
+        cfg.faq.splice(Number(btn.dataset.delFaq), 1);
+        setDirty(true);
+        renderAll();
+      };
+    });
+  }
+
+  else if (activePanel === "reviews") {
+    panel.innerHTML = panelReviews();
+
+    document.getElementById("addReview").onclick = ()=>{
+      collectReviews();
+      cfg.reviews.push({ name:"", rating:5, date:"", text:"" });
+      setDirty(true);
+      renderAll();
+    };
+
+    panel.querySelectorAll("[data-del-review]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectReviews();
+        cfg.reviews.splice(Number(btn.dataset.delReview), 1);
+        setDirty(true);
+        renderAll();
+      };
+    });
+  }
+
+  else if (activePanel === "images") {
+    panel.innerHTML = panelImages();
+
+    document.getElementById("addImgMap").onclick = ()=>{
+      collectImages();
+      cfg.images.map.push({ key:"", url:"", notes:"" });
+      setDirty(true);
+      renderAll();
+    };
+
+    panel.querySelectorAll("[data-del-imgmap]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectImages();
+        cfg.images.map.splice(Number(btn.dataset.delImgmap), 1);
+        setDirty(true);
+        renderAll();
+      };
+    });
+
+    panel.querySelectorAll("[data-upload-imgmap]").forEach(btn=>{
+      btn.onclick = ()=> uploadImgMap(Number(btn.dataset.uploadImgmap));
+    });
+  }
+
+  else if (activePanel === "services") {
+    panel.innerHTML = panelServices();
+
+    document.getElementById("addService").onclick = ()=>{
+      collectServices();
+      cfg.services.push({
+        slug: "",
+        name: "",
+        short: "",
+        heroImage: "",
+        contentHtml: "<p>Service description…</p>",
+        h1: "",
+        h2: "",
+        seo: ensureSeoShape({})
+      });
+      setDirty(true);
+      renderAll();
+    };
+
+    panel.querySelectorAll("[data-del-service]").forEach(btn=>{
+      btn.onclick = ()=>{
+        collectServices();
+        cfg.services.splice(Number(btn.dataset.delService), 1);
+        setDirty(true);
+        renderAll();
+      };
+    });
+
+    panel.querySelectorAll("[data-upload-svc-hero]").forEach(btn=>{
+      btn.onclick = ()=> uploadServiceHero(Number(btn.dataset.uploadSvcHero));
+    });
+  }
+
+  // Dirty tracking (simple)
+  panel.querySelectorAll("input, textarea, select").forEach(el=>{
     el.addEventListener("input", ()=> setDirty(true), { passive:true });
     el.addEventListener("change", ()=> setDirty(true), { passive:true });
   });
 }
 
-/** ----------------- Collect from UI ----------------- */
-function collectHero(){
-  const slides = cfg.hero.slides || [];
-  slides.forEach(slide=>{
-    const k = slide.id;
-    slide.name = (document.getElementById(`hero_name_${k}`)?.value || "").trim();
-    slide.serviceSlug = (document.getElementById(`hero_service_${k}`)?.value || "").trim();
-    slide.title = (document.getElementById(`hero_title_${k}`)?.value || "").trim();
-    slide.sub = (document.getElementById(`hero_sub_${k}`)?.value || "").trim();
-    slide.bullets = (document.getElementById(`hero_bullets_${k}`)?.value || "")
-      .split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6);
-    slide.ctaText = (document.getElementById(`hero_ctaText_${k}`)?.value || "").trim();
-    slide.ctaLink = (document.getElementById(`hero_ctaLink_${k}`)?.value || "").trim();
-    slide.imageDesktop = (document.getElementById(`hero_desktopUrl_${k}`)?.value || "").trim();
-    slide.imageMobile  = (document.getElementById(`hero_mobileUrl_${k}`)?.value || "").trim();
-  });
-
-  cfg.hero.autoRotateMs = Number(document.getElementById("hero_autoMs")?.value || 5000);
-}
-
-function collectMenu(){
-  const out = [];
-  (cfg.menu||[]).forEach((item, idx)=>{
-    const label = (document.getElementById(`menu_label_${idx}`)?.value || "").trim();
-    const url = (document.getElementById(`menu_url_${idx}`)?.value || "").trim();
-    const children = [];
-    const childCount = (item.children||[]).length;
-    for (let cidx=0;cidx<childCount;cidx++){
-      const cl = (document.getElementById(`menu_child_label_${idx}_${cidx}`)?.value || "").trim();
-      const cu = (document.getElementById(`menu_child_url_${idx}_${cidx}`)?.value || "").trim();
-      if (cl || cu) children.push({ label:cl, url:cu });
-    }
-    if (label || url || children.length) out.push({ label, url, children });
-  });
-  cfg.menu = out;
-}
-
-function collectSEO(){
-  cfg.seo.siteName = (document.getElementById("seo_siteName")?.value || "").trim();
-  cfg.seo.canonicalBase = (document.getElementById("seo_canonicalBase")?.value || "").trim();
-  cfg.seo.defaultTitle = (document.getElementById("seo_defaultTitle")?.value || "").trim();
-  cfg.seo.defaultDescription = (document.getElementById("seo_defaultDescription")?.value || "").trim();
-  cfg.seo.robots = (document.getElementById("seo_robots")?.value || "").trim();
-  cfg.seo.defaultOgImage = (document.getElementById("seo_defaultOgImage")?.value || "").trim();
-  cfg.seo.tags = (document.getElementById("seo_tags")?.value || "")
-    .split(",").map(x=>x.trim()).filter(Boolean).slice(0,50);
-}
-
-function collectAll(){
-  if (document.getElementById("heroWrap")) collectHero();
-  if (document.getElementById("menuWrap")) collectMenu();
-  if (document.getElementById("seo_siteName")) collectSEO();
-  cfg = ensureShape(cfg);
-  setDirty(true);
-}
-
-/** ----------------- Render All ----------------- */
 function renderAll(){
   renderNav();
   renderPanel();
-
-  document.getElementById("loginStatus").textContent =
-    getToken() ? "Token saved in browser ✅" : "Not logged in";
-
-  if (!isDirty) setDirty(false);
 }
 
-/** ----------------- Buttons ----------------- */
-document.getElementById("saveToken").onclick = ()=>{
-  const t = document.getElementById("token").value.trim();
-  if (!t) return show("Paste token first.", true);
-  setToken(t);
-  show("Token saved ✅");
-  renderAll();
-};
-
-document.getElementById("logout").onclick = ()=>{
-  clearToken();
-  show("Logged out ✅");
-  renderAll();
-};
-
+/* -----------------------------
+  Wiring: top controls
+----------------------------- */
 document.getElementById("saveAll").onclick = saveConfig;
 document.getElementById("saveAllTop").onclick = saveConfig;
-document.getElementById("saveAllTop2").onclick = saveConfig;
+document.getElementById("panelSaveBtn").onclick = saveConfig;
 
-document.getElementById("jumpHero").onclick = ()=>{ try{ collectAll(); }catch(e){} activePanel="hero"; renderAll(); window.scrollTo({top:0,behavior:"smooth"}); };
-document.getElementById("jumpMenu").onclick = ()=>{ try{ collectAll(); }catch(e){} activePanel="menu"; renderAll(); window.scrollTo({top:0,behavior:"smooth"}); };
-document.getElementById("jumpServices").onclick = ()=>{ try{ collectAll(); }catch(e){} activePanel="services"; renderAll(); window.scrollTo({top:0,behavior:"smooth"}); };
-
-document.addEventListener("keydown",(e)=>{
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==="s"){
-    e.preventDefault();
-    saveConfig();
-  }
+document.getElementById("btnPreview").onclick = openPreview;
+document.getElementById("closePreview").onclick = closePreview;
+document.getElementById("previewModal").addEventListener("click",(e)=>{
+  if (e.target.id === "previewModal") closePreview();
 });
 
-/** Warn before leaving */
-window.addEventListener("beforeunload",(e)=>{
-  if (!isDirty) return;
-  e.preventDefault();
-  e.returnValue = "";
-});
+document.getElementById("saveToken").onclick = ()=>{
+  const t = (document.getElementById("token").value || "").trim();
+  if (!t) return toast("Please paste token.", "warn", "Token");
+  setToken(t);
+  updateLoginUI();
+  toast("Token saved in browser.", "ok", "Token");
+};
+document.getElementById("logout").onclick = ()=>{
+  clearToken();
+  document.getElementById("token").value = "";
+  updateLoginUI();
+  toast("Logged out.", "ok", "Logout");
+};
 
-/** ----------------- INIT ----------------- */
-(async ()=>{
+function updateLoginUI(){
+  const t = getToken();
+  const status = document.getElementById("loginStatus");
+  if (t) status.innerHTML = `Token saved in browser <span class="inline-flex h-2 w-2 rounded-full bg-green-600"></span>`;
+  else status.innerHTML = `Not logged in <span class="inline-flex h-2 w-2 rounded-full bg-slate-300"></span>`;
+}
+
+/* -----------------------------
+  Why you saw "no items" in Menu panel?
+  If cfg.menu is empty in /api/config, admin will show empty.
+  This admin DOES NOT read HTML from frontend; it reads /api/config.
+----------------------------- */
+
+/* -----------------------------
+  Init
+----------------------------- */
+(async function init(){
+  // Token restore
+  const t = getToken();
+  if (t) document.getElementById("token").value = t;
+  updateLoginUI();
+
   try{
-    setStatus("warn","Loading…");
-    document.getElementById("sysState").textContent = "Loading config…";
-    document.getElementById("token").value = getToken();
-
     await loadConfig();
-
-    setStatus("ok","Loaded ✅");
-    document.getElementById("sysState").textContent = "Ready ✅";
-    show("");
-
     renderAll();
-  }catch(e){
-    setStatus("bad","Failed");
-    document.getElementById("sysState").textContent = "Failed to load";
-    show(e.message || "Failed to load config", true);
+    toast("Config loaded.", "ok", "Ready");
+  } catch(e){
+    document.getElementById("panelTitle").textContent = "Failed to load config";
+    document.getElementById("panelSub").textContent = "Check /api/config endpoint and console logs.";
+    document.getElementById("panel").innerHTML = `
+      <div class="rounded-3xl border bg-red-50 p-5">
+        <div class="text-sm font-extrabold text-red-700">Error</div>
+        <div class="text-sm text-red-700 mt-2 break-words">${escapeHtml(String(e.message || e))}</div>
+        <div class="text-xs text-red-700 mt-3">Open DevTools → Console for details.</div>
+      </div>
+    `;
+    toast(String(e.message || e), "err", "Load failed");
   }
 })();
+
+/* -----------------------------
+  Collect-all-safe wrapper
+----------------------------- */
+function collectAll(){
+  // Only collect what's currently rendered (avoid errors on hidden panels)
+  if (activePanel === "hero") collectHero();
+  if (activePanel === "menu") collectMenu();
+  if (activePanel === "seo") collectSEO();
+  if (activePanel === "pages") collectPages();
+  if (activePanel === "faq") collectFAQ();
+  if (activePanel === "reviews") collectReviews();
+  if (activePanel === "images") collectImages();
+  if (activePanel === "services") collectServices();
+
+  cfg = ensureShape(cfg);
+  setDirty(true);
+}
 </script>
+
 </body>
 </html>
