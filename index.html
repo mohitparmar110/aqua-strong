@@ -22,6 +22,9 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+      #hero-slide-img {
+        transition: opacity 180ms ease;
+}
     .hero-gradient {
       background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
     }
@@ -914,6 +917,123 @@ document.addEventListener('DOMContentLoaded', () => {
       menu.classList.toggle('hidden');
     });
   }
+// ✅ Hero Rotating Banner (auto-rotate + click triggers)
+const heroSlides = [
+  {
+    key: 'home',
+    img: 'assets/images/wterprofingwholehome.png',
+    title: 'Complete Home Protection',
+    sub: '10-Year Warranty Included',
+    waText: 'Hi! I need complete home waterproofing inspection'
+  },
+  {
+    key: 'terrace',
+    img: 'assets/images/terrace-2.jpg',
+    title: 'Terrace Waterproofing',
+    sub: 'Heat reflective • Crack repair',
+    waText: 'Hi! I need terrace waterproofing'
+  },
+  {
+    key: 'toilet',
+    img: 'assets/images/bathroom-1.jpg',
+    title: 'Toilet / Bathroom Waterproofing',
+    sub: 'No tile removal • Same day fix',
+    waText: 'Hi! I need bathroom/toilet waterproofing'
+  },
+  {
+    key: 'heat',
+    img: 'assets/images/heat-reflection.jpg',
+    title: 'Heat Reflection Coating',
+    sub: 'Cool roof • UV protection',
+    waText: 'Hi! I need heat reflection roof coating'
+  }
+];
+
+// if some images don’t exist yet, the slider still works — just replace paths later.
+
+let heroIndex = 0;
+let heroTimer = null;
+
+const heroImg = document.getElementById('hero-slide-img');
+const heroTitle = document.getElementById('hero-slide-title');
+const heroSub = document.getElementById('hero-slide-sub');
+const heroDots = document.getElementById('hero-dots');
+
+function setHero(index, { userAction = false } = {}) {
+  if (!heroImg || !heroTitle || !heroSub) return;
+
+  heroIndex = (index + heroSlides.length) % heroSlides.length;
+  const s = heroSlides[heroIndex];
+
+  // smooth-ish swap
+  heroImg.style.opacity = '0.15';
+  setTimeout(() => {
+    heroImg.src = s.img;
+    heroTitle.textContent = s.title;
+    heroSub.textContent = s.sub;
+    heroImg.style.opacity = '1';
+  }, 120);
+
+  // update dots
+  if (heroDots) {
+    [...heroDots.querySelectorAll('button')].forEach((btn, i) => {
+      btn.classList.toggle('bg-white', i === heroIndex);
+      btn.classList.toggle('bg-white/40', i !== heroIndex);
+    });
+  }
+
+  // Update WhatsApp CTA text per slide (optional)
+  const heroWa = document.getElementById('hero-whatsapp');
+  if (heroWa) {
+    heroWa.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(s.waText)}`;
+  }
+
+  // reset timer on user action so it doesn’t instantly flip
+  if (userAction) restartHeroAuto();
+}
+
+function buildHeroDots() {
+  if (!heroDots) return;
+  heroDots.innerHTML = '';
+  heroSlides.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'w-2.5 h-2.5 rounded-full transition-all ' + (i === 0 ? 'bg-white' : 'bg-white/40');
+    b.addEventListener('click', () => setHero(i, { userAction: true }));
+    heroDots.appendChild(b);
+  });
+}
+
+function nextHero() { setHero(heroIndex + 1, { userAction: true }); }
+function prevHero() { setHero(heroIndex - 1, { userAction: true }); }
+
+function restartHeroAuto() {
+  if (heroTimer) clearInterval(heroTimer);
+  heroTimer = setInterval(() => setHero(heroIndex + 1), 5000); // 5s
+}
+
+// prev/next buttons
+document.getElementById('hero-next')?.addEventListener('click', nextHero);
+document.getElementById('hero-prev')?.addEventListener('click', prevHero);
+
+// overlay service triggers (click anywhere)
+document.querySelectorAll('.hero-trigger').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.getAttribute('data-slide');
+    const idx = heroSlides.findIndex(s => s.key === key);
+    if (idx >= 0) setHero(idx, { userAction: true });
+
+    // Also preselect the contact form dropdown
+    const map = { terrace: 'terrace', toilet: 'bathroom', heat: 'terrace' };
+    const sel = document.getElementById('service');
+    if (sel && map[key]) sel.value = map[key];
+  });
+});
+
+// init
+buildHeroDots();
+setHero(0);
+restartHeroAuto();
 
   // ✅ Mobile services accordion
   const msBtn = document.getElementById('mobile-services-btn');
