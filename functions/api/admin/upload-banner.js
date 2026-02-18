@@ -19,7 +19,7 @@ export async function onRequestPost(context) {
 
   const key = `banners/${slot}-${variant}-${Date.now()}.png`;
 
-  await env.ASSETS_BUCKET.put(key, file.stream(), {
+  await env.R2.put(key, file.stream(), {
     httpMetadata: { contentType: file.type }
   });
 
