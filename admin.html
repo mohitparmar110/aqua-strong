@@ -6,6 +6,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <title>Admin • Site CMS</title>
 </head>
+
 <body class="bg-slate-50 text-slate-800">
   <div class="max-w-6xl mx-auto p-6">
     <div class="flex items-start justify-between gap-4 flex-wrap">
@@ -33,9 +34,7 @@
       <div class="lg:col-span-3">
         <div class="bg-white rounded-2xl shadow border p-3 sticky top-4">
           <div class="text-xs font-semibold text-slate-500 px-2 pb-2">PANELS</div>
-          <nav id="nav" class="space-y-1">
-            <!-- buttons injected -->
-          </nav>
+          <nav id="nav" class="space-y-1"></nav>
           <div class="mt-3 border-t pt-3 px-2">
             <p class="text-xs text-slate-500">Tip: Save often after uploads.</p>
           </div>
@@ -51,7 +50,6 @@
           </div>
 
           <div id="panel" class="mt-5"></div>
-
           <p id="msg" class="text-sm mt-4"></p>
         </div>
       </div>
@@ -96,6 +94,15 @@ function escapeHtml(str){
 
 function uid(prefix="id"){
   return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now();
+}
+
+/** Make safe IDs from arbitrary keys (slugs, etc.) */
+function domSafeKey(str){
+  return String(str || "")
+    .trim()
+    .replace(/^\/+/,"")
+    .replace(/[^a-zA-Z0-9_-]/g, "_")
+    .slice(0, 64) || ("k_" + Math.random().toString(16).slice(2));
 }
 
 function show(text, isErr=false){
@@ -160,19 +167,22 @@ function ensureShape(c){
   c.seo.h1Defaults = c.seo.h1Defaults || "";
   c.seo.h2Defaults = c.seo.h2Defaults || "";
 
-  // PAGES
+  // PAGES (object keyed by slug) + stable internal id for UI
   if (!c.pages || typeof c.pages !== "object") c.pages = {};
+  const normalizedPages = {};
   Object.keys(c.pages).forEach(k => {
     const p = c.pages[k] || {};
     p.slug = (p.slug || k || "").replace(/^\/+/,"");
+    p._id = p._id || uid("page"); // stable across renders
     p.title = p.title || "";
     p.headImage = p.headImage || "";
     p.contentHtml = p.contentHtml || "";
     p.h1 = p.h1 || "";
     p.h2 = p.h2 || "";
     p.seo = ensureSeoShape(p.seo);
-    c.pages[k] = p;
+    normalizedPages[p.slug || k] = p;
   });
+  c.pages = normalizedPages;
 
   // FAQ
   if (!Array.isArray(c.faq)) c.faq = [];
@@ -226,8 +236,7 @@ async function loadConfig(){
 
 /** -----------------------------
  *  GENERIC UPLOAD
- *  - You can map this to your existing endpoint.
- *  - Expected response: { publicUrl: "https://..." }
+ *  Expected response: { publicUrl: "https://..." }
  *  ----------------------------- */
 async function uploadFile({ file, purpose, key }){
   if (!getToken()) throw new Error("Paste ADMIN TOKEN and click Save first.");
@@ -253,6 +262,7 @@ async function uploadFile({ file, purpose, key }){
 
 /** -----------------------------
  *  NAV + PANEL SWITCH
+ *  - Fix: collect current panel before switching to avoid data loss.
  *  ----------------------------- */
 function renderNav(){
   const nav = document.getElementById("nav");
@@ -269,6 +279,8 @@ function renderNav(){
 
   nav.querySelectorAll("[data-panel]").forEach(btn => {
     btn.onclick = () => {
+      // IMPORTANT: save current panel edits into cfg before switching
+      try { collectAll(); } catch(e) {}
       activePanel = btn.dataset.panel;
       renderAll();
     };
@@ -317,7 +329,7 @@ function heroCard(slot){
 
 function panelHero(){
   return `
-    <div class="grid md:grid-cols-3 gap-4">
+    <div class="grid md:grid-cols-3 gap-4" id="cards">
       ${HERO_SLOTS.map(heroCard).join("")}
     </div>
   `;
@@ -325,13 +337,10 @@ function panelHero(){
 
 async function uploadHero(slot){
   const fileInput = document.getElementById(`file_${slot}`);
-  const file = fileInput.files && fileInput.files[0];
+  const file = fileInput?.files?.[0];
   if (!file) return show(`Select a file for ${slot} first`, true);
 
   try{
-    // If you already have /api/admin/upload-banner keep using it:
-    // const res = await fetch(`/api/admin/upload-banner?slot=${encodeURIComponent(slot)}`, ...)
-
     const url = await uploadFile({ file, purpose:"hero", key: slot });
     cfg.hero.slides[slot].bg = url;
     document.getElementById(`bg_${slot}`).textContent = url;
@@ -460,57 +469,56 @@ function panelSEO(){
   `;
 }
 
-
 /** -----------------------------
  *  PAGE CREATOR / EDITOR
- *  - stored in cfg.pages[slug]
+ *  Fix: stable DOM ids using page._id (NOT slug), so slug rename never breaks.
  *  ----------------------------- */
 function pageEditorCard(p){
-  const key = escapeHtml(p.slug || "");
-  const urlPreview = (cfg.seo.canonicalBase ? cfg.seo.canonicalBase.replace(/\/$/,"") : "") + "/" + key;
+  const domKey = domSafeKey(p._id);
+  const urlPreview = (cfg.seo.canonicalBase ? cfg.seo.canonicalBase.replace(/\/$/,"") : "") + "/" + (p.slug || "");
   return `
-    <div class="border rounded-2xl p-4">
+    <div class="border rounded-2xl p-4" data-page-id="${escapeHtml(p._id)}">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <div>
           <div class="font-semibold">${escapeHtml(p.title || "(Untitled Page)")}</div>
           <div class="text-xs text-slate-500 break-words">Slug: /${escapeHtml(p.slug || "")}</div>
           ${p.slug ? `<div class="text-xs mt-1">Link: <span class="font-mono">${escapeHtml(urlPreview)}</span></div>` : ``}
         </div>
-        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-page="${escapeHtml(p.slug)}">Delete</button>
+        <button class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm" data-del-page-id="${escapeHtml(p._id)}">Delete</button>
       </div>
 
       <div class="mt-4 grid md:grid-cols-2 gap-3">
         <div>
           <label class="text-xs font-semibold">Title</label>
-          <input class="w-full border rounded-xl px-3 py-2" id="page_title_${key}" value="${escapeHtml(p.title)}"/>
+          <input class="w-full border rounded-xl px-3 py-2" id="page_title_${domKey}" value="${escapeHtml(p.title)}"/>
         </div>
         <div>
           <label class="text-xs font-semibold">Slug (no spaces, example: faq)</label>
-          <input class="w-full border rounded-xl px-3 py-2" id="page_slug_${key}" value="${escapeHtml(p.slug)}"/>
+          <input class="w-full border rounded-xl px-3 py-2" id="page_slug_${domKey}" value="${escapeHtml(p.slug)}"/>
         </div>
       </div>
 
       <div class="mt-3">
         <label class="text-xs font-semibold">Head Image URL</label>
-        <input class="w-full border rounded-xl px-3 py-2" id="page_head_${key}" value="${escapeHtml(p.headImage)}" placeholder="https://..."/>
+        <input class="w-full border rounded-xl px-3 py-2" id="page_head_${domKey}" value="${escapeHtml(p.headImage)}" placeholder="https://..."/>
         <div class="grid md:grid-cols-2 gap-2 mt-2">
-          <input type="file" id="page_file_${key}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
-          <button class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm" data-upload-page-head="${key}">Upload Head Image</button>
+          <input type="file" id="page_file_${domKey}" class="block w-full text-sm" accept="image/png,image/jpeg,image/webp"/>
+          <button class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm" data-upload-page-head="${escapeHtml(p._id)}">Upload Head Image</button>
         </div>
       </div>
 
       <div class="mt-3">
         <label class="text-xs font-semibold">H1</label>
-        <input class="w-full border rounded-xl px-3 py-2" id="page_h1_${key}" value="${escapeHtml(p.h1)}"/>
+        <input class="w-full border rounded-xl px-3 py-2" id="page_h1_${domKey}" value="${escapeHtml(p.h1)}"/>
       </div>
       <div class="mt-3">
         <label class="text-xs font-semibold">H2</label>
-        <input class="w-full border rounded-xl px-3 py-2" id="page_h2_${key}" value="${escapeHtml(p.h2)}"/>
+        <input class="w-full border rounded-xl px-3 py-2" id="page_h2_${domKey}" value="${escapeHtml(p.h2)}"/>
       </div>
 
       <div class="mt-3">
         <label class="text-xs font-semibold">Content HTML (paste your written content)</label>
-        <textarea class="w-full border rounded-xl px-3 py-2 font-mono text-sm" rows="8" id="page_html_${key}">${escapeHtml(p.contentHtml)}</textarea>
+        <textarea class="w-full border rounded-xl px-3 py-2 font-mono text-sm" rows="8" id="page_html_${domKey}">${escapeHtml(p.contentHtml)}</textarea>
       </div>
 
       <div class="mt-4 p-4 rounded-2xl border bg-slate-50">
@@ -518,35 +526,35 @@ function pageEditorCard(p){
         <div class="grid md:grid-cols-2 gap-3">
           <div>
             <label class="text-xs font-semibold">Meta Title</label>
-            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_title_${key}" value="${escapeHtml(p.seo.title)}"/>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_title_${domKey}" value="${escapeHtml(p.seo.title)}"/>
           </div>
           <div>
             <label class="text-xs font-semibold">Meta Description</label>
-            <textarea class="w-full border rounded-xl px-3 py-2" rows="3" id="page_seo_desc_${key}">${escapeHtml(p.seo.description)}</textarea>
+            <textarea class="w-full border rounded-xl px-3 py-2" rows="3" id="page_seo_desc_${domKey}">${escapeHtml(p.seo.description)}</textarea>
           </div>
           <div>
             <label class="text-xs font-semibold">Canonical</label>
-            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_can_${key}" value="${escapeHtml(p.seo.canonical)}" placeholder="/faq or full url"/>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_can_${domKey}" value="${escapeHtml(p.seo.canonical)}" placeholder="/faq or full url"/>
           </div>
           <div>
             <label class="text-xs font-semibold">Robots</label>
-            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_robots_${key}" value="${escapeHtml(p.seo.robots)}" placeholder="index,follow"/>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_robots_${domKey}" value="${escapeHtml(p.seo.robots)}" placeholder="index,follow"/>
           </div>
           <div>
             <label class="text-xs font-semibold">OG Title</label>
-            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_ogt_${key}" value="${escapeHtml(p.seo.ogTitle)}"/>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_ogt_${domKey}" value="${escapeHtml(p.seo.ogTitle)}"/>
           </div>
           <div>
             <label class="text-xs font-semibold">OG Description</label>
-            <textarea class="w-full border rounded-xl px-3 py-2" rows="3" id="page_seo_ogd_${key}">${escapeHtml(p.seo.ogDesc)}</textarea>
+            <textarea class="w-full border rounded-xl px-3 py-2" rows="3" id="page_seo_ogd_${domKey}">${escapeHtml(p.seo.ogDesc)}</textarea>
           </div>
           <div class="md:col-span-2">
             <label class="text-xs font-semibold">OG Image</label>
-            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_ogi_${key}" value="${escapeHtml(p.seo.ogImage)}"/>
+            <input class="w-full border rounded-xl px-3 py-2" id="page_seo_ogi_${domKey}" value="${escapeHtml(p.seo.ogImage)}"/>
           </div>
           <div class="md:col-span-2">
             <label class="text-xs font-semibold">Schema JSON-LD (paste JSON)</label>
-            <textarea class="w-full border rounded-xl px-3 py-2 font-mono text-sm" rows="6" id="page_seo_schema_${key}">${escapeHtml(p.seo.schemaJsonLd)}</textarea>
+            <textarea class="w-full border rounded-xl px-3 py-2 font-mono text-sm" rows="6" id="page_seo_schema_${domKey}">${escapeHtml(p.seo.schemaJsonLd)}</textarea>
           </div>
         </div>
       </div>
@@ -561,11 +569,12 @@ function panelPages(){
       <p class="text-sm text-slate-600">Create pages like <span class="font-mono">/faq</span>, <span class="font-mono">/about</span>, etc.</p>
       <button id="addPage" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ New Page</button>
     </div>
-    <div class="mt-4 space-y-4">
+    <div class="mt-4 space-y-4" id="pagesWrap">
       ${pagesArr.map(pageEditorCard).join("") || `<p class="text-sm text-slate-500">No pages yet.</p>`}
     </div>
   `;
 }
+
 /** -----------------------------
  *  FAQ PANEL
  *  ----------------------------- */
@@ -594,7 +603,7 @@ function panelFAQ(){
       <p class="text-sm text-slate-600">Manage FAQs shown on the site.</p>
       <button id="addFaq" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add FAQ</button>
     </div>
-    <div class="mt-4 space-y-4">
+    <div class="mt-4 space-y-4" id="faqWrap">
       ${(cfg.faq||[]).map(faqRow).join("") || `<p class="text-sm text-slate-500">No FAQs yet.</p>`}
     </div>
   `;
@@ -639,7 +648,7 @@ function panelReviews(){
       <p class="text-sm text-slate-600">Update customer reviews.</p>
       <button id="addReview" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add Review</button>
     </div>
-    <div class="mt-4 space-y-4">
+    <div class="mt-4 space-y-4" id="reviewsWrap">
       ${(cfg.reviews||[]).map(reviewRow).join("") || `<p class="text-sm text-slate-500">No reviews yet.</p>`}
     </div>
   `;
@@ -685,7 +694,7 @@ function panelImages(){
       <p class="text-sm text-slate-600">Upload images and map them to keys for use anywhere.</p>
       <button id="addImgMap" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add Map Row</button>
     </div>
-    <div class="mt-4 space-y-4">
+    <div class="mt-4 space-y-4" id="imagesWrap">
       ${(cfg.images.map||[]).map(imageMapRow).join("") || `<p class="text-sm text-slate-500">No mapped images yet.</p>`}
     </div>
   `;
@@ -693,10 +702,10 @@ function panelImages(){
 
 async function uploadImgMap(idx){
   const fi = document.getElementById(`img_file_${idx}`);
-  const file = fi.files && fi.files[0];
+  const file = fi?.files?.[0];
   if (!file) return show("Select an image first.", true);
 
-  const key = (document.getElementById(`img_key_${idx}`).value || "").trim() || ("img_"+idx);
+  const key = (document.getElementById(`img_key_${idx}`)?.value || "").trim() || ("img_"+idx);
   try{
     const url = await uploadFile({ file, purpose:"map", key });
     document.getElementById(`img_url_${idx}`).value = url;
@@ -709,9 +718,10 @@ async function uploadImgMap(idx){
 
 /** -----------------------------
  *  SERVICES PANEL
+ *  - Fix: Upload uses correct IDs consistently
  *  ----------------------------- */
 function serviceCard(s, idx){
-  const k = escapeHtml(String(idx));
+  const k = String(idx);
   const link = s.slug ? ((cfg.seo.canonicalBase||"").replace(/\/$/,"") + "/" + escapeHtml(s.slug)) : "";
   return `
     <div class="border rounded-2xl p-4">
@@ -810,7 +820,7 @@ function panelServices(){
       <p class="text-sm text-slate-600">Create and edit services (each service can be its own page).</p>
       <button id="addService" class="px-4 py-2 rounded-xl bg-slate-900 text-white">+ Add Service</button>
     </div>
-    <div class="mt-4 space-y-4">
+    <div class="mt-4 space-y-4" id="servicesWrap">
       ${(cfg.services||[]).map(serviceCard).join("") || `<p class="text-sm text-slate-500">No services yet.</p>`}
     </div>
   `;
@@ -818,10 +828,11 @@ function panelServices(){
 
 async function uploadServiceHero(idx){
   const fi = document.getElementById(`svc_file_${idx}`);
-  const file = fi && fi.files && fi.files[0];
+  const file = fi?.files?.[0];
   if (!file) return show("Select an image first.", true);
 
-  const slug = (document.getElementById(`svc_slug_${idx}`).value || "").trim() || ("service_"+idx);
+  const slug = (document.getElementById(`svc_slug_${idx}`)?.value || "").trim().replace(/^\/+/,"") || ("service_"+idx);
+
   try{
     const url = await uploadFile({ file, purpose:"serviceHero", key: slug });
     document.getElementById(`svc_hero_${idx}`).value = url;
@@ -831,18 +842,20 @@ async function uploadServiceHero(idx){
     show("Upload failed: " + (e.message || e), true);
   }
 }
+
 /** -----------------------------
  *  COLLECT CHANGES (read UI -> cfg)
+ *  - Fix: collect based on DOM presence reliably.
  *  ----------------------------- */
 function collectHero(){
   HERO_SLOTS.forEach(slot=>{
     const s = cfg.hero.slides[slot];
-    s.title = document.getElementById(`title_${slot}`).value.trim();
-    s.sub = document.getElementById(`sub_${slot}`).value.trim();
-    s.bullets = document.getElementById(`bul_${slot}`).value
+    s.title = (document.getElementById(`title_${slot}`)?.value || "").trim();
+    s.sub = (document.getElementById(`sub_${slot}`)?.value || "").trim();
+    s.bullets = (document.getElementById(`bul_${slot}`)?.value || "")
       .split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6);
-    s.ctaText = document.getElementById(`ctaText_${slot}`).value.trim();
-    s.ctaLink = document.getElementById(`ctaLink_${slot}`).value.trim();
+    s.ctaText = (document.getElementById(`ctaText_${slot}`)?.value || "").trim();
+    s.ctaLink = (document.getElementById(`ctaLink_${slot}`)?.value || "").trim();
   });
 }
 
@@ -864,46 +877,62 @@ function collectMenu(){
 }
 
 function collectSEO(){
-  cfg.seo.siteName = (document.getElementById("seo_siteName").value || "").trim();
-  cfg.seo.canonicalBase = (document.getElementById("seo_canonicalBase").value || "").trim();
-  cfg.seo.defaultTitle = (document.getElementById("seo_defaultTitle").value || "").trim();
-  cfg.seo.defaultDescription = (document.getElementById("seo_defaultDescription").value || "").trim();
-  cfg.seo.robots = (document.getElementById("seo_robots").value || "").trim();
-  cfg.seo.defaultOgImage = (document.getElementById("seo_defaultOgImage").value || "").trim();
-  cfg.seo.tags = (document.getElementById("seo_tags").value || "")
+  cfg.seo.siteName = (document.getElementById("seo_siteName")?.value || "").trim();
+  cfg.seo.canonicalBase = (document.getElementById("seo_canonicalBase")?.value || "").trim();
+  cfg.seo.defaultTitle = (document.getElementById("seo_defaultTitle")?.value || "").trim();
+  cfg.seo.defaultDescription = (document.getElementById("seo_defaultDescription")?.value || "").trim();
+  cfg.seo.robots = (document.getElementById("seo_robots")?.value || "").trim();
+  cfg.seo.defaultOgImage = (document.getElementById("seo_defaultOgImage")?.value || "").trim();
+  cfg.seo.tags = (document.getElementById("seo_tags")?.value || "")
     .split(",").map(x=>x.trim()).filter(Boolean).slice(0,50);
-  cfg.seo.h1Defaults = (document.getElementById("seo_h1Defaults").value || "").trim();
-  cfg.seo.h2Defaults = (document.getElementById("seo_h2Defaults").value || "").trim();
+  cfg.seo.h1Defaults = (document.getElementById("seo_h1Defaults")?.value || "").trim();
+  cfg.seo.h2Defaults = (document.getElementById("seo_h2Defaults")?.value || "").trim();
 }
 
 function collectPages(){
+  // Rebuild pages object keyed by new slug, using stable _id from DOM cards
+  const cards = Array.from(document.querySelectorAll("[data-page-id]"));
   const next = {};
-  const pagesArr = Object.values(cfg.pages||{});
-  pagesArr.forEach(p => {
-    const key = (p.slug||"").replace(/^\/+/,"");
-    const newSlug = (document.getElementById(`page_slug_${key}`)?.value || "").trim().replace(/^\/+/,"");
-    const slug = newSlug || key;
+  const idToOld = {};
+  Object.values(cfg.pages||{}).forEach(p => idToOld[p._id] = p);
+
+  cards.forEach(card => {
+    const pid = card.getAttribute("data-page-id");
+    const old = idToOld[pid] || {};
+    const domKey = domSafeKey(pid);
+
+    const slug = (document.getElementById(`page_slug_${domKey}`)?.value || "").trim().replace(/^\/+/,"");
     if (!slug) return;
 
-    const title = (document.getElementById(`page_title_${key}`)?.value || "").trim();
-    const headImage = (document.getElementById(`page_head_${key}`)?.value || "").trim();
-    const h1 = (document.getElementById(`page_h1_${key}`)?.value || "").trim();
-    const h2 = (document.getElementById(`page_h2_${key}`)?.value || "").trim();
-    const contentHtml = (document.getElementById(`page_html_${key}`)?.value || "");
+    const title = (document.getElementById(`page_title_${domKey}`)?.value || "").trim();
+    const headImage = (document.getElementById(`page_head_${domKey}`)?.value || "").trim();
+    const h1 = (document.getElementById(`page_h1_${domKey}`)?.value || "").trim();
+    const h2 = (document.getElementById(`page_h2_${domKey}`)?.value || "").trim();
+    const contentHtml = (document.getElementById(`page_html_${domKey}`)?.value || "");
 
     const seo = ensureSeoShape({
-      title: (document.getElementById(`page_seo_title_${key}`)?.value || "").trim(),
-      description: (document.getElementById(`page_seo_desc_${key}`)?.value || "").trim(),
-      canonical: (document.getElementById(`page_seo_can_${key}`)?.value || "").trim(),
-      robots: (document.getElementById(`page_seo_robots_${key}`)?.value || "").trim(),
-      ogTitle: (document.getElementById(`page_seo_ogt_${key}`)?.value || "").trim(),
-      ogDesc: (document.getElementById(`page_seo_ogd_${key}`)?.value || "").trim(),
-      ogImage: (document.getElementById(`page_seo_ogi_${key}`)?.value || "").trim(),
-      schemaJsonLd: (document.getElementById(`page_seo_schema_${key}`)?.value || "").trim()
+      title: (document.getElementById(`page_seo_title_${domKey}`)?.value || "").trim(),
+      description: (document.getElementById(`page_seo_desc_${domKey}`)?.value || "").trim(),
+      canonical: (document.getElementById(`page_seo_can_${domKey}`)?.value || "").trim(),
+      robots: (document.getElementById(`page_seo_robots_${domKey}`)?.value || "").trim(),
+      ogTitle: (document.getElementById(`page_seo_ogt_${domKey}`)?.value || "").trim(),
+      ogDesc: (document.getElementById(`page_seo_ogd_${domKey}`)?.value || "").trim(),
+      ogImage: (document.getElementById(`page_seo_ogi_${domKey}`)?.value || "").trim(),
+      schemaJsonLd: (document.getElementById(`page_seo_schema_${domKey}`)?.value || "").trim()
     });
 
-    next[slug] = { slug, title, headImage, contentHtml, h1, h2, seo };
+    next[slug] = {
+      _id: pid,
+      slug,
+      title,
+      headImage,
+      contentHtml,
+      h1,
+      h2,
+      seo
+    };
   });
+
   cfg.pages = next;
 }
 
@@ -968,18 +997,16 @@ function collectServices(){
 }
 
 function collectAll(){
-  // Collect only if panel exists in DOM; safe to call always.
+  // Only collect from panels that exist in DOM now (prevents “undefined” crashes).
   if (document.getElementById("cards")) collectHero();
   if (document.getElementById("menuWrap")) collectMenu();
   if (document.getElementById("seo_siteName")) collectSEO();
-  // pages
-  if (activePanel === "pages" || Object.keys(cfg.pages||{}).length) collectPages();
-  if (activePanel === "faq" || (cfg.faq||[]).length) collectFAQ();
-  if (activePanel === "reviews" || (cfg.reviews||[]).length) collectReviews();
-  if (activePanel === "images" || (cfg.images.map||[]).length) collectImages();
-  if (activePanel === "services" || (cfg.services||[]).length) collectServices();
+  if (document.getElementById("pagesWrap")) collectPages();
+  if (document.getElementById("faqWrap")) collectFAQ();
+  if (document.getElementById("reviewsWrap")) collectReviews();
+  if (document.getElementById("imagesWrap")) collectImages();
+  if (document.getElementById("servicesWrap")) collectServices();
 
-  // Ensure clean shape after updates
   cfg = ensureShape(cfg);
 }
 
@@ -1011,18 +1038,21 @@ function renderPanel(){
   document.getElementById("panelTitle").textContent = title;
 
   const panel = document.getElementById("panel");
+
   if (activePanel === "hero") {
-    panel.innerHTML = `<div id="cards">${panelHero()}</div>`;
+    panel.innerHTML = panelHero();
     document.querySelectorAll("[data-upload-hero]").forEach(btn=>{
       btn.onclick = ()=> uploadHero(btn.dataset.uploadHero);
     });
   }
   else if (activePanel === "menu") {
     panel.innerHTML = panelMenu();
+
     document.getElementById("addMenu").onclick = ()=>{
       cfg.menu.push({ label:"", url:"", children:[] });
       renderAll();
     };
+
     document.querySelectorAll("[data-del-menu]").forEach(btn=>{
       btn.onclick = ()=>{
         collectMenu();
@@ -1030,6 +1060,7 @@ function renderPanel(){
         renderAll();
       };
     });
+
     document.querySelectorAll("[data-add-child]").forEach(btn=>{
       btn.onclick = ()=>{
         collectMenu();
@@ -1039,6 +1070,7 @@ function renderPanel(){
         renderAll();
       };
     });
+
     document.querySelectorAll("[data-del-child]").forEach(btn=>{
       btn.onclick = ()=>{
         collectMenu();
@@ -1053,10 +1085,12 @@ function renderPanel(){
   }
   else if (activePanel === "pages") {
     panel.innerHTML = panelPages();
+
     document.getElementById("addPage").onclick = ()=>{
-      const tmp = uid("page").slice(0,12);
-      cfg.pages[tmp] = {
-        slug: tmp,
+      const tmpSlug = uid("page").slice(0,10);
+      cfg.pages[tmpSlug] = {
+        _id: uid("page"),
+        slug: tmpSlug,
         title: "New Page",
         headImage: "",
         contentHtml: "<p>Paste your content here…</p>",
@@ -1066,25 +1100,35 @@ function renderPanel(){
       };
       renderAll();
     };
-    document.querySelectorAll("[data-del-page]").forEach(btn=>{
+
+    document.querySelectorAll("[data-del-page-id]").forEach(btn=>{
       btn.onclick = ()=>{
-        collectPages();
-        const slug = btn.dataset.delPage;
-        delete cfg.pages[slug];
+        // delete by page _id
+        const pid = btn.dataset.delPageId;
+        const next = {};
+        Object.values(cfg.pages||{}).forEach(p=>{
+          if (p._id !== pid) next[p.slug] = p;
+        });
+        cfg.pages = next;
         renderAll();
       };
     });
+
     document.querySelectorAll("[data-upload-page-head]").forEach(btn=>{
       btn.onclick = async ()=>{
-        const key = btn.dataset.uploadPageHead;
-        const fi = document.getElementById(`page_file_${key}`);
-        const file = fi && fi.files && fi.files[0];
+        const pid = btn.dataset.uploadPageHead;
+        const page = Object.values(cfg.pages||{}).find(p => p._id === pid);
+        if (!page) return show("Page not found.", true);
+
+        const domKey = domSafeKey(pid);
+        const fi = document.getElementById(`page_file_${domKey}`);
+        const file = fi?.files?.[0];
         if (!file) return show("Select an image first.", true);
 
         try{
-          const slug = (document.getElementById(`page_slug_${key}`)?.value || key).trim() || key;
+          const slug = (document.getElementById(`page_slug_${domKey}`)?.value || page.slug || "page").trim().replace(/^\/+/,"");
           const url = await uploadFile({ file, purpose:"pageHead", key: slug });
-          document.getElementById(`page_head_${key}`).value = url;
+          document.getElementById(`page_head_${domKey}`).value = url;
           fi.value = "";
           show("Uploaded ✅ Now click Save Changes");
         } catch(e){
@@ -1095,10 +1139,12 @@ function renderPanel(){
   }
   else if (activePanel === "faq") {
     panel.innerHTML = panelFAQ();
+
     document.getElementById("addFaq").onclick = ()=>{
       cfg.faq.push({ q:"", a:"" });
       renderAll();
     };
+
     document.querySelectorAll("[data-del-faq]").forEach(btn=>{
       btn.onclick = ()=>{
         collectFAQ();
@@ -1109,10 +1155,12 @@ function renderPanel(){
   }
   else if (activePanel === "reviews") {
     panel.innerHTML = panelReviews();
+
     document.getElementById("addReview").onclick = ()=>{
       cfg.reviews.push({ name:"", rating:5, text:"", date:"" });
       renderAll();
     };
+
     document.querySelectorAll("[data-del-review]").forEach(btn=>{
       btn.onclick = ()=>{
         collectReviews();
@@ -1123,10 +1171,12 @@ function renderPanel(){
   }
   else if (activePanel === "images") {
     panel.innerHTML = panelImages();
+
     document.getElementById("addImgMap").onclick = ()=>{
       cfg.images.map.push({ key:"", url:"", notes:"" });
       renderAll();
     };
+
     document.querySelectorAll("[data-del-imgmap]").forEach(btn=>{
       btn.onclick = ()=>{
         collectImages();
@@ -1134,12 +1184,14 @@ function renderPanel(){
         renderAll();
       };
     });
+
     document.querySelectorAll("[data-upload-imgmap]").forEach(btn=>{
       btn.onclick = ()=> uploadImgMap(Number(btn.dataset.uploadImgmap));
     });
   }
   else if (activePanel === "services") {
     panel.innerHTML = panelServices();
+
     document.getElementById("addService").onclick = ()=>{
       cfg.services.push({
         slug:"",
@@ -1153,6 +1205,7 @@ function renderPanel(){
       });
       renderAll();
     };
+
     document.querySelectorAll("[data-del-service]").forEach(btn=>{
       btn.onclick = ()=>{
         collectServices();
@@ -1160,6 +1213,7 @@ function renderPanel(){
         renderAll();
       };
     });
+
     document.querySelectorAll("[data-upload-svc-hero]").forEach(btn=>{
       btn.onclick = ()=> uploadServiceHero(Number(btn.dataset.uploadSvcHero));
     });
