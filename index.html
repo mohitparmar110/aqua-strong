@@ -1126,7 +1126,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const idx = heroSlides.findIndex(s => s.key === key);
       if (idx >= 0) setHero(idx, { userAction: true });
 
-      const map = { terrace: 'terrace', bathroom: 'bathroom', wall: 'wall', heat: 'terrace' };
+      const map = { terrace: 'terrace', bathroom: 'bathroom', wall: 'wall', heat: 'heat' };
       const sel = document.getElementById('service');
       if (sel && map[key]) sel.value = map[key];
     });
