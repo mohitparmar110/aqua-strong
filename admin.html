@@ -271,6 +271,8 @@
 
         async function saveConfig() {
             if (!getToken()) { document.getElementById('token-modal').classList.remove('hidden'); return; }
+            function collectAll() {
+  if (!cfg) return;
             collectAll();
             document.getElementById('loading-overlay').style.display = 'flex';
             try {
@@ -732,8 +734,15 @@
             document.getElementById('token-save-btn').onclick = () => { setToken(document.getElementById('token-input-field').value); document.getElementById('token-modal').classList.add('hidden'); };
             document.getElementById('token-logout-btn').onclick = () => { clearToken(); document.getElementById('token-modal').classList.add('hidden'); };
             document.getElementById('preview-target-select').onchange = renderPreview;
-            document.getElementById('view-desktop').onclick = () => { previewMode='desktop'; document.getElementById('preview-frame').className="desktop-view shadow-2xl bg-white";  };
-            document.getElementById('view-mobile').onclick = () => { previewMode='mobile'; document.getElementById('preview-frame').className="mobile-view shadow-2xl bg-white";  };
+            document.getElementById('view-desktop').onclick = () => {
+            previewMode='desktop';
+          document.getElementById('preview-iframe').className="desktop-view shadow-2xl bg-white";
+};
+document.getElementById('view-mobile').onclick = () => {
+  previewMode='mobile';
+  document.getElementById('preview-iframe').className="mobile-view shadow-2xl bg-white";
+};
+
             document.getElementById('manual-refresh').onclick = () => {
             document.getElementById("preview-iframe").contentWindow.location.reload();
         };
