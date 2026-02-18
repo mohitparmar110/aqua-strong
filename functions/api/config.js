@@ -1,26 +1,46 @@
 export async function onRequestGet({ env }) {
   try {
-    const raw = await env.KV.get("site_config");
+    const raw = await env.SITE_KV.get("site_config");
     const data = raw ? JSON.parse(raw) : defaultConfig(env);
     return json(data, 200);
   } catch (e) {
     return json({ error: "Failed to load config", details: String(e) }, 500);
   }
 }
+
 function defaultConfig(env) {
-  // Minimal safe default (matches your admin shape expectations)
   return {
+    company: {
+      name: "AquaShield",
+      phone: "+91 97695 31112",
+      whatsapp: "919769531112"
+    },
     hero: {
-      slides: {
-        terrace: { bg: "", title: "", sub: "", bullets: [], ctaText: "", ctaLink: "" },
-        toilet: { bg: "", title: "", sub: "", bullets: [], ctaText: "", ctaLink: "" },
-        heat: { bg: "", title: "", sub: "", bullets: [], ctaText: "", ctaLink: "" }
-      }
+      // ✅ dynamic array
+      slides: [
+        {
+          id: "home",
+          title: "Stop Water Damage Before It Starts",
+          sub: "Professional waterproofing solutions with 10-year warranty. Protect your home from leaks, seepage & dampness forever.",
+          bullets: ["10 Year Warranty", "Free Inspection", "24/7 Support"],
+          ctaText: "Get Free Inspection",
+          ctaLink: "#contact",
+          bg: "",       // optional (left bg)
+          banner: "",   // optional (right image)
+          gradFrom: "#0c4a6e",
+          gradMid: "#075985",
+          gradTo: "#0369a1",
+          waText: "Hi! I need complete home waterproofing inspection"
+        }
+      ]
     },
     menu: [],
+    services: [],
+    faq: [],
+    reviews: [],
     seo: {
-      siteName: "",
-      defaultTitle: "",
+      siteName: "AquaShield Waterproofing",
+      defaultTitle: "AquaShield Waterproofing",
       defaultDescription: "",
       defaultOgImage: "",
       robots: "index,follow",
@@ -29,11 +49,7 @@ function defaultConfig(env) {
       h1Defaults: "",
       h2Defaults: ""
     },
-    pages: {},
-    faq: [],
-    reviews: [],
-    images: { map: [] },
-    services: []
+    pages: {}
   };
 }
 
