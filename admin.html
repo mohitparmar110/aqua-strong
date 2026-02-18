@@ -704,6 +704,21 @@
                 sel.appendChild(opt);
             });
         }
+        function renderPreview() {
+  const sel = document.getElementById('preview-target-select');
+  const label = document.getElementById('preview-label');
+  const iframe = document.getElementById('preview-iframe');
+
+  const v = sel?.value || "home";
+  const url = (v === "home") ? "/" : `/${v}/`;
+
+  if (label) label.innerText = (v === "home") ? "/index.html" : `/${v}/index.html`;
+
+  // force reload of preview page
+  if (iframe) iframe.src = url + `?v=${Date.now()}`;
+
+  // after reload, your postMessage preview will be sent on markDirty()
+}
 
         function attachEvents() {
             document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
