@@ -787,16 +787,13 @@ document.getElementById('view-mobile').onclick = () => {
         config: cfg
     }, "*");
 }
-
-        window.onload = () => { updateAuthUI(); attachEvents(); loadConfig(); };
-            window.onload = () => {
-  updateAuthUI();
-  attachEvents();
-  loadConfig();         // IMPORTANT: this must exist in your file
-  // optional:
-  // setStatus("Ready");
+   window.onload = () => {
+      updateAuthUI();
+      attachEvents();
+      loadConfig();         // IMPORTANT: this must exist in your file
+      // optional:
+      // setStatus("Ready");
 };
-
 </script>
 </body>
 </html>
