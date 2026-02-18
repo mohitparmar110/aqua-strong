@@ -206,180 +206,188 @@
  <a href="/clients.html" class="nav-link text-slate-700 font-medium hover:text-sky-600 transition-colors">Clients</a><a href="#contact" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Contact</a>
      </div>
     </div>
-   </nav><!-- Hero Section -->
-  <!-- Hero Section (Rotating Banner) -->
-<section id="home" class="hero-gradient text-white relative overflow-hidden">
-  <!-- Animated Background Elements -->
-  <div class="absolute inset-0 overflow-hidden">
+   </nav><!-- Hero Section (ROTATING BANNER + CLICK TRIGGERS) -->
+<section id="home" class="text-white relative overflow-hidden"
+  style="background: linear-gradient(135deg, var(--heroFrom, #0c4a6e) 0%, var(--heroMid, #075985) 50%, var(--heroTo, #0369a1) 100%);">
+
+  <!-- Left BG Image (rotates) -->
+  <div id="hero-left-bg"
+    class="absolute inset-0 opacity-25 bg-cover bg-center transition-all duration-700"
+    style="background-image: url('assets/images/wterprofingwholehome.png');">
+  </div>
+
+  <!-- Soft overlay for readability -->
+  <div class="absolute inset-0 bg-black/25"></div>
+
+  <!-- Floating blobs (keep your premium vibe) -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
     <div class="absolute top-20 left-10 w-64 h-64 bg-sky-400/10 rounded-full blur-3xl float"></div>
-    <div class="absolute bottom-20 right-10 w-96 h-96 bg-green-400/10 rounded-full blur-3xl float" style="animation-delay: -3s;"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-green-400/10 rounded-full blur-3xl float" style="animation-delay:-3s;"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl"></div>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-28 relative z-10">
-    <div class="grid lg:grid-cols-2 gap-10 items-start">
-      <!-- LEFT: copy -->
+    <div class="grid lg:grid-cols-2 gap-12 items-start">
+
+      <!-- LEFT CONTENT -->
       <div class="text-center lg:text-left">
+
         <!-- Trust Badge -->
         <div class="inline-flex items-center gap-2 trust-badge px-4 py-2 rounded-full mb-6">
           <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
           <span class="text-sm font-medium text-green-300">Trusted by 10,000+ Customers</span>
         </div>
 
-        <h1 id="hero-headline" class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-          Stop Water Damage <br class="hidden sm:block" />
+        <h1 id="hero-left-title"
+          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5">
+          Stop Water Damage <br class="hidden sm:block">
           <span class="text-green-400">Before It Starts</span>
         </h1>
 
-        <p id="hero-subtext" class="text-lg md:text-xl text-sky-100 mb-8 max-w-xl mx-auto lg:mx-0">
+        <p id="hero-left-sub"
+          class="text-lg md:text-xl text-sky-100 mb-7 max-w-xl mx-auto lg:mx-0">
           Professional waterproofing solutions with 10-year warranty. Protect your home from leaks, seepage & dampness forever.
         </p>
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
           <a id="hero-whatsapp"
-             href="https://wa.me/919769531112?text=Hi!%20I%20need%20waterproofing%20services"
-             target="_blank" rel="noopener noreferrer"
-             class="inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            href="https://wa.me/919769531112?text=Hi!%20I%20need%20waterproofing%20services"
+            target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
             <span id="hero-cta-text">Get Free Inspection</span>
           </a>
 
           <a href="tel:+919769531112"
-             class="inline-flex items-center justify-center gap-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-8 py-4 rounded-full font-bold text-lg border border-white/20 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            class="inline-flex items-center justify-center gap-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-8 py-4 rounded-full font-bold text-lg border border-white/20 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
             Call Now
           </a>
         </div>
 
-        <!-- Trust Indicators -->
-        <div class="flex flex-wrap justify-center lg:justify-start gap-6 text-sm">
+        <!-- Bullets (rotates) -->
+        <div class="flex flex-wrap justify-center lg:justify-start gap-6 text-sm" id="hero-bullets">
           <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd" />
+            </svg>
             <span class="text-sky-100">10 Year Warranty</span>
           </div>
+
           <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd" />
+            </svg>
             <span class="text-sky-100">Free Inspection</span>
           </div>
+
           <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd" />
+            </svg>
             <span class="text-sky-100">24/7 Support</span>
           </div>
         </div>
+
+        <!-- Click Triggers (your UI buttons) -->
+        <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl mx-auto lg:mx-0">
+          <button class="hero-trigger bg-white/10 hover:bg-white/20 border border-white/15 rounded-2xl p-3 text-left transition-all"
+            data-slide="terrace" type="button">
+            <div class="text-sm font-bold">Terrace</div>
+            <div class="text-xs text-sky-100">Click Here</div>
+          </button>
+
+          <button class="hero-trigger bg-white/10 hover:bg-white/20 border border-white/15 rounded-2xl p-3 text-left transition-all"
+            data-slide="bathroom" type="button">
+            <div class="text-sm font-bold">Bathroom</div>
+            <div class="text-xs text-sky-100">Click Here</div>
+          </button>
+
+          <button class="hero-trigger bg-white/10 hover:bg-white/20 border border-white/15 rounded-2xl p-3 text-left transition-all"
+            data-slide="wall" type="button">
+            <div class="text-sm font-bold">Wall</div>
+            <div class="text-xs text-sky-100">Click Here</div>
+          </button>
+
+          <button class="hero-trigger bg-white/10 hover:bg-white/20 border border-white/15 rounded-2xl p-3 text-left transition-all"
+            data-slide="heat" type="button">
+            <div class="text-sm font-bold">Heat</div>
+            <div class="text-xs text-sky-100">Click Here</div>
+          </button>
+        </div>
       </div>
 
-      <!-- RIGHT: rotating banner -->
-      <div class="relative">
-        <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-          <!-- Slide image -->
-          <div class="aspect-[16/10] relative">
-            <img id="hero-slide-img"
-                 src="assets/images/wterprofingwholehome.png"
-                 alt="Waterproofing Service"
-                 class="absolute inset-0 w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-sky-950/70 via-sky-950/25 to-transparent"></div>
+      <!-- RIGHT ROTATING BANNER -->
+      <div class="hidden lg:block relative">
+        <div class="relative w-full max-w-lg mx-auto">
 
-            <!-- Slide label -->
-            <div class="absolute top-4 left-4">
-              <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-2">
-                <div id="hero-slide-title" class="text-white font-extrabold text-sm sm:text-base">Complete Home Protection</div>
-                <div id="hero-slide-sub" class="text-sky-200 text-xs sm:text-sm">10-Year Warranty Included</div>
+          <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+            <div class="aspect-[16/10] relative overflow-hidden">
+
+              <img id="hero-banner-img"
+                src="assets/images/wterprofingwholehome.png"
+                alt="AquaShield Hero"
+                class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+                loading="lazy" />
+
+              <div class="absolute inset-0 bg-gradient-to-t from-sky-900/65 via-sky-900/15 to-transparent"></div>
+
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
+                  <div id="hero-badge-title" class="text-white font-bold text-sm">✓ Complete Home Protection</div>
+                  <div id="hero-badge-sub" class="text-sky-200 text-xs">10-Year Warranty Included</div>
+                </div>
               </div>
+
+              <!-- Prev/Next -->
+              <button id="hero-prev" type="button"
+                class="absolute top-1/2 -translate-y-1/2 left-3 w-10 h-10 rounded-full bg-black/30 hover:bg-black/45 backdrop-blur flex items-center justify-center border border-white/20">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <button id="hero-next" type="button"
+                class="absolute top-1/2 -translate-y-1/2 right-3 w-10 h-10 rounded-full bg-black/30 hover:bg-black/45 backdrop-blur flex items-center justify-center border border-white/20">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              <!-- Dots -->
+              <div id="hero-dots" class="absolute bottom-4 right-4 flex items-center gap-2"></div>
+
             </div>
-
-            <!-- Slider controls -->
-            <button type="button" id="hero-prev"
-              class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full p-2 backdrop-blur-md transition">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-              </svg>
-            </button>
-
-            <button type="button" id="hero-next"
-              class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full p-2 backdrop-blur-md transition">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </button>
-
-            <!-- Dots -->
-            <div id="hero-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2"></div>
           </div>
-        </div>
 
-        <!-- Clickable overlay services -->
-        <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <button type="button"
-            class="hero-trigger w-full text-left bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition"
-            data-slide="terrace">
-            <div class="text-white font-bold text-sm">Terrace</div>
-            <div class="text-sky-200 text-xs">Coating • Crack repair</div>
-          </button>
-
-          <button type="button"
-            class="hero-trigger w-full text-left bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition"
-            data-slide="toilet">
-            <div class="text-white font-bold text-sm">Toilet / Bathroom</div>
-            <div class="text-sky-200 text-xs">No tile removal</div>
-          </button>
-
-          <button type="button"
-            class="hero-trigger w-full text-left bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition"
-            data-slide="heat">
-            <div class="text-white font-bold text-sm">Heat Reflection</div>
-            <div class="text-sky-200 text-xs">Cool roof coating</div>
-          </button>
         </div>
       </div>
+
     </div>
   </div>
 
   <!-- Wave Divider -->
   <div class="absolute bottom-0 left-0 right-0">
     <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
-      <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f8fafc"/>
+      <path
+        d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+        fill="#f8fafc" />
     </svg>
   </div>
-</section><!-- Stats Section -->
-   <section class="bg-slate-50 py-8 md:py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-      <div class="counter-box rounded-2xl p-6 text-center">
-       <div class="text-3xl md:text-4xl font-extrabold text-sky-600 mb-1">
-        10K+
-       </div>
-       <div class="text-sm text-slate-600 font-medium">
-        Happy Customers
-       </div>
-      </div>
-      <div class="counter-box rounded-2xl p-6 text-center">
-       <div class="text-3xl md:text-4xl font-extrabold text-sky-600 mb-1">
-        15+
-       </div>
-       <div class="text-sm text-slate-600 font-medium">
-        Years Experience
-       </div>
-      </div>
-      <div class="counter-box rounded-2xl p-6 text-center">
-       <div class="text-3xl md:text-4xl font-extrabold text-sky-600 mb-1">
-        100%
-       </div>
-       <div class="text-sm text-slate-600 font-medium">
-        Satisfaction Rate
-       </div>
-      </div>
-      <div class="counter-box rounded-2xl p-6 text-center">
-       <div class="text-3xl md:text-4xl font-extrabold text-sky-600 mb-1">
-        10 Yr
-       </div>
-       <div class="text-sm text-slate-600 font-medium">
-        Warranty
-       </div>
-      </div>
-     </div>
-    </div>
-   </section><!-- Services Section -->
+</section><!-- Services Section -->
    <section id="services" class="py-16 md:py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><!-- Section Header -->
      <div class="text-center mb-12 md:mb-16"><span class="inline-block px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-semibold mb-4">OUR SERVICES</span>
@@ -818,9 +826,9 @@
         </div>
         <div><label for="phone" class="block text-sm font-medium text-slate-700 mb-2">Phone Number *</label> <input type="tel" id="phone" name="phone" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors" placeholder="+91 97695 31112">
         </div>
-        <div><label for="service" class="block text-sm font-medium text-slate-700 mb-2">Service Required *</label> <select id="service" name="service" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"> <option value="">Select a service</option> <option value="basement">Basement Waterproofing</option> <option value="terrace">Terrace Waterproofing</option> <option value="wall">Wall Waterproofing</option> <option value="pool">Swimming Pool Waterproofing</option> <option value="bathroom">Bathroom Waterproofing</option> <option value="tank">Tank Waterproofing</option> <option value="other">Other</option> </select>
+        <div><label for="service" class="block text-sm font-medium text-slate-700 mb-2">Service Required *</label> <select id="service" name="service" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"> <option value="">Select a service</option> <option value="basement">Basement Waterproofing</option> <option value="terrace">Terrace W</option> <option value="wall">Wall W</option> <option value="pool">Swimming Pool W</option> <option value="bathroom">Bathroom W</option> <option value="tank">Tank W</option> <option value="other">Other</option> </select>
         </div>
-        <div><label for="message" class="block text-sm font-medium text-slate-700 mb-2">Describe Your Issue</label> <textarea id="message" name="message" rows="3" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors resize-none" placeholder="Tell us about the waterproofing problem..."></textarea>
+        <div><label for="message" class="block text-sm font-medium text-slate-700 mb-2">Describe Your Issue</label> <textarea id="message" name="message" rows="3" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors resize-none" placeholder="Tell us about the w problem..."></textarea>
         </div><button type="submit" id="submit-btn" class="w-full cta-gradient text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"> Get Free Quote → </button>
         <p class="text-center text-sm text-slate-500">🔒 Your information is secure and never shared</p>
        </form><!-- Success Message -->
@@ -849,7 +857,7 @@
         </div>
         <h3 id="footer-company-name" class="text-xl font-bold">AquaShield</h3>
        </div>
-       <p class="text-slate-400 text-sm mb-4">Professional waterproofing solutions with 10-year warranty. Protecting homes across India since 2009.</p>
+       <p class="text-slate-400 text-sm mb-4">Professional w solutions with 10-year warranty. Protecting homes across India since 2009.</p>
       </div>
       <div>
        <h4 class="font-semibold text-lg mb-4">Services</h4>
@@ -887,7 +895,7 @@
     </div>
    </footer>
   </div>
-  <script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
 
   // Default configuration
@@ -902,7 +910,10 @@ document.addEventListener('DOMContentLoaded', () => {
     surface_color: '#ffffff',
     text_color: '#1e293b',
     primary_action_color: '#22c55e',
-    secondary_action_color: '#0ea5e9'
+    secondary_action_color: '#0ea5e9',
+
+    // ✅ OPTIONAL (admin-ready): you can later send JSON string from admin
+    // hero_slides_json: '[]'
   };
 
   let config = { ...defaultConfig };
@@ -910,130 +921,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ✅ Mobile menu toggle
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
-
   if (btn && menu) {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       menu.classList.toggle('hidden');
     });
   }
-// ✅ Hero Rotating Banner (auto-rotate + click triggers)
-const heroSlides = [
-  {
-    key: 'home',
-    img: 'assets/images/wterprofingwholehome.png',
-    title: 'Complete Home Protection',
-    sub: '10-Year Warranty Included',
-    waText: 'Hi! I need complete home waterproofing inspection'
-  },
-  {
-    key: 'terrace',
-    img: 'assets/images/terrace-2.jpg',
-    title: 'Terrace Waterproofing',
-    sub: 'Heat reflective • Crack repair',
-    waText: 'Hi! I need terrace waterproofing'
-  },
-  {
-    key: 'toilet',
-    img: 'assets/images/bathroom-1.jpg',
-    title: 'Toilet / Bathroom Waterproofing',
-    sub: 'No tile removal • Same day fix',
-    waText: 'Hi! I need bathroom/toilet waterproofing'
-  },
-  {
-    key: 'heat',
-    img: 'assets/images/heat-reflection.jpg',
-    title: 'Heat Reflection Coating',
-    sub: 'Cool roof • UV protection',
-    waText: 'Hi! I need heat reflection roof coating'
-  }
-];
-
-// if some images don’t exist yet, the slider still works — just replace paths later.
-
-let heroIndex = 0;
-let heroTimer = null;
-
-const heroImg = document.getElementById('hero-slide-img');
-const heroTitle = document.getElementById('hero-slide-title');
-const heroSub = document.getElementById('hero-slide-sub');
-const heroDots = document.getElementById('hero-dots');
-
-function setHero(index, { userAction = false } = {}) {
-  if (!heroImg || !heroTitle || !heroSub) return;
-
-  heroIndex = (index + heroSlides.length) % heroSlides.length;
-  const s = heroSlides[heroIndex];
-
-  // smooth-ish swap
-  heroImg.style.opacity = '0.15';
-  setTimeout(() => {
-    heroImg.src = s.img;
-    heroTitle.textContent = s.title;
-    heroSub.textContent = s.sub;
-    heroImg.style.opacity = '1';
-  }, 120);
-
-  // update dots
-  if (heroDots) {
-    [...heroDots.querySelectorAll('button')].forEach((btn, i) => {
-      btn.classList.toggle('bg-white', i === heroIndex);
-      btn.classList.toggle('bg-white/40', i !== heroIndex);
-    });
-  }
-
-  // Update WhatsApp CTA text per slide (optional)
-  const heroWa = document.getElementById('hero-whatsapp');
-  if (heroWa) {
-    heroWa.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(s.waText)}`;
-  }
-
-  // reset timer on user action so it doesn’t instantly flip
-  if (userAction) restartHeroAuto();
-}
-
-function buildHeroDots() {
-  if (!heroDots) return;
-  heroDots.innerHTML = '';
-  heroSlides.forEach((_, i) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'w-2.5 h-2.5 rounded-full transition-all ' + (i === 0 ? 'bg-white' : 'bg-white/40');
-    b.addEventListener('click', () => setHero(i, { userAction: true }));
-    heroDots.appendChild(b);
-  });
-}
-
-function nextHero() { setHero(heroIndex + 1, { userAction: true }); }
-function prevHero() { setHero(heroIndex - 1, { userAction: true }); }
-
-function restartHeroAuto() {
-  if (heroTimer) clearInterval(heroTimer);
-  heroTimer = setInterval(() => setHero(heroIndex + 1), 5000); // 5s
-}
-
-// prev/next buttons
-document.getElementById('hero-next')?.addEventListener('click', nextHero);
-document.getElementById('hero-prev')?.addEventListener('click', prevHero);
-
-// overlay service triggers (click anywhere)
-document.querySelectorAll('.hero-trigger').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const key = btn.getAttribute('data-slide');
-    const idx = heroSlides.findIndex(s => s.key === key);
-    if (idx >= 0) setHero(idx, { userAction: true });
-
-    // Also preselect the contact form dropdown
-    const map = { terrace: 'terrace', toilet: 'bathroom', heat: 'terrace' };
-    const sel = document.getElementById('service');
-    if (sel && map[key]) sel.value = map[key];
-  });
-});
-
-// init
-buildHeroDots();
-setHero(0);
-restartHeroAuto();
 
   // ✅ Mobile services accordion
   const msBtn = document.getElementById('mobile-services-btn');
@@ -1057,6 +950,210 @@ restartHeroAuto();
     });
   });
 
+  // ============================================================
+  // ✅ HERO ROTATING BANNER (FULL: left bg + gradient + right img)
+  // ============================================================
+
+  // Default slides (works even if you don’t have all images yet)
+  let heroSlides = [
+    {
+      key: 'home',
+      leftBg: 'assets/images/wterprofingwholehome.png',
+      gradFrom: '#0c4a6e', gradMid: '#075985', gradTo: '#0369a1',
+      leftTitle: 'Stop Water Damage Before It Starts',
+      leftSub: 'Professional waterproofing solutions with 10-year warranty. Protect your home from leaks, seepage & dampness forever.',
+      bullets: ['10 Year Warranty', 'Free Inspection', '24/7 Support'],
+
+      bannerImg: 'assets/images/wterprofingwholehome.png',
+      badgeTitle: '✓ Complete Home Protection',
+      badgeSub: '10-Year Warranty Included',
+      waText: 'Hi! I need complete home waterproofing inspection'
+    },
+    {
+      key: 'terrace',
+      leftBg: 'assets/images/terrace-2.jpg',
+      gradFrom: '#064e3b', gradMid: '#047857', gradTo: '#059669',
+      leftTitle: 'Terrace Waterproofing',
+      leftSub: 'Heat reflective coating + crack repair for long-lasting monsoon protection.',
+      bullets: ['Heat reflective', 'Crack repair', 'UV protection'],
+
+      bannerImg: 'assets/images/terrace-2.jpg',
+      badgeTitle: '✓ Terrace Coating',
+      badgeSub: 'Heat reflective • Crack repair',
+      waText: 'Hi! I need terrace waterproofing'
+    },
+    {
+      key: 'bathroom',
+      leftBg: 'assets/images/bathroom-1.jpg',
+      gradFrom: '#0f172a', gradMid: '#1e293b', gradTo: '#334155',
+      leftTitle: 'Bathroom Waterproofing',
+      leftSub: 'Leak fix without tile removal — quick sealing + membrane application.',
+      bullets: ['No tile removal', 'Same day fix', 'Odour + damp control'],
+
+      bannerImg: 'assets/images/bathroom-1.jpg',
+      badgeTitle: '✓ Bathroom Fix',
+      badgeSub: 'No tile removal • Same day',
+      waText: 'Hi! I need bathroom waterproofing'
+    },
+    {
+      key: 'wall',
+      leftBg: 'assets/images/crack-filling-services-on-external-building-surface-500x500.jpg',
+      gradFrom: '#0b3b73', gradMid: '#075985', gradTo: '#0284c7',
+      leftTitle: 'Wall Waterproofing',
+      leftSub: 'Stop dampness, mold, and peeling paint with advanced wall treatment.',
+      bullets: ['Interior & exterior', 'Anti-fungal', 'Long-lasting finish'],
+
+      bannerImg: 'assets/images/crack-filling-services-on-external-building-surface-500x500.jpg',
+      badgeTitle: '✓ Wall Sealing',
+      badgeSub: 'Anti-fungal • Damp control',
+      waText: 'Hi! I need wall waterproofing'
+    },
+    {
+      key: 'heat',
+      leftBg: 'assets/images/heat-reflection.jpg',
+      gradFrom: '#7c2d12', gradMid: '#b45309', gradTo: '#f59e0b',
+      leftTitle: 'Heat Reflection Coating',
+      leftSub: 'Cool roof solution that reduces heat absorption and protects from UV.',
+      bullets: ['Cool roof', 'UV protection', 'Energy saving'],
+
+      bannerImg: 'assets/images/heat-reflection.jpg',
+      badgeTitle: '✓ Heat Reflection',
+      badgeSub: 'Cool roof • UV protection',
+      waText: 'Hi! I need heat reflection roof coating'
+    }
+  ];
+
+  let heroIndex = 0;
+  let heroTimer = null;
+
+  const heroSection = document.getElementById('home');
+  const heroLeftBg = document.getElementById('hero-left-bg');
+  const heroLeftTitle = document.getElementById('hero-left-title');
+  const heroLeftSub = document.getElementById('hero-left-sub');
+  const heroBulletsWrap = document.getElementById('hero-bullets');
+
+  const heroBannerImg = document.getElementById('hero-banner-img');
+  const heroBadgeTitle = document.getElementById('hero-badge-title');
+  const heroBadgeSub = document.getElementById('hero-badge-sub');
+  const heroDots = document.getElementById('hero-dots');
+
+  function buildHeroDots() {
+    if (!heroDots) return;
+    heroDots.innerHTML = '';
+    heroSlides.forEach((_, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'w-2.5 h-2.5 rounded-full transition-all ' + (i === 0 ? 'bg-white' : 'bg-white/40');
+      b.addEventListener('click', () => setHero(i, { userAction: true }));
+      heroDots.appendChild(b);
+    });
+  }
+
+  function renderBullets(bullets = []) {
+    if (!heroBulletsWrap) return;
+
+    // keep the layout same, rebuild items
+    heroBulletsWrap.innerHTML = '';
+    bullets.slice(0, 3).forEach(txt => {
+      const item = document.createElement('div');
+      item.className = 'flex items-center gap-2';
+      item.innerHTML = `
+        <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd" />
+        </svg>
+        <span class="text-sky-100">${txt}</span>
+      `;
+      heroBulletsWrap.appendChild(item);
+    });
+  }
+
+  function setHero(index, { userAction = false } = {}) {
+    const total = heroSlides.length;
+    heroIndex = (index + total) % total;
+    const s = heroSlides[heroIndex];
+
+    // smooth swaps
+    if (heroLeftBg) {
+      heroLeftBg.style.opacity = '0.05';
+      setTimeout(() => {
+        heroLeftBg.style.backgroundImage = `url('${s.leftBg}')`;
+        heroLeftBg.style.opacity = '0.25';
+      }, 120);
+    }
+
+    if (heroSection) {
+      heroSection.style.setProperty('--heroFrom', s.gradFrom || '#0c4a6e');
+      heroSection.style.setProperty('--heroMid', s.gradMid || '#075985');
+      heroSection.style.setProperty('--heroTo', s.gradTo || '#0369a1');
+    }
+
+    if (heroLeftTitle) {
+      heroLeftTitle.innerHTML = s.leftTitle || defaultConfig.hero_headline;
+    }
+    if (heroLeftSub) {
+      heroLeftSub.textContent = s.leftSub || defaultConfig.hero_subtext;
+    }
+    renderBullets(s.bullets || []);
+
+    if (heroBannerImg) {
+      heroBannerImg.style.opacity = '0.2';
+      setTimeout(() => {
+        heroBannerImg.src = s.bannerImg;
+        heroBannerImg.style.opacity = '1';
+      }, 120);
+    }
+
+    if (heroBadgeTitle) heroBadgeTitle.textContent = s.badgeTitle || '';
+    if (heroBadgeSub) heroBadgeSub.textContent = s.badgeSub || '';
+
+    // dots
+    if (heroDots) {
+      [...heroDots.querySelectorAll('button')].forEach((btn, i) => {
+        btn.classList.toggle('bg-white', i === heroIndex);
+        btn.classList.toggle('bg-white/40', i !== heroIndex);
+      });
+    }
+
+    // WhatsApp CTA per slide
+    const heroWa = document.getElementById('hero-whatsapp');
+    if (heroWa) {
+      heroWa.href = `https://wa.me/${config.whatsapp_number}?text=${encodeURIComponent(s.waText || 'Hi! I need waterproofing services')}`;
+    }
+
+    // reset timer on user action
+    if (userAction) restartHeroAuto();
+  }
+
+  function restartHeroAuto() {
+    if (heroTimer) clearInterval(heroTimer);
+    heroTimer = setInterval(() => setHero(heroIndex + 1), 5000);
+  }
+
+  // prev/next
+  document.getElementById('hero-next')?.addEventListener('click', () => setHero(heroIndex + 1, { userAction: true }));
+  document.getElementById('hero-prev')?.addEventListener('click', () => setHero(heroIndex - 1, { userAction: true }));
+
+  // triggers
+  document.querySelectorAll('.hero-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-slide');
+      const idx = heroSlides.findIndex(s => s.key === key);
+      if (idx >= 0) setHero(idx, { userAction: true });
+
+      // preselect contact form
+      const map = { terrace: 'terrace', bathroom: 'bathroom', wall: 'wall', heat: 'terrace' };
+      const sel = document.getElementById('service');
+      if (sel && map[key]) sel.value = map[key];
+    });
+  });
+
+  // init hero
+  buildHeroDots();
+  setHero(0);
+  restartHeroAuto();
+
   // ✅ Form submission (safe checks)
   const form = document.getElementById('contact-form');
   if (form) {
@@ -1078,29 +1175,22 @@ restartHeroAuto();
     });
   }
 
-  // ✅ When clicking a service dropdown item, pre-select the form dropdown
-  document.querySelectorAll('.service-dd').forEach(link => {
-    link.addEventListener('click', () => {
-      const val = link.getAttribute('data-service');
-      const sel = document.getElementById('service');
-      if (sel && val) sel.value = val;
-    });
-  });
-
   // ✅ Update UI based on config
   function onConfigChange(cfg) {
     config = { ...defaultConfig, ...cfg };
+
+    // Optional: allow admin to override heroSlides via JSON string later
+    // if (config.hero_slides_json) {
+    //   try {
+    //     const parsed = JSON.parse(config.hero_slides_json);
+    //     if (Array.isArray(parsed) && parsed.length) heroSlides = parsed;
+    //   } catch(e) {}
+    // }
 
     document.getElementById('nav-company-name').textContent = config.company_name;
     document.getElementById('footer-company-name').textContent = config.company_name;
     document.getElementById('copyright-company-name').textContent = config.company_name + ' Waterproofing';
 
-    document.getElementById('hero-headline').innerHTML =
-      config.hero_headline.replace(
-        'Before It Starts',
-        '<br class="hidden sm:block"/><span class="text-green-400">Before It Starts</span>'
-      );
-    document.getElementById('hero-subtext').textContent = config.hero_subtext;
     document.getElementById('hero-cta-text').textContent = config.cta_button_text;
 
     document.getElementById('nav-phone-text').textContent = config.phone_number;
@@ -1114,6 +1204,9 @@ restartHeroAuto();
     });
 
     document.getElementById('nav-cta').textContent = config.cta_button_text;
+
+    // refresh hero once after config (keeps whatsapp_number correct)
+    setHero(heroIndex);
   }
 
   // Element SDK init
