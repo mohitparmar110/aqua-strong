@@ -324,9 +324,12 @@
             const data = await res.json();
             return data.publicUrl || data.url;
         }
-        // --- PREMAP DEFAULT SLIDES (ONLY IF EMPTY) ---
-if (c.hero.slides.length === 0) {
-  c.hero.slides = [
+      // --- PREMAP DEFAULT SLIDES (ONLY IF EMPTY) ---
+function ensureDefaultSlides() {
+  if (!cfg?.hero?.slides) return;
+  if (cfg.hero.slides.length !== 0) return;
+
+  cfg.hero.slides = [
     {
       id: "terrace",
       label: "Terrace",
