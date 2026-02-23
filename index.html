@@ -160,48 +160,34 @@
     </svg>
   </a>
 
-<!-- IMPORTANT: this needs to live inside a RELATIVE parent (Services <li> or wrapper) -->
-<div class="absolute left-0 top-full mt-3 z-[9999] overflow-visible">
-  <!-- Make this overflow-visible so the submenu can escape -->
-  <div class="w-72 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-visible">
-    <ul class="py-2">
-      <!-- item with submenu -->
-      <li class="relative group">
-        <a
-          class="flex items-center justify-between px-5 py-3 hover:bg-sky-50"
-          href="#"
-        >
-          Terrace Waterproofing
-          <span>›</span>
-        </a>
+<div class="absolute left-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden
+            opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
 
-        <!-- SUBMENU -->
-        <div
-          class="absolute left-full top-0 w-56
-                 bg-white rounded-2xl shadow-xl border border-slate-100
-                 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition
-                 z-[10000]
-                 ml-0 pl-2"
-        >
-          <!-- hover-bridge so the submenu doesn't disappear when moving mouse -->
-          <div class="relative">
-            <div class="absolute -left-2 top-0 h-full w-2"></div>
+  <!-- 1) Terrace (TOP) with sub menu -->
+  <div class="relative group/terrace">
+    <a href="/terrace-waterproofing/" class="flex items-center justify-between px-5 py-3 hover:bg-sky-50">
+      <span>Terrace Waterproofing</span>
+      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </a>
 
-            <a class="block px-5 py-3 hover:bg-sky-50" href="#">Protect</a>
-            <a class="block px-5 py-3 hover:bg-sky-50" href="#">Proceed</a>
-          </div>
-        </div>
-      </li>
-
-      <!-- normal items -->
-      <li><a class="block px-5 py-3 hover:bg-sky-50" href="#">Wall Waterproofing</a></li>
-      <li><a class="block px-5 py-3 hover:bg-sky-50" href="#">Swimming Pool Waterproofing</a></li>
-      <li><a class="block px-5 py-3 hover:bg-sky-50" href="#">Bathroom Waterproofing</a></li>
-      <li><a class="block px-5 py-3 hover:bg-sky-50" href="#">Tank Waterproofing</a></li>
-      <li><a class="block px-5 py-3 hover:bg-sky-50" href="#">Smart Paint</a></li>
-    </ul>
+    <!-- Submenu: Protect / Proceed -->
+    <div class="absolute top-0 left-full ml-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden
+                opacity-0 invisible group-hover/terrace:opacity-100 group-hover/terrace:visible transition-all z-50">
+      <a href="/terrace-waterproofing/protect/" class="block px-5 py-3 hover:bg-sky-50">Protect</a>
+      <a href="/terrace-waterproofing/proceed/" class="block px-5 py-3 hover:bg-sky-50">Proceed</a>
+    </div>
   </div>
-</div>
+
+  <!-- 2) Other services (Basement REMOVED) -->
+  <a href="/wall-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Wall Waterproofing</a>
+  <a href="/swimming-pool-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Swimming Pool Waterproofing</a>
+  <a href="/bathroom-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Bathroom Waterproofing</a>
+  <a href="/water-tank-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Tank Waterproofing</a>
+
+  <!-- 3) NEW: Smart Paint -->
+  <a href="/smart-paint/" class="block px-5 py-3 hover:bg-sky-50">Smart Paint</a>
 </div>
    </nav><!-- Hero Section (ROTATING BANNER + CLICK TRIGGERS) -->
 <section id="home" class="text-white relative overflow-hidden"
