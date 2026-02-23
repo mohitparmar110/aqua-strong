@@ -160,29 +160,36 @@
     </svg>
   </a>
 
-<!-- OUTER: allows submenu to overflow -->
-<div class="absolute left-0 mt-3 z-50 overflow-visible">
-  
-  <!-- INNER: keeps rounded corners clean -->
-  <div class="w-72 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-    
+<!-- IMPORTANT: this needs to live inside a RELATIVE parent (Services <li> or wrapper) -->
+<div class="absolute left-0 top-full mt-3 z-[9999] overflow-visible">
+  <!-- Make this overflow-visible so the submenu can escape -->
+  <div class="w-72 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-visible">
     <ul class="py-2">
       <!-- item with submenu -->
       <li class="relative group">
-        <a class="flex items-center justify-between px-5 py-3 hover:bg-sky-50"
-           href="#">
+        <a
+          class="flex items-center justify-between px-5 py-3 hover:bg-sky-50"
+          href="#"
+        >
           Terrace Waterproofing
           <span>›</span>
         </a>
 
         <!-- SUBMENU -->
         <div
-          class="absolute left-full top-0 ml-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100
+          class="absolute left-full top-0 w-56
+                 bg-white rounded-2xl shadow-xl border border-slate-100
                  opacity-0 invisible group-hover:opacity-100 group-hover:visible transition
-                 z-50"
+                 z-[10000]
+                 ml-0 pl-2"
         >
-          <a class="block px-5 py-3 hover:bg-sky-50" href="#">Protect</a>
-          <a class="block px-5 py-3 hover:bg-sky-50" href="#">Proceed</a>
+          <!-- hover-bridge so the submenu doesn't disappear when moving mouse -->
+          <div class="relative">
+            <div class="absolute -left-2 top-0 h-full w-2"></div>
+
+            <a class="block px-5 py-3 hover:bg-sky-50" href="#">Protect</a>
+            <a class="block px-5 py-3 hover:bg-sky-50" href="#">Proceed</a>
+          </div>
         </div>
       </li>
 
@@ -193,8 +200,8 @@
       <li><a class="block px-5 py-3 hover:bg-sky-50" href="#">Tank Waterproofing</a></li>
       <li><a class="block px-5 py-3 hover:bg-sky-50" href="#">Smart Paint</a></li>
     </ul>
-
   </div>
+</div>
 </div>
     </div>
    </nav><!-- Hero Section (ROTATING BANNER + CLICK TRIGGERS) -->
