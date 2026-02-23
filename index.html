@@ -160,15 +160,35 @@
     </svg>
   </a>
 
-<div class="absolute left-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden
+<div class="absolute left-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden
             opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-    <a href="/basement-waterproofing" class="block px-5 py-3 hover:bg-sky-50">Basement Waterproofing</a>
-    <a href="/terrace-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Terrace Waterproofing</a>
-    <a href="/wall-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Wall Waterproofing</a>
-    <a href="/swimming-pool-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Swimming Pool Waterproofing</a>
-    <a href="/bathroom-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Bathroom Waterproofing</a>
-    <a href="/water-tank-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Tank Waterproofing</a>
+
+  <!-- 1) Terrace (TOP) with sub menu -->
+  <div class="relative group/terrace">
+    <a href="/terrace-waterproofing/" class="flex items-center justify-between px-5 py-3 hover:bg-sky-50">
+      <span>Terrace Waterproofing</span>
+      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </a>
+
+    <!-- Submenu: Protect / Proceed -->
+    <div class="absolute top-0 left-full ml-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden
+                opacity-0 invisible group-hover/terrace:opacity-100 group-hover/terrace:visible transition-all z-50">
+      <a href="/terrace-waterproofing/protect/" class="block px-5 py-3 hover:bg-sky-50">Protect</a>
+      <a href="/terrace-waterproofing/proceed/" class="block px-5 py-3 hover:bg-sky-50">Proceed</a>
+    </div>
   </div>
+
+  <!-- 2) Other services (Basement REMOVED) -->
+  <a href="/wall-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Wall Waterproofing</a>
+  <a href="/swimming-pool-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Swimming Pool Waterproofing</a>
+  <a href="/bathroom-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Bathroom Waterproofing</a>
+  <a href="/water-tank-waterproofing/" class="block px-5 py-3 hover:bg-sky-50">Tank Waterproofing</a>
+
+  <!-- 3) NEW: Smart Paint -->
+  <a href="/smart-paint/" class="block px-5 py-3 hover:bg-sky-50">Smart Paint</a>
+</div>
 </div>
  <a href="#why-us" class="nav-link text-slate-700 font-medium hover:text-sky-600 transition-colors">Why Us</a> <a href="#testimonials" class="nav-link text-slate-700 font-medium hover:text-sky-600 transition-colors">Reviews</a> <a href="/blog/" class="nav-link text-slate-700 font-medium hover:text-sky-600 transition-colors">Blog</a>
  <a href="/clients.html" class="nav-link text-slate-700 font-medium hover:text-sky-600 transition-colors">Clients</a><a href="#contact" class="nav-link text-slate-700 font-medium hover:text-sky-600 transition-colors">Contact</a>
