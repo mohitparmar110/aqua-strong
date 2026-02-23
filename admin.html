@@ -25,15 +25,8 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
             backdrop-filter: blur(10px);
         }
-        .water-wave { position: relative; }
-        .water-wave::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, #0ea5e9, #22c55e, #0ea5e9);
-            background-size: 200% 100%; animation: wave 3s linear infinite;
-        }
-        @keyframes wave { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
-
-        #preview-iframe { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+       
+#preview-iframe { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .mobile-view {
             width: 390px;
