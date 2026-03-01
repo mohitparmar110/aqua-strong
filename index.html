@@ -239,152 +239,89 @@ class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-sk
 <a href="/clients.html" class="nav-link text-slate-700 font-medium hover:text-sky-600 transition-colors">Clients</a><a href="#contact" class="px-4 py-3 rounded-xl hover:bg-sky-50 text-slate-700 font-medium transition-colors">Contact</a>
 </div>
 </div>
-</nav><!-- Hero Section (ROTATING BANNER + CLICK TRIGGERS) -->
-<section id="home" class="text-white relative overflow-hidden"
-style="background: linear-gradient(135deg, var(--heroFrom, #0c4a6e) 0%, var(--heroMid, #075985) 50%, var(--heroTo, #0369a1) 100%);">
+</nav><section id="home" class="hero-section text-white relative overflow-hidden">
 
-  <!-- Left BG Image (rotates) -->
-  <div id="hero-left-bg"
-    class="absolute inset-0 opacity-25 bg-cover bg-center transition-all duration-700"
-    style="background-image: url('assets/images/wterprofingwholehome.png');">
-  </div>
-
-  <!-- Soft overlay for readability -->
-  <div class="absolute inset-0 bg-black/25"></div>
-
-  <!-- Floating blobs -->
+  <!-- Premium Animated Background -->
   <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute top-20 left-10 w-64 h-64 bg-sky-400/10 rounded-full blur-3xl float"></div>
-    <div class="absolute bottom-20 right-10 w-96 h-96 bg-green-400/10 rounded-full blur-3xl float" style="animation-delay:-3s;"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl"></div>
+    <div class="absolute -top-40 -right-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl float"></div>
+    <div class="absolute -bottom-40 -left-20 w-96 h-96 bg-purple-500/8 rounded-full blur-3xl float" style="animation-delay: -3s;"></div>
+    <div class="absolute top-1/2 left-1/3 w-72 h-72 bg-indigo-400/5 rounded-full blur-3xl" style="animation: float 12s ease-in-out infinite 4s;"></div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-28 relative z-10">
-    <div class="grid lg:grid-cols-2 gap-12 items-start">
+  <!-- Content Wrapper -->
+  <div class="hero-content-wrapper relative z-10">
 
-      <!-- LEFT CONTENT -->
-      <div class="text-center lg:text-left">
+    <!-- Left Content -->
+    <div class="hero-left-content">
 
-        <!-- Trust Badge -->
-        <div class="inline-flex items-center gap-2 trust-badge px-4 py-2 rounded-full mb-6">
-          <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-          <span class="text-sm font-medium text-green-300">Trusted by 10,000+ Customers</span>
+      <div class="inline-flex items-center gap-3 trust-badge px-6 py-3 rounded-full mb-8">
+        <span class="w-3 h-3 bg-indigo-300 rounded-full animate-pulse"></span>
+        <span class="text-base font-semibold text-indigo-200">✓ Trusted by 10,000+ Customers</span>
+      </div>
+
+      <h1 id="hero-left-title" class="text-6xl font-extrabold leading-tight mb-7">
+        Stop Water Damage <br>
+        <span class="bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">Before It Starts</span>
+      </h1>
+
+      <p id="hero-left-sub" class="text-xl text-indigo-100 leading-relaxed font-light">
+        Professional waterproofing solutions with 10-year warranty. Protect your home from leaks, seepage & dampness forever.
+      </p>
+    </div>
+
+    <!-- Right Content -->
+    <div class="hero-right-content">
+      <div class="services-grid">
+
+        <div class="service-item">
+          <button class="service-icon-btn active" data-slide="0" type="button">
+            <div class="service-icon-circle">🏢</div>
+            <div class="service-name">Terrace</div>
+          </button>
+          <button class="click-here-btn" data-slide="0" type="button">Click Here</button>
         </div>
 
-        <!-- ✅ Title -->
-        <h1 id="hero-left-title"
-          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5">
-          Stop Water Damage <br class="hidden sm:block">
-          <span class="text-green-400">Before It Starts</span>
-        </h1>
-
-        <!-- ✅ Subtitle -->
-        <p id="hero-left-sub"
-          class="text-lg md:text-xl text-sky-100 mb-7 max-w-xl mx-auto lg:mx-0">
-          Professional waterproofing solutions with 10-year warranty. Protect your home from leaks, seepage & dampness forever.
-        </p>
-
-        <!-- CTA Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
-          <a id="hero-whatsapp"
-            href="https://wa.me/919769531112?text=Hi!%20I%20need%20waterproofing%20services"
-            target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
-            </svg>
-            <span id="hero-cta-text">Get Free Inspection</span>
-          </a>
-
-          <a href="tel:+919769531112"
-            class="inline-flex items-center justify-center gap-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-8 py-4 rounded-full font-bold text-lg border border-white/20 transition-all">
-            Call Now
-          </a>
+        <div class="service-item">
+          <button class="service-icon-btn" data-slide="1" type="button">
+            <div class="service-icon-circle">🚿</div>
+            <div class="service-name">Bathroom</div>
+          </button>
+          <button class="click-here-btn" data-slide="1" type="button">Click Here</button>
         </div>
 
-        <!-- ✅ Bullets container (JS dynamically replaces this) -->
-        <div id="hero-bullets" class="flex flex-wrap justify-center lg:justify-start gap-6 text-sm"></div>
-
-        <!-- Click Triggers -->
-        <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl mx-auto lg:mx-0">
-          <button class="hero-trigger bg-white/10 hover:bg-white/20 border border-white/15 rounded-2xl p-3 text-left transition-all"
-            data-slide="terrace" type="button">
-            <div class="text-sm font-bold">Terrace</div>
-            <div class="text-xs text-sky-100">Click Here</div>
+        <div class="service-item">
+          <button class="service-icon-btn" data-slide="2" type="button">
+            <div class="service-icon-circle">🧱</div>
+            <div class="service-name">Walls</div>
           </button>
+          <button class="click-here-btn" data-slide="2" type="button">Click Here</button>
+        </div>
 
-          <button class="hero-trigger bg-white/10 hover:bg-white/20 border border-white/15 rounded-2xl p-3 text-left transition-all"
-            data-slide="bathroom" type="button">
-            <div class="text-sm font-bold">Bathroom</div>
-            <div class="text-xs text-sky-100">Click Here</div>
+        <div class="service-item">
+          <button class="service-icon-btn" data-slide="3" type="button">
+            <div class="service-icon-circle">🏗️</div>
+            <div class="service-name">Basement</div>
           </button>
-
-          <button class="hero-trigger bg-white/10 hover:bg-white/20 border border-white/15 rounded-2xl p-3 text-left transition-all"
-            data-slide="wall" type="button">
-            <div class="text-sm font-bold">Wall</div>
-            <div class="text-xs text-sky-100">Click Here</div>
-          </button>
-
-          <button class="hero-trigger bg-white/10 hover:bg-white/20 border border-white/15 rounded-2xl p-3 text-left transition-all"
-            data-slide="heat" type="button">
-            <div class="text-sm font-bold">Heat</div>
-            <div class="text-xs text-sky-100">Click Here</div>
-          </button>
+          <button class="click-here-btn" data-slide="3" type="button">Click Here</button>
         </div>
 
       </div>
-
-      <!-- RIGHT ROTATING BANNER -->
-      <div class="hidden lg:block relative">
-        <div class="relative w-full max-w-lg mx-auto">
-          <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-            <div class="aspect-[16/10] relative overflow-hidden">
-
-              <img id="hero-banner-img"
-                src="assets/images/wterprofingwholehome.png"
-                alt="Hero Banner"
-                class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
-                loading="lazy" />
-
-              <div class="absolute inset-0 bg-gradient-to-t from-sky-900/65 via-sky-900/15 to-transparent"></div>
-
-              <div class="absolute bottom-4 left-4 right-4">
-                <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
-                  <div id="hero-badge-title" class="text-white font-bold text-sm">✓ Complete Home Protection</div>
-                  <div id="hero-badge-sub" class="text-sky-200 text-xs">10-Year Warranty Included</div>
-                </div>
-              </div>
-
-              <!-- Prev/Next -->
-              <button id="hero-prev" type="button"
-                class="absolute top-1/2 -translate-y-1/2 left-3 w-10 h-10 rounded-full bg-black/30 hover:bg-black/45 backdrop-blur flex items-center justify-center border border-white/20">
-                ‹
-              </button>
-
-              <button id="hero-next" type="button"
-                class="absolute top-1/2 -translate-y-1/2 right-3 w-10 h-10 rounded-full bg-black/30 hover:bg-black/45 backdrop-blur flex items-center justify-center border border-white/20">
-                ›
-              </button>
-
-              <!-- Dots -->
-              <div id="hero-dots" class="absolute bottom-4 right-4 flex items-center gap-2"></div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- Wave Divider -->
-  <div class="absolute bottom-0 left-0 right-0">
-    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
-      <path
-        d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H0Z"
-        fill="#f8fafc" />
-    </svg>
+  <!-- CTA Buttons -->
+  <div class="hero-cta-buttons">
+    <a id="hero-whatsapp" href="https://wa.me/919769531112?text=Hi!%20I%20need%20waterproofing%20services"
+       target="_blank" rel="noopener noreferrer"
+       class="cta-button inline-flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-2xl bounce-float">
+      <span id="hero-cta-text">Get Free Inspection</span>
+    </a>
+
+    <a id="hero-call" href="tel:+919769531112"
+       class="cta-button inline-flex items-center justify-center gap-3 bg-white/12 backdrop-blur-md text-white px-8 py-4 rounded-xl font-bold text-lg border-2 border-white/40 bounce-float"
+       style="animation-delay: 0.1s;">
+      <span id="hero-call-text">Call Now</span>
+    </a>
   </div>
 
 </section><!-- Services Section -->
